@@ -4,7 +4,11 @@ using UnityEngine;
 
 public class Player : MonoBehaviour
 {
-    public float movSpeed = 200f;
+    public float movSpeed = 10f;
+
+    private float horizontalScreenMarginLimit;
+    private float verticalScreenMarginLimit;
+    
     void Awake()
     {
         Debug.Log("Awake");
@@ -12,7 +16,9 @@ public class Player : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        Debug.Log("Start");
+        // >> 1 divides by 2, 0 is the center
+        horizontalScreenMarginLimit = (Screen.width >> 1);
+        verticalScreenMarginLimit = (Screen.height >> 1);
     }
 
     // Update is called once per frame
@@ -20,22 +26,22 @@ public class Player : MonoBehaviour
     {
         if (Input.GetKey(KeyCode.LeftArrow))
         {
-            var xpos = transform.position.x - movSpeed * Time.deltaTime;
+            var xpos = Mathf.Max(transform.position.x - movSpeed * Time.deltaTime, -horizontalScreenMarginLimit);
             transform.position = new Vector3(xpos, transform.position.y, 0);
         }
         else if (Input.GetKey(KeyCode.RightArrow))
         {
-            var xpos = transform.position.x + movSpeed * Time.deltaTime;
+            var xpos = Mathf.Min(transform.position.x + movSpeed * Time.deltaTime, horizontalScreenMarginLimit);
             transform.position = new Vector3(xpos, transform.position.y, 0);
         }
         else if (Input.GetKey(KeyCode.UpArrow))
         {
-            var ypos = transform.position.y + movSpeed * Time.deltaTime;
+            var ypos = Mathf.Min(transform.position.y + movSpeed * Time.deltaTime, verticalScreenMarginLimit);
             transform.position = new Vector3(transform.position.x, ypos, 0);
         }
         else if (Input.GetKey(KeyCode.DownArrow))
         {
-            var ypos = transform.position.y - movSpeed * Time.deltaTime;
+            var ypos = Mathf.Max(transform.position.y - movSpeed * Time.deltaTime, -verticalScreenMarginLimit);
             transform.position = new Vector3(transform.position.x, ypos, 0);
         }
     }
