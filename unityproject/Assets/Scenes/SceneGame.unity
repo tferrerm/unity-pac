@@ -237,6 +237,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   movSpeed: 10
+  playerSprites:
+  - {fileID: -5082647686934749709, guid: 987d6203cab1543d9a1de69abd061e71, type: 3}
+  - {fileID: 3386662938922423588, guid: 987d6203cab1543d9a1de69abd061e71, type: 3}
+  - {fileID: 1211998406744890917, guid: 987d6203cab1543d9a1de69abd061e71, type: 3}
+  - {fileID: 8553092956536608252, guid: 987d6203cab1543d9a1de69abd061e71, type: 3}
 --- !u!212 &1570586585
 SpriteRenderer:
   m_ObjectHideFlags: 0
