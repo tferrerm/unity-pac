@@ -184,22 +184,22 @@ TextureImporter:
     second: grey_ghost_left
   - first:
       213: 5327131734856063916
-    second: apple
+    second: bonus_apple
   - first:
       213: 7083852059897662497
-    second: orange
+    second: bonus_orange
   - first:
       213: -4513582774868341619
-    second: strawberry
+    second: bonus_strawberry
   - first:
       213: 8064056289589391633
-    second: cherry
+    second: bonus_cherry
   - first:
       213: 6660317758004568044
-    second: melon
+    second: bonus_melon
   - first:
       213: -2419440146347887631
-    second: galaxian
+    second: bonus_galaxian
   - first:
       213: 3026130483469327200
     second: blue_ghost_1
@@ -214,28 +214,28 @@ TextureImporter:
     second: grey_ghost_2
   - first:
       213: 1901097361567403819
-    second: apple
+    second: bonus_apple
   - first:
       213: 7286473914490883674
-    second: orange
+    second: bonus_orange
   - first:
       213: 2610982374439609670
     second: berry
   - first:
       213: 2027226811094811350
-    second: cherry
+    second: bonus_cherry
   - first:
       213: 7003351578027503056
-    second: melon
+    second: bonus_melon
   - first:
       213: -3624837553737152464
-    second: galaxian
+    second: bonus_galaxian
   - first:
       213: 5627485602472712047
-    second: bell
+    second: bonus_bell
   - first:
       213: 8472352921499875423
-    second: key
+    second: bonus_key
   - first:
       213: -1867604602640378555
     second: power_pellet
@@ -469,28 +469,28 @@ TextureImporter:
     second: grey_ghost_left
   - first:
       213: 8160373527584436708
-    second: apple
+    second: bonus_apple
   - first:
       213: 7150125039321881957
-    second: orange
+    second: bonus_orange
   - first:
       213: 3736174943399590159
-    second: strawberry
+    second: bonus_strawberry
   - first:
       213: 4860710331705247164
-    second: cherry
+    second: bonus_cherry
   - first:
       213: 7338191021795798967
-    second: melon
+    second: bonus_melon
   - first:
       213: -3473560846729503991
-    second: galaxian
+    second: bonus_galaxian
   - first:
       213: 895444875753460237
-    second: bell
+    second: bonus_bell
   - first:
       213: -1158912700075946899
-    second: key
+    second: bonus_key
   - first:
       213: 786418664329856818
     second: power_pellet
@@ -499,16 +499,16 @@ TextureImporter:
     second: pellet
   - first:
       213: -6822636483642451544
-    second: two_hundred
+    second: points_two_hundred
   - first:
       213: -7389134563638984669
-    second: four_hundred
+    second: points_four_hundred
   - first:
       213: -3895370630361171546
-    second: eight_hundred
+    second: points_eight_hundred
   - first:
       213: 8668148507260095566
-    second: sixteen_hundred
+    second: points_sixteen_hundred
   externalObjects: {}
   serializedVersion: 11
   mipmaps:
@@ -1856,7 +1856,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: apple
+      name: bonus_apple
       rect:
         serializedVersion: 2
         x: 0
@@ -1877,7 +1877,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: orange
+      name: bonus_orange
       rect:
         serializedVersion: 2
         x: 32
@@ -1898,7 +1898,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: strawberry
+      name: bonus_strawberry
       rect:
         serializedVersion: 2
         x: 64
@@ -1919,7 +1919,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: cherry
+      name: bonus_cherry
       rect:
         serializedVersion: 2
         x: 96
@@ -1940,7 +1940,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: melon
+      name: bonus_melon
       rect:
         serializedVersion: 2
         x: 128
@@ -1961,7 +1961,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: galaxian
+      name: bonus_galaxian
       rect:
         serializedVersion: 2
         x: 160
@@ -1982,7 +1982,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: bell
+      name: bonus_bell
       rect:
         serializedVersion: 2
         x: 192
@@ -2003,7 +2003,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: key
+      name: bonus_key
       rect:
         serializedVersion: 2
         x: 224
@@ -2066,7 +2066,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: two_hundred
+      name: points_two_hundred
       rect:
         serializedVersion: 2
         x: 0
@@ -2087,7 +2087,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: four_hundred
+      name: points_four_hundred
       rect:
         serializedVersion: 2
         x: 32
@@ -2108,7 +2108,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: eight_hundred
+      name: points_eight_hundred
       rect:
         serializedVersion: 2
         x: 64
@@ -2129,7 +2129,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: sixteen_hundred
+      name: points_sixteen_hundred
       rect:
         serializedVersion: 2
         x: 96
