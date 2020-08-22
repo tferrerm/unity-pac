@@ -43,11 +43,24 @@ public class Ghost : MonoBehaviour
     
     
     /*
-     * Start is called before the first frame update
+     * Start is called before the first frame update.
+     * If this is not working let's make sure that Ghost script is after Pac Man script in execution order
      */
     void Start()
     {
-        
+        _pacMan = GameObject.FindGameObjectWithTag("Player");
+
+        var node = GetNodeAtPosition(transform.localPosition);
+        if (node != null)
+        {
+            _currentNode = node;
+        }
+        _direction = Vector2.right;
+
+        _previousNode = _currentNode;
+        Vector2 pacmanPosition = _pacMan.transform.position;
+        var targetTile = new Vector2(Mathf.RoundToInt(pacmanPosition.x), Mathf.RoundToInt(pacmanPosition.y));
+        _targetNode = GetNodeAtPosition(targetTile);
     }
 
     /*
@@ -55,7 +68,38 @@ public class Ghost : MonoBehaviour
      */
     void Update()
     {
-        
+        ModeUpdate();
+        Move();
+    }
+    
+    /*
+     * 
+     */
+    private void Move()
+    {
+        if (_targetNode != _currentNode && _targetNode != null)
+        {
+            if (OverShotTarget())
+            {
+                _currentNode = _targetNode;
+                transform.localPosition = _currentNode.transform.position;
+                var otherPortal = GetPortal(_currentNode.transform.position);
+                if (otherPortal != null)
+                {
+                    transform.localPosition = otherPortal.transform.position;
+                    _currentNode = otherPortal.GetComponent<Node>();
+                }
+
+                _targetNode = ChooseNextNode();
+                _previousNode = _currentNode;
+                _currentNode = null;
+            }
+            else
+            {
+                transform.localPosition += (Vector3) _direction * (movSpeed * Time.deltaTime);
+            }
+        }
+            
     }
 
     /*
@@ -147,6 +191,54 @@ public class Ghost : MonoBehaviour
         _currentMode = m;
     }
 
+    private Node ChooseNextNode()
+    {
+        Vector2 pacmanPosition = _pacMan.transform.position;
+        var targetTile = new Vector2(Mathf.RoundToInt(pacmanPosition.x), Mathf.RoundToInt(pacmanPosition.y));
+
+        Node moveToNode = null;
+        var foundNodes = new Node[4];
+        var foundNodesDirection = new Vector2[4];
+        var nodeCounter = 0;
+
+        /*
+         * At every moment a ghost could possibly move in 4 directions. Here we need to check which directions
+         * are really available considering walls and the fact that sometimes the ghost can't turn around
+         */
+        for (var i = 0; i < _currentNode.neighbors.Lenght; i++)
+        {
+            if (_currentNode.validDirections[i] != _direction * -1)
+            {
+                foundNodes[nodeCounter] = _currentNode.neighbors[i];
+                foundNodesDirection[nodeCounter] = _currentNode.validDirections[i];
+                nodeCounter++;
+            }
+        }
+
+        if (foundNodes.Length == 1)
+        {
+            moveToNode = foundNodes[0];
+        }
+
+        /*
+         * Iterating through the nodes to see which is closer to targetTile (Pac-man)
+         */
+        if (foundNodes.Length <= 1) return moveToNode;
+        
+        var leastDistance = 100000f;
+        for (var i = 0; i < foundNodes.Length; i++)
+        {
+            if (foundNodesDirection[i] == Vector2.zero) continue;
+            var distance = GetDistance(foundNodes[i].transform.position, targetTile);
+            if (!(distance < leastDistance)) continue;
+            leastDistance = distance;
+            moveToNode = foundNodes[i];
+            _direction = foundNodesDirection[i];
+        }
+        
+        return moveToNode;
+    }
+
     private GameObject GetPortal(Vector2 pos)
     {
         GameObject tile = GameObject.Find("Game").GetComponent<GameBoard>().board[(int) pos.x, (int) pos.y];
@@ -172,4 +264,23 @@ public class Ghost : MonoBehaviour
         var vec = targetPosition - (Vector2) _previousNode.transform.position;
         return vec.sqrMagnitude;
     }
+
+
+    private bool OverShotTarget()
+    {
+        var nodeToTarget = LengthFromNode(_targetNode.transform.position);
+        var nodeToSelf = LengthFromNode(transform.localPosition);
+
+        return nodeToSelf > nodeToTarget;
+    }
+
+    private static float GetDistance(Vector2 posA, Vector2 posB)
+    {
+        var dx = posA.x - posB.x;
+        var dy = posA.y - posB.y;
+
+        var distance = Mathf.Sqrt(dx * dx + dy * dy);
+        return distance;
+    }
+    
 }
