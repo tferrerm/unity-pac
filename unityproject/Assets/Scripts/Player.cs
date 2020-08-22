@@ -7,20 +7,26 @@ using UnityEngine.XR;
 
 public enum Direction  
 {  
-    Up, Down, Left, Right  
+    Up = 0, Down = 1, Left = 2, Right = 3,
 };
 
 public class Player : MonoBehaviour
 {
-    private const int DirectionUp = 0;
-    private const int DirectionRight = 1;
-    private const int DirectionDown = 2;
-    private const int DirectionLeft = 3;
+    public float playerAnimationDelta = 0.075f;
+    private float _spriteAnimationAcum;
+    private int _spriteVariantIndex = 0;
     public float movSpeed = 10f;
     private float _horizontalScreenMarginLimit;
     private float _verticalScreenMarginLimit;
     private SpriteRenderer _spriteRenderer;
-    public Sprite[] playerSprites;
+    public Sprite[] upSprites;
+    public Sprite[] downSprites;
+    public Sprite[] rightSprites;
+    public Sprite[] leftSprites;
+    private int _spritesPerDirection;
+    private int _nextSpriteVariant = -1;
+    public Sprite[][] playerSprites;
+    public Sprite[] fadingPlayerSprites;
     public Vector3 initialPosition;
     public Direction currentDirection;
     private Direction? nextDirection;
@@ -29,6 +35,13 @@ public class Player : MonoBehaviour
     private void Awake()
     {
         _spriteRenderer = GetComponent<SpriteRenderer>();
+        _spriteAnimationAcum = 0;
+        _spritesPerDirection = 3;
+        playerSprites = new Sprite[Enum.GetNames(typeof(Direction)).Length][];
+        playerSprites[(int) Direction.Up] = upSprites;
+        playerSprites[(int) Direction.Right] = rightSprites;
+        playerSprites[(int) Direction.Down] = downSprites;
+        playerSprites[(int) Direction.Left] = leftSprites;
     }
     
     // Start is called before the first frame update
@@ -44,23 +57,37 @@ public class Player : MonoBehaviour
     // Update is called once per frame
     private void Update()
     {
+        _spriteAnimationAcum += Time.deltaTime;
+        if (_spriteAnimationAcum > playerAnimationDelta)
+        {
+            if (_spriteVariantIndex % (_spritesPerDirection - 1) == 0) // animate from full to open or open to full
+                _nextSpriteVariant *= -1;
+            _spriteVariantIndex += _nextSpriteVariant; // next sprite for direction
+            _spriteRenderer.sprite = playerSprites[(int) currentDirection][_spriteVariantIndex];
+            _spriteAnimationAcum -= playerAnimationDelta;
+        }
+
         MovePlayer();
         
         if (Input.GetKey(KeyCode.LeftArrow))
         {
-            HandleInput(Direction.Left, Direction.Right, playerSprites[DirectionLeft]);
+            HandleInput(Direction.Left, Direction.Right,
+                playerSprites[(int) Direction.Left][_spriteVariantIndex]);
         }
         else if (Input.GetKey(KeyCode.RightArrow))
         {
-            HandleInput(Direction.Right, Direction.Left, playerSprites[DirectionRight]);
+            HandleInput(Direction.Right, Direction.Left,
+                playerSprites[(int) Direction.Right][_spriteVariantIndex]);
         }
         else if (Input.GetKey(KeyCode.UpArrow))
         {
-            HandleInput(Direction.Up, Direction.Down, playerSprites[DirectionUp]);
+            HandleInput(Direction.Up, Direction.Down,
+                playerSprites[(int) Direction.Up][_spriteVariantIndex]);
         }
         else if (Input.GetKey(KeyCode.DownArrow))
         {
-            HandleInput(Direction.Down, Direction.Up, playerSprites[DirectionDown]);
+            HandleInput(Direction.Down, Direction.Up,
+                playerSprites[(int) Direction.Down][_spriteVariantIndex]);
         }
     }
 
@@ -216,25 +243,25 @@ public class Player : MonoBehaviour
                 transform.position = new Vector3(waypointGO.transform.position.x, waypointGO.transform.position.y + extraDistance, 0);
                 currentDirection = Direction.Up;
                 waypointGO = waypoint.upNeighbor;
-                _spriteRenderer.sprite = playerSprites[DirectionUp];
+                _spriteRenderer.sprite = playerSprites[(int) Direction.Up][_spriteVariantIndex];
                 break;
             case Direction.Down:
                 transform.position = new Vector3(waypointGO.transform.position.x, waypointGO.transform.position.y - extraDistance, 0);
                 currentDirection = Direction.Down;
                 waypointGO = waypoint.downNeighbor;
-                _spriteRenderer.sprite = playerSprites[DirectionDown];
+                _spriteRenderer.sprite = playerSprites[(int)Direction.Down][_spriteVariantIndex];
                 break;
             case Direction.Left:
                 transform.position = new Vector3(waypointGO.transform.position.x - extraDistance, waypointGO.transform.position.y, 0);
                 currentDirection = Direction.Left;
                 waypointGO = waypoint.leftNeighbor;
-                _spriteRenderer.sprite = playerSprites[DirectionLeft];
+                _spriteRenderer.sprite = playerSprites[(int)Direction.Left][_spriteVariantIndex];
                 break;
             case Direction.Right:
                 transform.position = new Vector3(waypointGO.transform.position.x + extraDistance, waypointGO.transform.position.y, 0);
                 currentDirection = Direction.Right;
                 waypointGO = waypoint.rightNeighbor;
-                _spriteRenderer.sprite = playerSprites[DirectionRight];
+                _spriteRenderer.sprite = playerSprites[(int)Direction.Right][_spriteVariantIndex];
                 break;
             default:
                 throw new ArgumentOutOfRangeException();

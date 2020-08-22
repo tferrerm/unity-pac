@@ -9062,11 +9062,29 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   movSpeed: 100
+  playerAnimationDelta: 0.1
+  upSprites:
+  - {fileID: 6813553822765877458, guid: 987d6203cab1543d9a1de69abd061e71, type: 3}
+  - {fileID: -5082647686934749709, guid: 987d6203cab1543d9a1de69abd061e71, type: 3}
+  - {fileID: -6110656803992641779, guid: 987d6203cab1543d9a1de69abd061e71, type: 3}
+  downSprites:
+  - {fileID: -2423230811885516303, guid: 987d6203cab1543d9a1de69abd061e71, type: 3}
+  - {fileID: 1211998406744890917, guid: 987d6203cab1543d9a1de69abd061e71, type: 3}
+  - {fileID: -6110656803992641779, guid: 987d6203cab1543d9a1de69abd061e71, type: 3}
+  rightSprites:
+  - {fileID: 6128299156075563123, guid: 987d6203cab1543d9a1de69abd061e71, type: 3}
+  - {fileID: 3386662938922423588, guid: 987d6203cab1543d9a1de69abd061e71, type: 3}
+  - {fileID: -6110656803992641779, guid: 987d6203cab1543d9a1de69abd061e71, type: 3}
+  leftSprites:
+  - {fileID: 6708733205153277002, guid: 987d6203cab1543d9a1de69abd061e71, type: 3}
+  - {fileID: 8553092956536608252, guid: 987d6203cab1543d9a1de69abd061e71, type: 3}
+  - {fileID: -6110656803992641779, guid: 987d6203cab1543d9a1de69abd061e71, type: 3}
   playerSprites:
   - {fileID: -5082647686934749709, guid: 987d6203cab1543d9a1de69abd061e71, type: 3}
   - {fileID: 3386662938922423588, guid: 987d6203cab1543d9a1de69abd061e71, type: 3}
   - {fileID: 1211998406744890917, guid: 987d6203cab1543d9a1de69abd061e71, type: 3}
   - {fileID: 8553092956536608252, guid: 987d6203cab1543d9a1de69abd061e71, type: 3}
+  fadingPlayerSprites: []
   initialPosition: {x: -200, y: -232, z: 0}
   currentDirection: 3
   waypointGO: {fileID: 249438033}
