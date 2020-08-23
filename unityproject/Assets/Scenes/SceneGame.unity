@@ -2307,6 +2307,7 @@ GameObject:
   - component: {fileID: 1517139764}
   - component: {fileID: 1517139763}
   - component: {fileID: 1517139762}
+  - component: {fileID: 1517139765}
   m_Layer: 0
   m_Name: Main Camera
   m_TagString: MainCamera
@@ -2379,6 +2380,18 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1517139765
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1517139761}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ffbfa00118973614eab324b90921d640, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1570586583
 GameObject:
   m_ObjectHideFlags: 0
@@ -2391,6 +2404,7 @@ GameObject:
   - component: {fileID: 1570586585}
   - component: {fileID: 1570586584}
   - component: {fileID: 1570586587}
+  - component: {fileID: 1570586588}
   m_Layer: 0
   m_Name: Player
   m_TagString: Player
@@ -2411,7 +2425,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   playerAnimationDelta: 0.1
-  movSpeed: 100
+  movSpeed: 5
   upSprites:
   - {fileID: 6813553822765877458, guid: 987d6203cab1543d9a1de69abd061e71, type: 3}
   - {fileID: -5082647686934749709, guid: 987d6203cab1543d9a1de69abd061e71, type: 3}
@@ -2514,15 +2528,26 @@ BoxCollider2D:
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0.5, y: 0.5}
-    oldSize: {x: 11.636364, y: 11.636364}
+    oldSize: {x: 12, y: 12}
     newSize: {x: 0.18, y: 0.26}
     adaptiveTilingThreshold: 0.5
     drawMode: 0
     adaptiveTiling: 0
   m_AutoTiling: 0
   serializedVersion: 2
-  m_Size: {x: 9, y: 13}
+  m_Size: {x: 12, y: 12}
   m_EdgeRadius: 0
+--- !u!210 &1570586588
+SortingGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1570586583}
+  m_Enabled: 1
+  m_SortingLayerID: 0
+  m_SortingLayer: 0
+  m_SortingOrder: 1
 --- !u!4 &1640575872 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 6152001136983954488, guid: a9a85a99e1515994495ff8b90341b10e, type: 3}

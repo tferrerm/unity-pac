@@ -4,8 +4,6 @@ using UnityEngine;
 
 public class CameraManager : MonoBehaviour
 {
-    public float horizontalResolution = 1920;
- 
     void OnGUI ()
     {
         switch (Screen.width)
