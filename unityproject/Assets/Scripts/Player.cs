@@ -27,10 +27,8 @@ public class Player : MonoBehaviour
     private int _nextSpriteVariant = -1;
     public Sprite[][] playerSprites;
     public Sprite[] fadingPlayerSprites;
-    public Vector3 initialPosition;
     public Direction currentDirection;
     private Direction? nextDirection;
-    public GameObject waypointGO;
 
     private void Awake()
     {
@@ -50,8 +48,6 @@ public class Player : MonoBehaviour
         // >> 1 divides by 2, 0 is the center
         _horizontalScreenMarginLimit = (Screen.width >> 1);
         _verticalScreenMarginLimit = (Screen.height >> 1);
-
-        transform.position = initialPosition;
     }
 
     // Update is called once per frame
@@ -96,24 +92,9 @@ public class Player : MonoBehaviour
         var pos = 0f;
         switch (currentDirection)
         {
-            case Direction.Left:
+            /*case Direction.Left:
                 pos = Mathf.Max(transform.position.x - movSpeed * Time.deltaTime, -_horizontalScreenMarginLimit);
-                if (pos <= waypointGO.transform.position.x) // REACHED WAYPOINT
-                {
-                    if (nextDirection != null)
-                    {
-                        ChangeDirection(Math.Abs(pos - waypointGO.transform.position.x));
-                    }
-                    else if (waypointGO.GetComponent<Waypoint>().HasLeftNeighbor)
-                    {
-                        waypointGO = waypointGO.GetComponent<Waypoint>().leftNeighbor;
-                        transform.position = new Vector3(pos, transform.position.y, 0);
-                    }
-                }
-                else
-                {
-                    transform.position = new Vector3(pos, transform.position.y, 0);
-                }
+                transform.position = new Vector3(pos, transform.position.y, 0);
                 break;
             case Direction.Right:
                 pos = Mathf.Min(transform.position.x + movSpeed * Time.deltaTime, _horizontalScreenMarginLimit);
@@ -173,13 +154,13 @@ public class Player : MonoBehaviour
                 }
                 break;
             default:
-                throw new ArgumentOutOfRangeException();
+                throw new ArgumentOutOfRangeException();*/
         }
     }
 
     private void HandleInput(Direction inputDirection, Direction oppositeInputDirection, Sprite sprite)
     {
-        if (currentDirection == inputDirection)
+        /*if (currentDirection == inputDirection)
         {
             nextDirection = null;
         }
@@ -231,12 +212,12 @@ public class Player : MonoBehaviour
                 default:
                     throw new ArgumentOutOfRangeException();
             }
-        }
+        }*/
     }
 
     private void ChangeDirection(float extraDistance)
     {
-        var waypoint = waypointGO.GetComponent<Waypoint>();
+        /*var waypoint = waypointGO.GetComponent<Waypoint>();
         switch (nextDirection)
         {
             case Direction.Up:
@@ -267,6 +248,6 @@ public class Player : MonoBehaviour
                 throw new ArgumentOutOfRangeException();
         }
         
-        nextDirection = null;
+        nextDirection = null;*/
     }
 }

@@ -18,6 +18,8 @@ public class LevelManager : MonoBehaviour
 
     private MapComponent[][] tileMap;
 
+    public Player player;
+
     private const string PelletId = "o";
     private const string PowerPelletId = "X";
     private const string BlankId = ".";
@@ -64,14 +66,14 @@ public class LevelManager : MonoBehaviour
                 
                 input = reader.ReadLine();
                 var initY = Int32.Parse(input);
-
+                
                 if (tileMap[initX][initY].IsWall) // TODO CHECK NEGATIVES
                 {
                     throw new Exception("Invalid initial player position.");
                 }
                 
                 var initDirection = reader.ReadLine();
-                
+                player.transform.position = tileMap[initX][initY].gameObject.transform.position;
             }
         }
         catch (Exception e)
