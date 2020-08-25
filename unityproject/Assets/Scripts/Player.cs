@@ -27,8 +27,10 @@ public class Player : MonoBehaviour
     private int _nextSpriteVariant = -1;
     public Sprite[][] playerSprites;
     public Sprite[] fadingPlayerSprites;
-    public Direction currentDirection;
+    private Direction currentDirection = Direction.Right;
     private Direction? nextDirection;
+
+    public GameManager gameManager;
 
     private void Awake()
     {
@@ -48,6 +50,9 @@ public class Player : MonoBehaviour
         // >> 1 divides by 2, 0 is the center
         _horizontalScreenMarginLimit = (Screen.width >> 1);
         _verticalScreenMarginLimit = (Screen.height >> 1);
+        
+        if(currentDirection != null) // TODO FIX
+            _spriteRenderer.sprite = playerSprites[(int) currentDirection][_spriteVariantIndex];
     }
 
     // Update is called once per frame
@@ -65,8 +70,16 @@ public class Player : MonoBehaviour
 
         MovePlayer();
         
-        if (Input.GetKey(KeyCode.LeftArrow))
+        /*if (Input.GetKey(KeyCode.LeftArrow))
         {
+            if (gameManager.IsValidDirection(EntityId.Player, Direction.Left))
+            {
+                currentDirection = Direction.Left;
+            }
+            else
+            {
+                nextDirection = Direction.Left;
+            }
             HandleInput(Direction.Left, Direction.Right,
                 playerSprites[(int) Direction.Left][_spriteVariantIndex]);
         }
@@ -84,77 +97,32 @@ public class Player : MonoBehaviour
         {
             HandleInput(Direction.Down, Direction.Up,
                 playerSprites[(int) Direction.Down][_spriteVariantIndex]);
-        }
+        }*/
     }
 
     private void MovePlayer()
     {
-        var pos = 0f;
+        Vector3 newPosition;
         switch (currentDirection)
         {
-            /*case Direction.Left:
-                pos = Mathf.Max(transform.position.x - movSpeed * Time.deltaTime, -_horizontalScreenMarginLimit);
-                transform.position = new Vector3(pos, transform.position.y, 0);
+            case Direction.Left:
+                newPosition = new Vector3(Mathf.Max(transform.position.x - movSpeed * Time.deltaTime, -_horizontalScreenMarginLimit), transform.position.y, 0);
+                transform.position = gameManager.GetValidMovement(EntityId.Player, newPosition, currentDirection);
                 break;
             case Direction.Right:
-                pos = Mathf.Min(transform.position.x + movSpeed * Time.deltaTime, _horizontalScreenMarginLimit);
-                if (pos >= waypointGO.transform.position.x) // REACHED WAYPOINT
-                {
-                    if (nextDirection != null)
-                    {
-                        ChangeDirection(Math.Abs(pos - waypointGO.transform.position.x));
-                    }
-                    else if (waypointGO.GetComponent<Waypoint>().HasRightNeighbor)
-                    {
-                        waypointGO = waypointGO.GetComponent<Waypoint>().rightNeighbor;
-                        transform.position = new Vector3(pos, transform.position.y, 0);
-                    }
-                }
-                else
-                {
-                    transform.position = new Vector3(pos, transform.position.y, 0);
-                }
+                newPosition = new Vector3(Mathf.Min(transform.position.x + movSpeed * Time.deltaTime, _horizontalScreenMarginLimit), transform.position.y, 0);
+                transform.position = gameManager.GetValidMovement(EntityId.Player, newPosition, currentDirection);
                 break;
             case Direction.Up:
-                pos = Mathf.Min(transform.position.y + movSpeed * Time.deltaTime, _verticalScreenMarginLimit);
-                if (pos >= waypointGO.transform.position.y) // REACHED WAYPOINT
-                {
-                    if (nextDirection != null)
-                    {
-                        ChangeDirection(Math.Abs(pos - waypointGO.transform.position.y));
-                    }
-                    else if (waypointGO.GetComponent<Waypoint>().HasUpNeighbor)
-                    {
-                        waypointGO = waypointGO.GetComponent<Waypoint>().upNeighbor;
-                        transform.position = new Vector3(transform.position.x, pos, 0);
-                    }
-                }
-                else
-                {
-                    transform.position = new Vector3(transform.position.x, pos, 0);
-                }
+                newPosition = new Vector3(transform.position.x, Mathf.Min(transform.position.y + movSpeed * Time.deltaTime, _verticalScreenMarginLimit), 0);
+                transform.position = gameManager.GetValidMovement(EntityId.Player, newPosition, currentDirection);
                 break;
             case Direction.Down:
-                pos = Mathf.Max(transform.position.y - movSpeed * Time.deltaTime, -_verticalScreenMarginLimit);
-                if (pos <= waypointGO.transform.position.y) // REACHED WAYPOINT
-                {
-                    if (nextDirection != null)
-                    {
-                        ChangeDirection(Math.Abs(pos - waypointGO.transform.position.y));
-                    }
-                    else if (waypointGO.GetComponent<Waypoint>().HasDownNeighbor)
-                    {
-                        waypointGO = waypointGO.GetComponent<Waypoint>().downNeighbor;
-                        transform.position = new Vector3(transform.position.x, pos, 0);
-                    }
-                }
-                else
-                {
-                    transform.position = new Vector3(transform.position.x, pos, 0);
-                }
+                newPosition = new Vector3(transform.position.x, Mathf.Max(transform.position.y - movSpeed * Time.deltaTime, -_verticalScreenMarginLimit), 0);
+                transform.position = gameManager.GetValidMovement(EntityId.Player, newPosition, currentDirection);
                 break;
             default:
-                throw new ArgumentOutOfRangeException();*/
+                throw new ArgumentOutOfRangeException();
         }
     }
 
@@ -249,5 +217,11 @@ public class Player : MonoBehaviour
         }
         
         nextDirection = null;*/
+    }
+
+    public Direction CurrentDirection
+    {
+        get => currentDirection;
+        set => currentDirection = value;
     }
 }

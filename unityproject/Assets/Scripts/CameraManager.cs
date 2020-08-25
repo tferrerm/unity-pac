@@ -9,7 +9,7 @@ public class CameraManager : MonoBehaviour
         switch (Screen.width)
         {
             case 200:
-                Camera.main.orthographicSize = 144;
+                Camera.main.orthographicSize = 156;
                 break;
             case 480:
                 Camera.main.orthographicSize = 120;
