@@ -41,14 +41,26 @@ public class GameManager : MonoBehaviour
 
     public bool ValidateDirection(EntityId entityId, Direction inputDirection, Direction currentDirection)
     {
-        if (inputDirection == currentDirection || !levelManager.ValidateOppositeDirection(entityId, inputDirection, currentDirection)) return false;
+        if (!levelManager.ValidateOppositeDirection(entityId, inputDirection, currentDirection)) return false;
         
         entityDict[entityId].currentDirection = inputDirection;
         return true;
+    }
+    
+    public void ValidateDirection(EntityId entityId, Direction inputDirection, Direction currentDirection, bool hasCollidedWall)
+    {
+        if (!levelManager.ValidateOppositeDirection(entityId, inputDirection, currentDirection, hasCollidedWall)) return;
+        
+        entityDict[entityId].currentDirection = inputDirection;
     }
 
     public void SetPlayerCollidedWall(bool hasCollided)
     {
         player.HasCollidedWall = hasCollided;
+    }
+
+    public void SetPlayerNextDirection(Direction nextDirection)
+    {
+        player.NextDirection = nextDirection;
     }
 }
