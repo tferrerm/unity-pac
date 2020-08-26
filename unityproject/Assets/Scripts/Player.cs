@@ -13,40 +13,17 @@ public enum Direction
 
 public class Player : MonoBehaviour, IEntity
 {
-    public float playerAnimationDelta = 0.075f;
-    private float _spriteAnimationAcum;
-    private int _spriteVariantIndex = 0;
     public float movSpeed = 10f;
     private float _horizontalScreenMarginLimit;
     private float _verticalScreenMarginLimit;
-    private SpriteRenderer _spriteRenderer;
-    public Sprite[] upSprites;
-    public Sprite[] downSprites;
-    public Sprite[] rightSprites;
-    public Sprite[] leftSprites;
-    private int _spritesPerDirection;
-    private int _nextSpriteVariant = -1;
-    public Sprite[][] playerSprites;
-    public Sprite[] fadingPlayerSprites;
-    //private Direction currentDirection = Direction.Right;
     private Direction? nextDirection;
     private bool hasCollidedWall;
-    private Dictionary<KeyCode, Direction> keyDirections;
+    private Dictionary<KeyCode, Direction> keyDirections = new Dictionary<KeyCode, Direction>();
+    private Dictionary<Direction, int> directionRotationAngles = new Dictionary<Direction, int>();
+    private Animator animator;
 
     public GameManager gameManager;
 
-    private void Awake()
-    {
-        _spriteRenderer = GetComponent<SpriteRenderer>();
-        _spriteAnimationAcum = 0;
-        _spritesPerDirection = 3;
-        playerSprites = new Sprite[Enum.GetNames(typeof(Direction)).Length][];
-        playerSprites[(int) Direction.Up] = upSprites;
-        playerSprites[(int) Direction.Right] = rightSprites;
-        playerSprites[(int) Direction.Down] = downSprites;
-        playerSprites[(int) Direction.Left] = leftSprites;
-    }
-    
     // Start is called before the first frame update
     private void Start()
     {
@@ -54,29 +31,22 @@ public class Player : MonoBehaviour, IEntity
         _horizontalScreenMarginLimit = (Screen.width >> 1);
         _verticalScreenMarginLimit = (Screen.height >> 1);
         
-        if(currentDirection != null) // TODO FIX
-            _spriteRenderer.sprite = playerSprites[(int) currentDirection][_spriteVariantIndex];
-        
-        keyDirections = new Dictionary<KeyCode, Direction>();
         keyDirections.Add(KeyCode.LeftArrow, Direction.Left);
         keyDirections.Add(KeyCode.RightArrow, Direction.Right);
         keyDirections.Add(KeyCode.UpArrow, Direction.Up);
         keyDirections.Add(KeyCode.DownArrow, Direction.Down);
+        
+        directionRotationAngles.Add(Direction.Right, 0);
+        directionRotationAngles.Add(Direction.Up, 90);
+        directionRotationAngles.Add(Direction.Left, 180);
+        directionRotationAngles.Add(Direction.Down, 270);
+        
+        animator = GetComponent<Animator>();
     }
 
     // Update is called once per frame
     private void Update()
     {
-        _spriteAnimationAcum += Time.deltaTime;
-        if (_spriteAnimationAcum > playerAnimationDelta)
-        {
-            if (_spriteVariantIndex % (_spritesPerDirection - 1) == 0) // animate from full to open or open to full
-                _nextSpriteVariant *= -1;
-            _spriteVariantIndex += _nextSpriteVariant; // next sprite for direction
-            _spriteRenderer.sprite = playerSprites[(int) currentDirection][_spriteVariantIndex];
-            _spriteAnimationAcum -= playerAnimationDelta;
-        }
-        
         MovePlayer();
 
         foreach (var keyValuePair in keyDirections.Where(keyValuePair => Input.GetKey(keyValuePair.Key)))
@@ -118,6 +88,7 @@ public class Player : MonoBehaviour, IEntity
                 throw new ArgumentOutOfRangeException();
         }
         transform.position = gameManager.GetValidMovement(EntityId.Player, newPosition, currentDirection, nextDirection);
+        animator.transform.rotation = Quaternion.Euler(new Vector3(0,0, directionRotationAngles[currentDirection]));
     }
 
     public Direction CurrentDirection
