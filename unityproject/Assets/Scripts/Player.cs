@@ -18,9 +18,9 @@ public class Player : MonoBehaviour, IEntity
     private float _verticalScreenMarginLimit;
     private Direction? nextDirection;
     private bool hasCollidedWall;
-    private Dictionary<KeyCode, Direction> keyDirections = new Dictionary<KeyCode, Direction>();
-    private Dictionary<Direction, int> directionRotationAngles = new Dictionary<Direction, int>();
-    private Animator animator;
+    private readonly Dictionary<KeyCode, Direction> keyDirections = new Dictionary<KeyCode, Direction>();
+    private readonly Dictionary<Direction, int> directionRotationAngles = new Dictionary<Direction, int>();
+    private Animator _animator;
 
     public GameManager gameManager;
 
@@ -41,7 +41,7 @@ public class Player : MonoBehaviour, IEntity
         directionRotationAngles.Add(Direction.Left, 180);
         directionRotationAngles.Add(Direction.Down, 270);
         
-        animator = GetComponent<Animator>();
+        _animator = GetComponent<Animator>();
     }
 
     // Update is called once per frame
@@ -88,7 +88,8 @@ public class Player : MonoBehaviour, IEntity
                 throw new ArgumentOutOfRangeException();
         }
         transform.position = gameManager.GetValidMovement(EntityId.Player, newPosition, currentDirection, nextDirection);
-        animator.transform.rotation = Quaternion.Euler(new Vector3(0,0, directionRotationAngles[currentDirection]));
+        _animator.transform.rotation = Quaternion.Euler(new Vector3(0,0, directionRotationAngles[currentDirection]));
+        _animator.speed = 1;
     }
 
     public Direction CurrentDirection
@@ -107,6 +108,12 @@ public class Player : MonoBehaviour, IEntity
     {
         get => hasCollidedWall;
         set => hasCollidedWall = value;
+    }
+
+    public void AnimationPlayback()
+    {
+        if (hasCollidedWall)
+            _animator.speed = 0;
     }
 
     public Direction currentDirection { get; set; }
