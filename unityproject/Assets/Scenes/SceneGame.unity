@@ -2426,6 +2426,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   movSpeed: 30
+  idleSprite: {fileID: 6128299156075563123, guid: 987d6203cab1543d9a1de69abd061e71, type: 3}
   gameManager: {fileID: 1760033258}
 --- !u!212 &1570586585
 SpriteRenderer:
