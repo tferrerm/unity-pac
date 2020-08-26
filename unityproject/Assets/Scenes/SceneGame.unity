@@ -2425,7 +2425,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   playerAnimationDelta: 0.1
-  movSpeed: 10
+  movSpeed: 30
   upSprites:
   - {fileID: 6813553822765877458, guid: 987d6203cab1543d9a1de69abd061e71, type: 3}
   - {fileID: -5082647686934749709, guid: 987d6203cab1543d9a1de69abd061e71, type: 3}
@@ -2821,6 +2821,7 @@ MonoBehaviour:
   - {fileID: 4035501790466999928, guid: e7c0d2614a7094b4ca25ac4c994b9be8, type: 3}
   - {fileID: -8717017754119436831, guid: e7c0d2614a7094b4ca25ac4c994b9be8, type: 3}
   player: {fileID: 1570586584}
+  gameManager: {fileID: 1760033258}
 --- !u!4 &1795960092
 Transform:
   m_ObjectHideFlags: 0
