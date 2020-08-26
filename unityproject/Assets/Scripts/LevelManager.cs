@@ -367,5 +367,48 @@ public class LevelManager : MonoBehaviour
         UpdateTargetTileCoordinates(entityId, entitiesTargetTileCoordinates[entityId], inputDirection);
         return true;
     }
+    
+    public bool ValidateOppositeDirection(EntityId entityId, Direction inputDirection, Direction currentDirection, bool hasCollidedWall)
+    {
+        if (!hasCollidedWall)
+        {
+            if (!ValidateOppositeDirection(entityId, inputDirection, currentDirection))
+            {
+                gameManager.SetPlayerCollidedWall(false);
+                gameManager.SetPlayerNextDirection(inputDirection);
+                return false;
+            }
+
+            return true;
+        }
+        
+        Vector2Int tileCoordinates = entitiesTargetTileCoordinates[entityId];
+        bool isValidDirection;
+        switch (inputDirection)
+        {
+            case Direction.Up:
+                isValidDirection = !tileMap[tileCoordinates.y - 1][tileCoordinates.x].IsWall;
+                break;
+            case Direction.Down:
+                isValidDirection = !tileMap[tileCoordinates.y + 1][tileCoordinates.x].IsWall;
+                break;
+            case Direction.Left:
+                isValidDirection = !tileMap[tileCoordinates.y][tileCoordinates.x - 1].IsWall;
+                break;
+            case Direction.Right:
+                isValidDirection = !tileMap[tileCoordinates.y][tileCoordinates.x + 1].IsWall;
+                break;
+            default:
+                throw new ArgumentOutOfRangeException();
+        }
+        
+        if (isValidDirection)
+        {
+            UpdateTargetTileCoordinates(entityId, entitiesTargetTileCoordinates[entityId], inputDirection);
+            gameManager.SetPlayerCollidedWall(false);
+        }
+
+        return isValidDirection;
+    }
 }
     

@@ -58,11 +58,7 @@ public class Player : MonoBehaviour, IEntity
     // Check if direction can be changed instantly
     private void HandleInput(Direction inputDirection)
     {
-        if (!gameManager.ValidateDirection(EntityId.Player, inputDirection, currentDirection))
-        {
-            nextDirection = inputDirection;
-            hasCollidedWall = false;
-        }
+        gameManager.ValidateDirection(EntityId.Player, inputDirection, currentDirection, hasCollidedWall);
     }
 
     private void MovePlayer()
