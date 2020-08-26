@@ -20,6 +20,7 @@ public class LevelManager : MonoBehaviour
     private Dictionary<EntityId, Vector2Int> entitiesTargetTileCoordinates;
 
     public Player player;
+    public GameManager gameManager;
 
     private const string PelletId = "o";
     private const string PowerPelletId = "X";
@@ -29,18 +30,18 @@ public class LevelManager : MonoBehaviour
     void Start()
     {
         entitiesTargetTileCoordinates = new Dictionary<EntityId, Vector2Int>();
-        
+
         Dictionary<String, Sprite> spriteDict = new Dictionary<String, Sprite>();
         tileSprites.ForEach(sprite => spriteDict.Add(sprite.name, sprite));
-        var tileWidth = (int)tileSprites[0].rect.width;
-        var tileHeight = (int)tileSprites[0].rect.height;
+        var tileWidth = (int) tileSprites[0].rect.width;
+        var tileHeight = (int) tileSprites[0].rect.height;
         try
         {
             using (StreamReader reader = new StreamReader(inputFile))
             {
                 var input = reader.ReadLine();
                 rows = Int32.Parse(input);
-                
+
                 input = reader.ReadLine();
                 cols = Int32.Parse(input);
 
@@ -48,37 +49,39 @@ public class LevelManager : MonoBehaviour
 
                 tileMap = new MapComponent[rows][];
 
-                Vector3 positionPointer = new Vector3(-cols/2 * tileWidth, rows/2 * tileHeight, 0);
-                
+                Vector3 positionPointer = new Vector3(-cols / 2 * tileWidth, rows / 2 * tileHeight, 0);
+
                 for (int i = 0; i < rows; i++)
                 {
                     tileMap[i] = new MapComponent[cols];
                     for (int j = 0; j < cols; j++)
                     {
-                        input = ((char)reader.Read()).ToString();
+                        input = ((char) reader.Read()).ToString();
                         CreateTile(input, positionPointer, spriteDict, i, j);
 
                         positionPointer = new Vector3(positionPointer.x + tileWidth, positionPointer.y, 0);
                     }
+
                     reader.ReadLine();
-                    positionPointer = new Vector3(-cols/2 * tileWidth, positionPointer.y - tileHeight, 0);
+                    positionPointer = new Vector3(-cols / 2 * tileWidth, positionPointer.y - tileHeight, 0);
                 }
-                
+
                 input = reader.ReadLine();
                 var initY = Int32.Parse(input);
-                
+
                 input = reader.ReadLine();
                 var initX = Int32.Parse(input);
-                
+
                 if (tileMap[initY][initX].IsWall || initX <= 0 || initX >= cols - 1 || initY <= 0 || initY >= rows - 1)
                 {
                     throw new Exception("Invalid initial player position.");
                 }
+
                 player.transform.position = tileMap[initY][initX].gameObject.transform.position;
-                
+
                 input = reader.ReadLine();
-                Direction initDirection = (Direction)Int32.Parse(input);
-                GameObject.FindGameObjectWithTag("GameController").GetComponent<GameManager>().SetPlayerDirection(initDirection);
+                Direction initDirection = (Direction) Int32.Parse(input);
+                gameManager.SetPlayerDirection(initDirection);
                 Vector2Int targetTileCoordinates;
                 switch (initDirection)
                 {
@@ -97,6 +100,7 @@ public class LevelManager : MonoBehaviour
                     default:
                         throw new ArgumentOutOfRangeException();
                 }
+
                 entitiesTargetTileCoordinates.Add(EntityId.Player, targetTileCoordinates);
             }
         }
@@ -108,12 +112,13 @@ public class LevelManager : MonoBehaviour
         }
     }
 
-    private void CreateTile(string input, Vector3 positionPointer, Dictionary<string, Sprite> spriteDict, int row, int col)
+    private void CreateTile(string input, Vector3 positionPointer, Dictionary<string, Sprite> spriteDict, int row,
+        int col)
     {
         GameObject go = new GameObject();
         go.transform.SetParent(this.transform);
         go.transform.position = positionPointer;
-        
+
         MapComponent mp = go.AddComponent<MapComponent>();
         switch (input)
         {
@@ -129,8 +134,9 @@ public class LevelManager : MonoBehaviour
                 mp.IsWall = true;
                 break;
         }
+
         tileMap[row][col] = mp;
-        
+
         go.AddComponent<SpriteRenderer>();
         go.GetComponent<SpriteRenderer>().sprite = spriteDict[input];
         go.name = $"Tile ({row}, {col})";
@@ -152,63 +158,214 @@ public class LevelManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        
+
     }
 
-    public Vector3 GetValidMovement(EntityId entityId, Vector3 position, Direction direction)
+    // Check if target was reached, otherwise return position parameter
+    public Vector3 GetValidMovement(EntityId entityId, Vector3 position, Direction currentDirection,
+        Direction? nextDirection)
     {
-        Vector2Int targetTileCoordinates = this.entitiesTargetTileCoordinates[entityId];
-        switch (direction)
+        var targetTileCoordinates = entitiesTargetTileCoordinates[entityId];
+        var targetTilePosition = tileMap[targetTileCoordinates.y][targetTileCoordinates.x].transform.position;
+        
+        switch (currentDirection)
         {
             case Direction.Up:
-                if (position.y >= tileMap[targetTileCoordinates.y][targetTileCoordinates.x].transform.position.y) // Reached target tile
+                if (position.y >= targetTilePosition.y) // Reached target tile
                 {
-                    if (tileMap[targetTileCoordinates.y - 1][targetTileCoordinates.x].IsWall) // Reached a wall, returned position must be exact
+                    // Entity must be player if true
+                    if (nextDirection != null && IsValidDirection(targetTileCoordinates, nextDirection.GetValueOrDefault()))
                     {
-                        return tileMap[targetTileCoordinates.y][targetTileCoordinates.x].transform.position;
+                        UpdateTargetTileCoordinates(entityId, targetTileCoordinates, nextDirection.GetValueOrDefault());
+                        gameManager.SetPlayerDirection(nextDirection.GetValueOrDefault());
+                        gameManager.SetPlayerCollidedWall(false);
+
+                        var delta = position.y - targetTilePosition.y;
+                        return GetPositionAfterRedirection(targetTilePosition, nextDirection.GetValueOrDefault(), delta);
                     }
-                    entitiesTargetTileCoordinates[entityId] = new Vector2Int(targetTileCoordinates.x, targetTileCoordinates.y - 1); // Update target tile
+                    
+                    // Reached a wall, returned position must be exact
+                    if (tileMap[targetTileCoordinates.y - 1][targetTileCoordinates.x].IsWall)
+                    {
+                        if(entityId == EntityId.Player) gameManager.SetPlayerCollidedWall(true);
+                        return targetTilePosition;
+                    }
+
+                    UpdateTargetTileCoordinates(entityId, targetTileCoordinates, currentDirection);
                 }
+
                 break;
             case Direction.Down:
-                if (position.y <= tileMap[targetTileCoordinates.y][targetTileCoordinates.x].transform.position.y) // Reached target tile
+                if (position.y <= targetTilePosition.y) // Reached target tile
                 {
-                    if (tileMap[targetTileCoordinates.y + 1][targetTileCoordinates.x].IsWall) // Reached a wall, returned position must be exact
+                    // Entity must be player if true
+                    if (nextDirection != null && IsValidDirection(targetTileCoordinates, nextDirection.GetValueOrDefault())) 
                     {
-                        return tileMap[targetTileCoordinates.y][targetTileCoordinates.x].transform.position;
+                        UpdateTargetTileCoordinates(entityId, targetTileCoordinates, nextDirection.GetValueOrDefault());
+                        gameManager.SetPlayerDirection(nextDirection.GetValueOrDefault());
+
+                        var delta = targetTilePosition.y - position.y;
+                        return GetPositionAfterRedirection(targetTilePosition, nextDirection.GetValueOrDefault(), delta);
                     }
-                    entitiesTargetTileCoordinates[entityId] = new Vector2Int(targetTileCoordinates.x, targetTileCoordinates.y + 1); // Update target tile
+                    
+                    // Reached a wall, returned position must be exact
+                    if (tileMap[targetTileCoordinates.y + 1][targetTileCoordinates.x].IsWall)
+                    {
+                        if(entityId == EntityId.Player) gameManager.SetPlayerCollidedWall(true);
+                        return targetTilePosition;
+                    }
+
+                    UpdateTargetTileCoordinates(entityId, targetTileCoordinates, currentDirection);
                 }
+
                 break;
             case Direction.Left:
-                if (position.x <= tileMap[targetTileCoordinates.y][targetTileCoordinates.x].transform.position.x) // Reached target tile
+                if (position.x <= targetTilePosition.x) // Reached target tile
                 {
-                    if (tileMap[targetTileCoordinates.y][targetTileCoordinates.x - 1].IsWall) // Reached a wall, returned position must be exact
+                    // Entity must be player if true
+                    if (nextDirection != null && IsValidDirection(targetTileCoordinates, nextDirection.GetValueOrDefault()))
                     {
-                        return tileMap[targetTileCoordinates.y][targetTileCoordinates.x].transform.position;
+                        UpdateTargetTileCoordinates(entityId, targetTileCoordinates, nextDirection.GetValueOrDefault());
+                        gameManager.SetPlayerDirection(nextDirection.GetValueOrDefault());
+
+                        var delta = position.x - targetTilePosition.x;
+                        return GetPositionAfterRedirection(targetTilePosition, nextDirection.GetValueOrDefault(), delta);
                     }
-                    entitiesTargetTileCoordinates[entityId] = new Vector2Int(targetTileCoordinates.x - 1, targetTileCoordinates.y); // Update target tile
+                    
+                    // Reached a wall, returned position must be exact
+                    if (tileMap[targetTileCoordinates.y][targetTileCoordinates.x - 1].IsWall)
+                    {
+                        if(entityId == EntityId.Player) gameManager.SetPlayerCollidedWall(true);
+                        return targetTilePosition;
+                    }
+
+                    UpdateTargetTileCoordinates(entityId, targetTileCoordinates, currentDirection);
                 }
+
                 break;
             case Direction.Right:
-                if (position.x >= tileMap[targetTileCoordinates.y][targetTileCoordinates.x].transform.position.x) // Reached target tile
+                if (position.x >= targetTilePosition.x) // Reached target tile
                 {
-                    if (tileMap[targetTileCoordinates.y][targetTileCoordinates.x + 1].IsWall) // Reached a wall, returned position must be exact
+                    // Entity must be player if true
+                    if (nextDirection != null && IsValidDirection(targetTileCoordinates, nextDirection.GetValueOrDefault()))
                     {
-                        return tileMap[targetTileCoordinates.y][targetTileCoordinates.x].transform.position;
+                        UpdateTargetTileCoordinates(entityId, targetTileCoordinates, nextDirection.GetValueOrDefault());
+                        gameManager.SetPlayerDirection(nextDirection.GetValueOrDefault());
+
+                        var delta = targetTilePosition.x - position.x;
+                        return GetPositionAfterRedirection(targetTilePosition, nextDirection.GetValueOrDefault(), delta);
                     }
-                    entitiesTargetTileCoordinates[entityId] = new Vector2Int(targetTileCoordinates.x + 1, targetTileCoordinates.y); // Update target tile
+
+                    // Reached a wall, returned position must be exact
+                    if (tileMap[targetTileCoordinates.y][targetTileCoordinates.x + 1].IsWall)
+                    {
+                        if(entityId == EntityId.Player) gameManager.SetPlayerCollidedWall(true);
+                        return targetTilePosition;
+                    }
+
+                    UpdateTargetTileCoordinates(entityId, targetTileCoordinates, currentDirection);
                 }
+
                 break;
             default:
-                throw new ArgumentOutOfRangeException(nameof(direction), direction, null);
+                throw new ArgumentOutOfRangeException();
         }
 
         return position;
     }
 
-    public bool IsValidDirection(EntityId entityId, Direction direction)
+    private Vector3
+        GetPositionAfterRedirection(Vector3 tilePosition, Direction newDirection,
+            float delta) // Refers to reached tile when switched direction
     {
-        throw new NotImplementedException();
+        switch (newDirection)
+        {
+            case Direction.Up:
+                return new Vector3(tilePosition.x, tilePosition.y + delta, 0);
+            case Direction.Down:
+                return new Vector3(tilePosition.x, tilePosition.y - delta, 0);
+            case Direction.Left:
+                return new Vector3(tilePosition.x - delta, tilePosition.y, 0);
+            case Direction.Right:
+                return new Vector3(tilePosition.x + delta, tilePosition.y, 0);
+            default:
+                throw new ArgumentOutOfRangeException();
+        }
+    }
+
+    private void UpdateTargetTileCoordinates(EntityId entityId, Vector2Int targetTileCoordinates,
+        Direction nextDirection)
+    {
+        switch (nextDirection)
+        {
+            case Direction.Up:
+                entitiesTargetTileCoordinates[entityId] =
+                    new Vector2Int(targetTileCoordinates.x, targetTileCoordinates.y - 1);
+                break;
+            case Direction.Down:
+                entitiesTargetTileCoordinates[entityId] =
+                    new Vector2Int(targetTileCoordinates.x, targetTileCoordinates.y + 1);
+                break;
+            case Direction.Left:
+                entitiesTargetTileCoordinates[entityId] =
+                    new Vector2Int(targetTileCoordinates.x - 1, targetTileCoordinates.y);
+                break;
+            case Direction.Right:
+                entitiesTargetTileCoordinates[entityId] =
+                    new Vector2Int(targetTileCoordinates.x + 1, targetTileCoordinates.y);
+                break;
+            default:
+                throw new ArgumentOutOfRangeException();
+        }
+    }
+
+    private bool IsValidDirection(Vector2Int tileCoordinates, Direction nextDirection)
+    {
+        switch (nextDirection)
+        {
+            case Direction.Up:
+                return !tileMap[tileCoordinates.y - 1][tileCoordinates.x].IsWall;
+                break;
+            case Direction.Down:
+                return !tileMap[tileCoordinates.y + 1][tileCoordinates.x].IsWall;
+                break;
+            case Direction.Left:
+                return !tileMap[tileCoordinates.y][tileCoordinates.x - 1].IsWall;
+                break;
+            case Direction.Right:
+                return !tileMap[tileCoordinates.y][tileCoordinates.x + 1].IsWall;
+                break;
+            default:
+                throw new ArgumentOutOfRangeException();
+        }
+    }
+
+    // Check if entity can instantly move in one direction (only opposite), and update target if true
+    public bool ValidateOppositeDirection(EntityId entityId, Direction inputDirection, Direction currentDirection)
+    {
+        switch (currentDirection)
+        {
+            case Direction.Up:
+                if (inputDirection != Direction.Down)
+                    return false;
+                break;
+            case Direction.Down:
+                if (inputDirection != Direction.Up)
+                    return false;
+                break;
+            case Direction.Left:
+                if (inputDirection != Direction.Right)
+                    return false;
+                break;
+            case Direction.Right:
+                if (inputDirection != Direction.Left)
+                    return false;
+                break;
+            default:
+                throw new ArgumentOutOfRangeException();
+        }
+        UpdateTargetTileCoordinates(entityId, entitiesTargetTileCoordinates[entityId], inputDirection);
+        return true;
     }
 }
+    
