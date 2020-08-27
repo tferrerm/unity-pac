@@ -410,5 +410,33 @@ public class LevelManager : MonoBehaviour
 
         return isValidDirection;
     }
+
+    public Vector2Int GetEntityTargetTileCoordinates(EntityId entityId)
+    {
+        return entitiesTargetTileCoordinates[entityId];
+    }
+
+    public Direction[] GetValidDirectionsForTile(Vector2Int position)
+    {
+        var validDirections = new List<Direction>();
+        var i = 0;
+        if (!tileMap[position.y - 1][position.x].IsWall)
+        {
+            validDirections[i++] = Direction.Up;
+        }
+        if (!tileMap[position.y + 1][position.x].IsWall)
+        {
+            validDirections[i++] = Direction.Down;
+        }
+        if (!tileMap[position.y][position.x - 1].IsWall)
+        {
+            validDirections[i++] = Direction.Left;
+        }
+        if (!tileMap[position.y][position.x + 1].IsWall)
+        {
+            validDirections[i] = Direction.Right;
+        }
+        return validDirections.ToArray();
+    }
 }
     

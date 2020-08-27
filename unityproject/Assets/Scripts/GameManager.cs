@@ -4,7 +4,11 @@ using UnityEngine;
 
 public enum EntityId  
 {  
-    Player = 0
+    Player = 0,
+    Blinky = 1,
+    Pinky = 2,
+    Inky  = 3,
+    Clyde = 4
 };
 
 public class GameManager : MonoBehaviour
@@ -62,5 +66,10 @@ public class GameManager : MonoBehaviour
     public void SetPlayerNextDirection(Direction nextDirection)
     {
         player.NextDirection = nextDirection;
+    }
+
+    public Vector2Int GetEntityTargetTileCoordinates(EntityId entityId)
+    {
+        return levelManager.GetEntityTargetTileCoordinates(entityId);
     }
 }

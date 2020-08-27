@@ -3,7 +3,7 @@ using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 using UnityEngine.Tilemaps;
 
-public class Ghost : MonoBehaviour
+public class Ghost : MonoBehaviour, IEntity
 {
     public float movSpeed = 3.9f;
     public Node startingPosition;
@@ -35,32 +35,18 @@ public class Ghost : MonoBehaviour
     private Mode _currentMode = Mode.Scatter;
     private Mode _previousMode;
 
-    private GameObject _pacMan;
-
-    private Node _currentNode, _targetNode, _previousNode;
-    private Vector2 _direction, _nextDirection;
-    
-    
-    
+    public GameManager gameManager;
+    public LevelManager levelManager;
+    private Vector2Int _pacManTile;
+    private Vector2Int _currentTile;
+    public Vector2Int moveToTile;
     /*
      * Start is called before the first frame update.
      * If this is not working let's make sure that Ghost script is after Pac Man script in execution order
      */
     void Start()
     {
-        _pacMan = GameObject.FindGameObjectWithTag("Player");
-
-        var node = GetNodeAtPosition(transform.localPosition);
-        if (node != null)
-        {
-            _currentNode = node;
-        }
-        _direction = Vector2.right;
-
-        _previousNode = _currentNode;
-        Vector2 pacmanPosition = _pacMan.transform.position;
-        var targetTile = new Vector2(Mathf.RoundToInt(pacmanPosition.x), Mathf.RoundToInt(pacmanPosition.y));
-        _targetNode = GetNodeAtPosition(targetTile);
+        _pacManTile = gameManager.GetEntityTargetTileCoordinates(EntityId.Player);
     }
 
     /*
@@ -77,29 +63,7 @@ public class Ghost : MonoBehaviour
      */
     private void Move()
     {
-        if (_targetNode != _currentNode && _targetNode != null)
-        {
-            if (OverShotTarget())
-            {
-                _currentNode = _targetNode;
-                transform.localPosition = _currentNode.transform.position;
-                var otherPortal = GetPortal(_currentNode.transform.position);
-                if (otherPortal != null)
-                {
-                    transform.localPosition = otherPortal.transform.position;
-                    _currentNode = otherPortal.GetComponent<Node>();
-                }
-
-                _targetNode = ChooseNextNode();
-                _previousNode = _currentNode;
-                _currentNode = null;
-            }
-            else
-            {
-                transform.localPosition += (Vector3) _direction * (movSpeed * Time.deltaTime);
-            }
-        }
-            
+        moveToTile = ChooseTile();
     }
 
     /*
@@ -191,90 +155,50 @@ public class Ghost : MonoBehaviour
         _currentMode = m;
     }
 
-    private Node ChooseNextNode()
+    private Vector2Int ChooseTile()
     {
-        Vector2 pacmanPosition = _pacMan.transform.position;
-        var targetTile = new Vector2(Mathf.RoundToInt(pacmanPosition.x), Mathf.RoundToInt(pacmanPosition.y));
+        
+        _pacManTile = gameManager.GetEntityTargetTileCoordinates(EntityId.Player);
+        _currentTile = gameManager.GetEntityTargetTileCoordinates(EntityId.Blinky);
 
-        Node moveToNode = null;
-        var foundNodes = new Node[4];
-        var foundNodesDirection = new Vector2[4];
-        var nodeCounter = 0;
-
-        /*
-         * At every moment a ghost could possibly move in 4 directions. Here we need to check which directions
-         * are really available considering walls and the fact that sometimes the ghost can't turn around
-         */
-        for (var i = 0; i < _currentNode.neighbors.Lenght; i++)
-        {
-            if (_currentNode.validDirections[i] != _direction * -1)
-            {
-                foundNodes[nodeCounter] = _currentNode.neighbors[i];
-                foundNodesDirection[nodeCounter] = _currentNode.validDirections[i];
-                nodeCounter++;
-            }
-        }
-
-        if (foundNodes.Length == 1)
-        {
-            moveToNode = foundNodes[0];
-        }
+        var foundDirections = levelManager.GetValidDirectionsForTile(_currentTile);
 
         /*
          * Iterating through the nodes to see which is closer to targetTile (Pac-man)
          */
-        if (foundNodes.Length <= 1) return moveToNode;
-        
         var leastDistance = 100000f;
-        for (var i = 0; i < foundNodes.Length; i++)
+        Vector2Int nextTile = new Vector2Int();
+        foreach (var t in foundDirections)
         {
-            if (foundNodesDirection[i] == Vector2.zero) continue;
-            var distance = GetDistance(foundNodes[i].transform.position, targetTile);
-            if (!(distance < leastDistance)) continue;
-            leastDistance = distance;
-            moveToNode = foundNodes[i];
-            _direction = foundNodesDirection[i];
+            var xCoord = _currentTile.x;
+            var yCoord = _currentTile.y;
+            switch (t)
+            {
+                case Direction.Down: yCoord += 1;
+                    break;
+                case Direction.Up: yCoord -= 1;
+                    break;
+                case Direction.Right: xCoord += 1;
+                    break;
+                case Direction.Left: xCoord -= 1;
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
+            
+            Vector2Int projectedTile = new Vector2Int(xCoord, yCoord);
+            var distance = GetDistance(_pacManTile, projectedTile);
+            if (distance < leastDistance)
+            {
+                leastDistance = distance;
+                nextTile = projectedTile;
+            }
         }
         
-        return moveToNode;
+        return nextTile;
     }
 
-    private GameObject GetPortal(Vector2 pos)
-    {
-        GameObject tile = GameObject.Find("Game").GetComponent<GameBoard>().board[(int) pos.x, (int) pos.y];
-        if (tile == null) return null;
-        if (!tile.GetComponent<Tile>().isPortal) return null;
-        GameObject otherPortal = tile.GetComponent<Tile>().portalReceiver;
-        return otherPortal;
-
-    }
-
-    private Node GetNodeAtPosition(Vector2 pos)
-    {
-        /*
-         * TODO: CAMBIAR GameBoard por el nombre del board real
-         */
-        GameObject tile = GameObject.Find("Game").GetComponent<GameBoard>().board[(int) pos.x, (int) pos.y];
-        if (tile == null) return null;
-        return tile.GetComponent<Node>() ?? null;
-    }
-
-    private float LengthFromNode(Vector2 targetPosition)
-    {
-        var vec = targetPosition - (Vector2) _previousNode.transform.position;
-        return vec.sqrMagnitude;
-    }
-
-
-    private bool OverShotTarget()
-    {
-        var nodeToTarget = LengthFromNode(_targetNode.transform.position);
-        var nodeToSelf = LengthFromNode(transform.localPosition);
-
-        return nodeToSelf > nodeToTarget;
-    }
-
-    private static float GetDistance(Vector2 posA, Vector2 posB)
+    private static float GetDistance(Vector2Int posA, Vector2Int posB)
     {
         var dx = posA.x - posB.x;
         var dy = posA.y - posB.y;
@@ -282,5 +206,6 @@ public class Ghost : MonoBehaviour
         var distance = Mathf.Sqrt(dx * dx + dy * dy);
         return distance;
     }
-    
+
+    public Direction currentDirection { get; set; }
 }
