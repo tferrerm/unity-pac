@@ -21,6 +21,7 @@ public class LevelManager : MonoBehaviour
 
     public Player player;
     public GameManager gameManager;
+    public Ghost blinky;
 
     private const string PelletId = "o";
     private const string PowerPelletId = "X";
@@ -102,6 +103,7 @@ public class LevelManager : MonoBehaviour
                 }
 
                 entitiesTargetTileCoordinates.Add(EntityId.Player, targetTileCoordinates);
+                entitiesTargetTileCoordinates.Add(EntityId.Blinky, new Vector2Int(0,0));
             }
         }
         catch (Exception e)
@@ -413,6 +415,7 @@ public class LevelManager : MonoBehaviour
 
     public Vector2Int GetEntityTargetTileCoordinates(EntityId entityId)
     {
+        Debug.LogWarning(entitiesTargetTileCoordinates[entityId]);
         return entitiesTargetTileCoordinates[entityId];
     }
 

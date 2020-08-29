@@ -46,7 +46,7 @@ public class Ghost : MonoBehaviour, IEntity
      */
     void Start()
     {
-        _pacManTile = gameManager.GetEntityTargetTileCoordinates(EntityId.Player);
+        currentDirection = Direction.Up;
     }
 
     /*
@@ -58,14 +58,6 @@ public class Ghost : MonoBehaviour, IEntity
         Move();
     }
     
-    /*
-     * 
-     */
-    private void Move()
-    {
-        moveToTile = ChooseTile();
-    }
-
     /*
      * This function determines whether a mode needs to be changed or not (in that case calls ChangeMode())
      * Ghosts iterate doing the scatter-chase combination. After every chase period, iteration number is
@@ -155,13 +147,14 @@ public class Ghost : MonoBehaviour, IEntity
         _currentMode = m;
     }
 
-    private Vector2Int ChooseTile()
+    private void Move()
     {
         
         _pacManTile = gameManager.GetEntityTargetTileCoordinates(EntityId.Player);
         _currentTile = gameManager.GetEntityTargetTileCoordinates(EntityId.Blinky);
 
         var foundDirections = levelManager.GetValidDirectionsForTile(_currentTile);
+        Debug.Log(foundDirections);
 
         /*
          * Iterating through the nodes to see which is closer to targetTile (Pac-man)
@@ -190,12 +183,12 @@ public class Ghost : MonoBehaviour, IEntity
             var distance = GetDistance(_pacManTile, projectedTile);
             if (distance < leastDistance)
             {
+                currentDirection = t;
                 leastDistance = distance;
-                nextTile = projectedTile;
             }
         }
-        
-        return nextTile;
+        Vector3 newPosition = GameManager.GetEntityPosition(movSpeed, transform.position, currentDirection, null);
+        transform.position = gameManager.GetValidMovement(EntityId.Blinky, newPosition, currentDirection, null);;
     }
 
     private static float GetDistance(Vector2Int posA, Vector2Int posB)
@@ -206,6 +199,7 @@ public class Ghost : MonoBehaviour, IEntity
         var distance = Mathf.Sqrt(dx * dx + dy * dy);
         return distance;
     }
-
+    
     public Direction currentDirection { get; set; }
+
 }

@@ -14,8 +14,6 @@ public enum Direction
 public class Player : MonoBehaviour, IEntity
 {
     public float movSpeed = 10f;
-    private float _horizontalScreenMarginLimit;
-    private float _verticalScreenMarginLimit;
     private Direction? nextDirection;
     private bool hasCollidedWall;
     private readonly Dictionary<KeyCode, Direction> keyDirections = new Dictionary<KeyCode, Direction>();
@@ -27,9 +25,7 @@ public class Player : MonoBehaviour, IEntity
     // Start is called before the first frame update
     private void Start()
     {
-        // >> 1 divides by 2, 0 is the center
-        _horizontalScreenMarginLimit = (Screen.width >> 1);
-        _verticalScreenMarginLimit = (Screen.height >> 1);
+        
         
         keyDirections.Add(KeyCode.LeftArrow, Direction.Left);
         keyDirections.Add(KeyCode.RightArrow, Direction.Right);
@@ -65,28 +61,12 @@ public class Player : MonoBehaviour, IEntity
     {
         if (hasCollidedWall) return;
         
-        Vector3 newPosition;
-        switch (currentDirection)
-        {
-            case Direction.Left:
-                newPosition = new Vector3(Mathf.Max(transform.position.x - movSpeed * Time.deltaTime, -_horizontalScreenMarginLimit), transform.position.y, 0);
-                break;
-            case Direction.Right:
-                newPosition = new Vector3(Mathf.Min(transform.position.x + movSpeed * Time.deltaTime, _horizontalScreenMarginLimit), transform.position.y, 0);
-                break;
-            case Direction.Up:
-                newPosition = new Vector3(transform.position.x, Mathf.Min(transform.position.y + movSpeed * Time.deltaTime, _verticalScreenMarginLimit), 0);
-                break;
-            case Direction.Down:
-                newPosition = new Vector3(transform.position.x, Mathf.Max(transform.position.y - movSpeed * Time.deltaTime, -_verticalScreenMarginLimit), 0);
-                break;
-            default:
-                throw new ArgumentOutOfRangeException();
-        }
+        Vector3 newPosition = GameManager.GetEntityPosition(movSpeed, transform.position, currentDirection, nextDirection);
         transform.position = gameManager.GetValidMovement(EntityId.Player, newPosition, currentDirection, nextDirection);
         _animator.transform.rotation = Quaternion.Euler(new Vector3(0,0, directionRotationAngles[currentDirection]));
         _animator.speed = 1;
     }
+    
 
     public Direction CurrentDirection
     {
