@@ -103,7 +103,7 @@ public class LevelManager : MonoBehaviour
                 }
 
                 entitiesTargetTileCoordinates.Add(EntityId.Player, targetTileCoordinates);
-                entitiesTargetTileCoordinates.Add(EntityId.Blinky, new Vector2Int(0,0));
+                entitiesTargetTileCoordinates.Add(EntityId.Blinky, new Vector2Int(11, 9));
             }
         }
         catch (Exception e)
@@ -415,29 +415,27 @@ public class LevelManager : MonoBehaviour
 
     public Vector2Int GetEntityTargetTileCoordinates(EntityId entityId)
     {
-        Debug.LogWarning(entitiesTargetTileCoordinates[entityId]);
         return entitiesTargetTileCoordinates[entityId];
     }
 
     public Direction[] GetValidDirectionsForTile(Vector2Int position)
     {
         var validDirections = new List<Direction>();
-        var i = 0;
         if (!tileMap[position.y - 1][position.x].IsWall)
         {
-            validDirections[i++] = Direction.Up;
+            validDirections.Add(Direction.Up);
         }
         if (!tileMap[position.y + 1][position.x].IsWall)
         {
-            validDirections[i++] = Direction.Down;
+            validDirections.Add(Direction.Down);
         }
         if (!tileMap[position.y][position.x - 1].IsWall)
         {
-            validDirections[i++] = Direction.Left;
+            validDirections.Add(Direction.Left);
         }
         if (!tileMap[position.y][position.x + 1].IsWall)
         {
-            validDirections[i] = Direction.Right;
+            validDirections.Add(Direction.Right);
         }
         return validDirections.ToArray();
     }

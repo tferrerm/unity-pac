@@ -61,7 +61,7 @@ public class Player : MonoBehaviour, IEntity
     {
         if (hasCollidedWall) return;
         
-        Vector3 newPosition = GameManager.GetEntityPosition(movSpeed, transform.position, currentDirection, nextDirection);
+        Vector3 newPosition = GameManager.GetNewEntityPosition(movSpeed, transform.position, currentDirection, nextDirection);
         transform.position = gameManager.GetValidMovement(EntityId.Player, newPosition, currentDirection, nextDirection);
         _animator.transform.rotation = Quaternion.Euler(new Vector3(0,0, directionRotationAngles[currentDirection]));
         _animator.speed = 1;

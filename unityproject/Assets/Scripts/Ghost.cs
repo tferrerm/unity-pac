@@ -187,7 +187,7 @@ public class Ghost : MonoBehaviour, IEntity
                 leastDistance = distance;
             }
         }
-        Vector3 newPosition = GameManager.GetEntityPosition(movSpeed, transform.position, currentDirection, null);
+        Vector3 newPosition = GameManager.GetNewEntityPosition(movSpeed, transform.position, currentDirection, null);
         transform.position = gameManager.GetValidMovement(EntityId.Blinky, newPosition, currentDirection, null);;
     }
 

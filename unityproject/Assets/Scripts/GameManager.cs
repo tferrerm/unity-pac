@@ -82,7 +82,7 @@ public class GameManager : MonoBehaviour
         return levelManager.GetEntityTargetTileCoordinates(entityId);
     }
 
-    public static Vector3 GetEntityPosition(float movSpeed,Vector2 position, Direction currentDirection, Direction? nextDirection)
+    public static Vector3 GetNewEntityPosition(float movSpeed,Vector2 position, Direction currentDirection, Direction? nextDirection)
     {
         Vector3 newPosition;
         switch (currentDirection)
