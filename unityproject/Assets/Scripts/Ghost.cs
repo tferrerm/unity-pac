@@ -1,7 +1,9 @@
 ﻿using System;
+using System.Collections.Generic;
 using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 using UnityEngine.Tilemaps;
+using Random = System.Random;
 
 public class Ghost : MonoBehaviour, IEntity
 {
@@ -32,21 +34,22 @@ public class Ghost : MonoBehaviour, IEntity
         Frightened
     }
 
-    private Mode _currentMode = Mode.Scatter;
+    public Mode _currentMode = Mode.Scatter;
     private Mode _previousMode;
 
     public GameManager gameManager;
     public LevelManager levelManager;
-    private Vector2Int _pacManTile;
-    private Vector2Int _currentTile;
     public Vector2Int moveToTile;
+
+    private readonly Random _random = new Random();
+    
     /*
      * Start is called before the first frame update.
      * If this is not working let's make sure that Ghost script is after Pac Man script in execution order
      */
     void Start()
     {
-        currentDirection = Direction.Up;
+        currentDirection = Direction.Right;
     }
 
     /*
@@ -149,46 +152,96 @@ public class Ghost : MonoBehaviour, IEntity
 
     private void Move()
     {
-        
-        _pacManTile = gameManager.GetEntityTargetTileCoordinates(EntityId.Player);
-        _currentTile = gameManager.GetEntityTargetTileCoordinates(EntityId.Blinky);
-
-        var foundDirections = levelManager.GetValidDirectionsForTile(_currentTile);
-        Debug.Log(foundDirections);
-
-        /*
-         * Iterating through the nodes to see which is closer to targetTile (Pac-man)
-         */
-        var leastDistance = 100000f;
-        Vector2Int nextTile = new Vector2Int();
-        foreach (var t in foundDirections)
+        Vector3 newPosition = GameManager.GetNewEntityPosition(movSpeed, transform.position, currentDirection, null);
+        if (levelManager.ReachedTargetTile(EntityId.Blinky, newPosition, currentDirection))
         {
-            var xCoord = _currentTile.x;
-            var yCoord = _currentTile.y;
-            switch (t)
+            levelManager.UpdateTargetTile(EntityId.Blinky, currentDirection);
+            var pacManTile = gameManager.GetEntityCurrentTileCoordinates(EntityId.Player, gameManager.GetPlayerDirection());
+            var currentTile = gameManager.GetEntityCurrentTileCoordinates(EntityId.Blinky, currentDirection);
+            var validDirections = levelManager.GetValidDirectionsForTile(currentTile);
+            var chosenDirection = ChooseNewDirection(currentTile, pacManTile, validDirections);
+            transform.position = gameManager.GetValidatedPosition(EntityId.Blinky, newPosition, currentDirection, chosenDirection);
+            currentDirection = chosenDirection;
+        }
+        else
+        {
+            transform.position = newPosition;
+        }
+    }
+
+    /*
+     * Iterating through the nodes to see which is closer to targetTile (Pac-man)
+     */
+    private Direction ChooseNewDirection(Vector2Int currentTile, Vector2Int pacManTile, List<Direction> validDirections)
+    {
+        Direction chosenDirection = currentDirection; // Dummy value
+        
+        switch (_currentMode)
+        {
+            case Mode.Chase:
+                chosenDirection = ChooseChaseModeDirection(currentTile, pacManTile, validDirections);
+                break;
+            case Mode.Scatter:
+                chosenDirection = ChooseScatterModeDirection(currentTile, pacManTile, validDirections);
+                break;
+            case Mode.Frightened:
+                break;
+            default:
+                throw new ArgumentOutOfRangeException();
+        }
+        
+
+        return chosenDirection;
+    }
+
+    private Direction ChooseChaseModeDirection(Vector2Int currentTile, Vector2Int pacManTile, List<Direction> validDirections)
+    {
+        Direction chosenDirection = currentDirection; // Dummy value
+        var leastDistance = 100000f;
+        
+        foreach (var direction in validDirections)
+        {
+            if(gameManager.DirectionsAreOpposite(currentDirection, direction))
+                continue;
+            
+            var xCoord = currentTile.x;
+            var yCoord = currentTile.y;
+            switch (direction)
             {
-                case Direction.Down: yCoord += 1;
+                case Direction.Down:
+                    yCoord += 1;
                     break;
-                case Direction.Up: yCoord -= 1;
+                case Direction.Up:
+                    yCoord -= 1;
                     break;
-                case Direction.Right: xCoord += 1;
+                case Direction.Right:
+                    xCoord += 1;
                     break;
-                case Direction.Left: xCoord -= 1;
+                case Direction.Left:
+                    xCoord -= 1;
                     break;
                 default:
                     throw new ArgumentOutOfRangeException();
             }
             
             Vector2Int projectedTile = new Vector2Int(xCoord, yCoord);
-            var distance = GetDistance(_pacManTile, projectedTile);
+            var distance = GetDistance(pacManTile, projectedTile);
             if (distance < leastDistance)
             {
-                currentDirection = t;
+                chosenDirection = direction;
                 leastDistance = distance;
             }
         }
-        Vector3 newPosition = GameManager.GetNewEntityPosition(movSpeed, transform.position, currentDirection, null);
-        transform.position = gameManager.GetValidMovement(EntityId.Blinky, newPosition, currentDirection, null);;
+
+        return chosenDirection;
+    }
+    
+    private Direction ChooseScatterModeDirection(Vector2Int currentTile, Vector2Int pacManTile, List<Direction> validDirections)
+    {
+        var filteredValidDirection = validDirections.FindAll(
+            dir => currentDirection == dir || !gameManager.DirectionsAreOpposite(currentDirection, dir));
+        var index = _random.Next(0, filteredValidDirection.Count - 1);
+        return filteredValidDirection[index];
     }
 
     private static float GetDistance(Vector2Int posA, Vector2Int posB)

@@ -20,6 +20,9 @@ public class GameManager : MonoBehaviour
     public Ghost blinky;
 
     private Dictionary<EntityId, IEntity> entityDict;
+
+    private readonly List<Direction> oppositeXDirections = new List<Direction>(new [] {Direction.Left, Direction.Right});
+    private readonly List<Direction> oppositeYDirections = new List<Direction>(new [] {Direction.Up, Direction.Down});
     
     private static float _horizontalScreenMarginLimit;
     private static float _verticalScreenMarginLimit;
@@ -41,15 +44,27 @@ public class GameManager : MonoBehaviour
         
     }
 
-    public Vector3 GetValidMovement(EntityId entityId, Vector3 position, Direction currentDirection, Direction? nextDirection) // OR RETURN VECTOR3
+    public Vector3 GetValidatedPosition(EntityId entityId, Vector3 position, Direction currentDirection, Direction? nextDirection)
     {
-        return levelManager.GetValidMovement(entityId, position, currentDirection, nextDirection);
+        if (entityId == EntityId.Player)
+        {
+            return levelManager.GetValidatedPlayerPosition(position, currentDirection, nextDirection);
+        }
+        else
+        {
+            return levelManager.GetValidatedGhostPosition(entityId, position, currentDirection, nextDirection.GetValueOrDefault());
+        }
     }
 
     public void SetPlayerDirection(Direction direction)
     {
         player.CurrentDirection = direction;
         player.NextDirection = null;
+    }
+    
+    public Direction GetPlayerDirection()
+    {
+        return player.currentDirection;
     }
 
     public bool ValidateDirection(EntityId entityId, Direction inputDirection, Direction currentDirection)
@@ -104,5 +119,16 @@ public class GameManager : MonoBehaviour
         }
 
         return newPosition;
+    }
+
+    public bool DirectionsAreOpposite(Direction direction1, Direction direction2)
+    {
+        return (oppositeXDirections.Contains(direction1) && oppositeXDirections.Contains(direction2)) ||
+               (oppositeYDirections.Contains(direction1) && oppositeYDirections.Contains(direction2));
+    }
+
+    public Vector2Int GetEntityCurrentTileCoordinates(EntityId entityId, Direction currentDirection)
+    {
+        return levelManager.GetEntityCurrentTileCoordinates(entityId, currentDirection);
     }
 }
