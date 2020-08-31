@@ -29,9 +29,9 @@ public class Ghost : MonoBehaviour, IEntity
 
     public enum Mode
     {
-        Chase,
-        Scatter,
-        Frightened
+        Chase = 0,
+        Scatter = 1,
+        Frightened = 2,
     }
 
     public Mode _currentMode = Mode.Scatter;
