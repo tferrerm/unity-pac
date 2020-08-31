@@ -750,6 +750,7 @@ GameObject:
   - component: {fileID: 494656771}
   - component: {fileID: 494656770}
   - component: {fileID: 494656769}
+  - component: {fileID: 494656772}
   m_Layer: 0
   m_Name: Blinky
   m_TagString: Blinky
@@ -779,6 +780,7 @@ MonoBehaviour:
   scatterModeTimer4: 7
   modeChangeIteration: 1
   modeChangeTimer: 0
+  _currentMode: 1
   gameManager: {fileID: 1760033258}
   levelManager: {fileID: 1795960091}
   moveToTile: {x: 0, y: 0}
@@ -847,6 +849,25 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 6
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!95 &494656772
+Animator:
+  serializedVersion: 3
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 494656768}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: 4954249b342e94869ba954db869788c1, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 1
+  m_LinearVelocityBlending: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorControllerStateOnDisable: 0
 --- !u!1 &497547288 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 3988997135098319535, guid: 72463807008ccad419ca1d1964890bbf, type: 3}

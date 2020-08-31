@@ -40,6 +40,7 @@ public class Ghost : MonoBehaviour, IEntity
     public GameManager gameManager;
     public LevelManager levelManager;
     public Vector2Int moveToTile;
+    private Animator _animator;
 
     private readonly Random _random = new Random();
     
@@ -50,6 +51,7 @@ public class Ghost : MonoBehaviour, IEntity
     void Start()
     {
         currentDirection = Direction.Right;
+        _animator = GetComponent<Animator>();
     }
 
     /*
@@ -162,6 +164,7 @@ public class Ghost : MonoBehaviour, IEntity
             var chosenDirection = ChooseNewDirection(currentTile, pacManTile, validDirections);
             transform.position = gameManager.GetValidatedPosition(EntityId.Blinky, newPosition, currentDirection, chosenDirection);
             currentDirection = chosenDirection;
+            _animator.SetInteger("Direction", (int)currentDirection);
         }
         else
         {
