@@ -63,7 +63,7 @@ public class Player : MonoBehaviour, IEntity
 
     private void MovePlayer()
     {
-        if (hasCollidedWall) return;
+        if (hasCollidedWall || _animator.GetBool("Disappear")) return;
         
         Vector3 newPosition = GameManager.GetNewEntityPosition(movSpeed, transform.position, currentDirection, nextDirection);
         transform.position = gameManager.GetValidatedPosition(EntityId.Player, newPosition, currentDirection, nextDirection);
@@ -83,7 +83,7 @@ public class Player : MonoBehaviour, IEntity
             Destroy(other.gameObject);
         } else if (other.CompareTag("Ghost"))
         {
-            // DIE()
+            _animator.transform.rotation = Quaternion.Euler(new Vector3(0, 0, 0));
             _animator.SetBool("Disappear", true);
         }
     }
