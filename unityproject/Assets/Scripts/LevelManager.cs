@@ -367,16 +367,12 @@ public class LevelManager : MonoBehaviour
         {
             case Direction.Up:
                 return !tileMap[tileCoordinates.y - 1][tileCoordinates.x].IsWall;
-                break;
             case Direction.Down:
                 return !tileMap[tileCoordinates.y + 1][tileCoordinates.x].IsWall;
-                break;
             case Direction.Left:
                 return !tileMap[tileCoordinates.y][tileCoordinates.x - 1].IsWall;
-                break;
             case Direction.Right:
                 return !tileMap[tileCoordinates.y][tileCoordinates.x + 1].IsWall;
-                break;
             default:
                 throw new ArgumentOutOfRangeException();
         }

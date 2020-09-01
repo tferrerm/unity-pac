@@ -76,14 +76,16 @@ public class Player : MonoBehaviour, IEntity
         if (other.CompareTag("Pellet"))
         {
             points += POINTS_PER_PELLET;
+            Destroy(other.gameObject);
         } else if (other.CompareTag("PowerPellet"))
         {
             points += POINTS_PER_POWER_PELLET;
+            Destroy(other.gameObject);
         } else if (other.CompareTag("Ghost"))
         {
-            // DIE, DIE, DIE!
+            // DIE()
+            _animator.SetBool("Disappear", true);
         }
-        Destroy(other.gameObject);
     }
 
     public Direction CurrentDirection
