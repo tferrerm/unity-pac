@@ -20,6 +20,10 @@ public class Player : MonoBehaviour, IEntity
     private readonly Dictionary<Direction, int> directionRotationAngles = new Dictionary<Direction, int>();
     private Animator _animator;
 
+    public int points = 0; // CHANGE PLACE?
+    private const int POINTS_PER_PELLET = 10;
+    private const int POINTS_PER_POWER_PELLET = 50;
+
     public GameManager gameManager;
 
     // Start is called before the first frame update
@@ -66,7 +70,23 @@ public class Player : MonoBehaviour, IEntity
         _animator.transform.rotation = Quaternion.Euler(new Vector3(0,0, directionRotationAngles[currentDirection]));
         _animator.speed = 1;
     }
-    
+
+    public void OnTriggerEnter2D(Collider2D other)
+    {
+        if (other.CompareTag("Pellet"))
+        {
+            points += POINTS_PER_PELLET;
+            Destroy(other.gameObject);
+        } else if (other.CompareTag("PowerPellet"))
+        {
+            points += POINTS_PER_POWER_PELLET;
+            Destroy(other.gameObject);
+        } else if (other.CompareTag("Ghost"))
+        {
+            // DIE()
+            _animator.SetBool("Disappear", true);
+        }
+    }
 
     public Direction CurrentDirection
     {

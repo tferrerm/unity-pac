@@ -15,7 +15,11 @@ public class LevelManager : MonoBehaviour
     public String inputFile = "Assets/Resources/level_classic.txt";
 
     public List<Sprite> tileSprites;
-
+    
+    public GameObject pelletPool;
+    public GameObject pelletPrefab;
+    public GameObject powerPelletPrefab;
+    
     private MapComponent[][] tileMap;
     private Dictionary<EntityId, Vector2Int> entitiesTargetTileCoordinates;
 
@@ -117,11 +121,11 @@ public class LevelManager : MonoBehaviour
     private void CreateTile(string input, Vector3 positionPointer, Dictionary<string, Sprite> spriteDict, int row,
         int col)
     {
-        GameObject go = new GameObject();
-        go.transform.SetParent(this.transform);
-        go.transform.position = positionPointer;
+        GameObject tileGO = new GameObject();
+        tileGO.transform.SetParent(this.transform);
+        tileGO.transform.position = positionPointer;
 
-        MapComponent mp = go.AddComponent<MapComponent>();
+        MapComponent mp = tileGO.AddComponent<MapComponent>();
         switch (input)
         {
             case "o":
@@ -139,9 +143,23 @@ public class LevelManager : MonoBehaviour
 
         tileMap[row][col] = mp;
 
-        go.AddComponent<SpriteRenderer>();
-        go.GetComponent<SpriteRenderer>().sprite = spriteDict[input];
-        go.name = $"Tile ({col}, {row})";
+        tileGO.AddComponent<SpriteRenderer>();
+        if (input == "o")
+        {
+            tileGO.GetComponent<SpriteRenderer>().sprite = spriteDict["."];
+            Instantiate(pelletPrefab, positionPointer, Quaternion.identity, pelletPool.transform);
+        }
+        else if (input == "X")
+        {
+            tileGO.GetComponent<SpriteRenderer>().sprite = spriteDict["."];
+            Instantiate(powerPelletPrefab, positionPointer, Quaternion.identity, pelletPool.transform);
+        }
+        else
+        {
+            tileGO.GetComponent<SpriteRenderer>().sprite = spriteDict[input];
+        }
+        
+        tileGO.name = $"Tile ({col}, {row})";
     }
 
     private void ValidateRowsAndCols()
@@ -349,16 +367,12 @@ public class LevelManager : MonoBehaviour
         {
             case Direction.Up:
                 return !tileMap[tileCoordinates.y - 1][tileCoordinates.x].IsWall;
-                break;
             case Direction.Down:
                 return !tileMap[tileCoordinates.y + 1][tileCoordinates.x].IsWall;
-                break;
             case Direction.Left:
                 return !tileMap[tileCoordinates.y][tileCoordinates.x - 1].IsWall;
-                break;
             case Direction.Right:
                 return !tileMap[tileCoordinates.y][tileCoordinates.x + 1].IsWall;
-                break;
             default:
                 throw new ArgumentOutOfRangeException();
         }

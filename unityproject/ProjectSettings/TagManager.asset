@@ -6,6 +6,8 @@ TagManager:
   tags:
   - Ghost
   - Blinky
+  - Pellet
+  - PowerPellet
   layers:
   - Default
   - TransparentFX
