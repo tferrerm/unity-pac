@@ -123,6 +123,8 @@ public class GameManager : MonoBehaviour
 
     public bool DirectionsAreOpposite(Direction direction1, Direction direction2)
     {
+        if (direction1 == direction2) return false;
+        
         return (oppositeXDirections.Contains(direction1) && oppositeXDirections.Contains(direction2)) ||
                (oppositeYDirections.Contains(direction1) && oppositeYDirections.Contains(direction2));
     }

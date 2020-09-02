@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 using UnityEngine.Tilemaps;
-using Random = System.Random;
+using Random = UnityEngine.Random;
 
 public class Ghost : MonoBehaviour, IEntity
 {
@@ -41,8 +41,6 @@ public class Ghost : MonoBehaviour, IEntity
     public LevelManager levelManager;
     public Vector2Int moveToTile;
     private Animator _animator;
-
-    private readonly Random _random = new Random();
     
     /*
      * Start is called before the first frame update.
@@ -200,7 +198,7 @@ public class Ghost : MonoBehaviour, IEntity
     private Direction ChooseChaseModeDirection(Vector2Int currentTile, Vector2Int pacManTile, List<Direction> validDirections)
     {
         Direction chosenDirection = currentDirection; // Dummy value
-        var leastDistance = 100000f;
+        var leastDistance = float.MaxValue;
         
         foreach (var direction in validDirections)
         {
@@ -228,7 +226,7 @@ public class Ghost : MonoBehaviour, IEntity
             }
             
             Vector2Int projectedTile = new Vector2Int(xCoord, yCoord);
-            var distance = GetDistance(pacManTile, projectedTile);
+            var distance = Vector2Int.Distance(pacManTile, projectedTile);
             if (distance < leastDistance)
             {
                 chosenDirection = direction;
@@ -242,20 +240,11 @@ public class Ghost : MonoBehaviour, IEntity
     private Direction ChooseScatterModeDirection(Vector2Int currentTile, Vector2Int pacManTile, List<Direction> validDirections)
     {
         var filteredValidDirection = validDirections.FindAll(
-            dir => currentDirection == dir || !gameManager.DirectionsAreOpposite(currentDirection, dir));
-        var index = _random.Next(0, filteredValidDirection.Count - 1);
+            dir => !gameManager.DirectionsAreOpposite(currentDirection, dir));
+        var index = Random.Range(0, filteredValidDirection.Count);
         return filteredValidDirection[index];
     }
 
-    private static float GetDistance(Vector2Int posA, Vector2Int posB)
-    {
-        var dx = posA.x - posB.x;
-        var dy = posA.y - posB.y;
-
-        var distance = Mathf.Sqrt(dx * dx + dy * dy);
-        return distance;
-    }
-    
     public Direction currentDirection { get; set; }
 
 }

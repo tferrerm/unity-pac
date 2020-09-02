@@ -29,8 +29,6 @@ public class Player : MonoBehaviour, IEntity
     // Start is called before the first frame update
     private void Start()
     {
-        
-        
         keyDirections.Add(KeyCode.LeftArrow, Direction.Left);
         keyDirections.Add(KeyCode.RightArrow, Direction.Right);
         keyDirections.Add(KeyCode.UpArrow, Direction.Up);
@@ -84,6 +82,7 @@ public class Player : MonoBehaviour, IEntity
         } else if (other.CompareTag("Ghost"))
         {
             _animator.transform.rotation = Quaternion.Euler(new Vector3(0, 0, 0));
+            _animator.speed = 1; // TODO FIX WHEN GHOST COLLIDES PLAYER STUCK AGAINST WALL
             _animator.SetBool("Disappear", true);
         }
     }
