@@ -36,6 +36,8 @@ public class Ghost : MonoBehaviour, IEntity
 
     public Mode _currentMode = Mode.Scatter;
     private Mode _previousMode;
+    public EntityId entityId;
+
 
     public GameManager gameManager;
     public LevelManager levelManager;
@@ -153,13 +155,10 @@ public class Ghost : MonoBehaviour, IEntity
     private void Move()
     {
         Vector3 newPosition = GameManager.GetNewEntityPosition(movSpeed, transform.position, currentDirection, null);
-        if (levelManager.ReachedTargetTile(EntityId.Blinky, newPosition, currentDirection))
+        if (levelManager.ReachedTargetTile(entityId, newPosition, currentDirection))
         {
-            levelManager.UpdateTargetTile(EntityId.Blinky, currentDirection);
-            var pacManTile = gameManager.GetEntityCurrentTileCoordinates(EntityId.Player, gameManager.GetPlayerDirection());
-            var currentTile = gameManager.GetEntityCurrentTileCoordinates(EntityId.Blinky, currentDirection);
-            var validDirections = levelManager.GetValidDirectionsForTile(currentTile);
-            var chosenDirection = ChooseNewDirection(currentTile, pacManTile, validDirections);
+            levelManager.UpdateTargetTile(entityId, currentDirection);
+            var chosenDirection = ChooseNewDirection();
             transform.position = gameManager.GetValidatedPosition(EntityId.Blinky, newPosition, currentDirection, chosenDirection);
             currentDirection = chosenDirection;
             _animator.SetInteger("Direction", (int)currentDirection);
@@ -173,17 +172,20 @@ public class Ghost : MonoBehaviour, IEntity
     /*
      * Iterating through the nodes to see which is closer to targetTile (Pac-man)
      */
-    private Direction ChooseNewDirection(Vector2Int currentTile, Vector2Int pacManTile, List<Direction> validDirections)
+    private Direction ChooseNewDirection()
     {
         Direction chosenDirection = currentDirection; // Dummy value
         
         switch (_currentMode)
         {
             case Mode.Chase:
-                chosenDirection = ChooseChaseModeDirection(currentTile, pacManTile, validDirections);
+                var currentTile = gameManager.GetEntityCurrentTileCoordinates(entityId, currentDirection);
+                var validDirections = levelManager.GetValidDirectionsForTile(currentTile);
+                Vector2Int targetTile = ChooseTargetTile();
+                chosenDirection = ChooseChaseModeDirection(currentTile, targetTile, validDirections);
                 break;
             case Mode.Scatter:
-                chosenDirection = ChooseScatterModeDirection(currentTile, pacManTile, validDirections);
+                chosenDirection = ChooseScatterModeDirection(currentTile, targetTile, validDirections);
                 break;
             case Mode.Frightened:
                 break;
@@ -195,7 +197,7 @@ public class Ghost : MonoBehaviour, IEntity
         return chosenDirection;
     }
 
-    private Direction ChooseChaseModeDirection(Vector2Int currentTile, Vector2Int pacManTile, List<Direction> validDirections)
+    private Direction ChooseChaseModeDirection(Vector2Int currentTile, Vector2Int targetTile, List<Direction> validDirections)
     {
         Direction chosenDirection = currentDirection; // Dummy value
         var leastDistance = float.MaxValue;
@@ -226,7 +228,7 @@ public class Ghost : MonoBehaviour, IEntity
             }
             
             Vector2Int projectedTile = new Vector2Int(xCoord, yCoord);
-            var distance = Vector2Int.Distance(pacManTile, projectedTile);
+            var distance = Vector2Int.Distance(targetTile, projectedTile);
             if (distance < leastDistance)
             {
                 chosenDirection = direction;
@@ -237,12 +239,24 @@ public class Ghost : MonoBehaviour, IEntity
         return chosenDirection;
     }
     
-    private Direction ChooseScatterModeDirection(Vector2Int currentTile, Vector2Int pacManTile, List<Direction> validDirections)
+    private Direction ChooseScatterModeDirection(List<Direction> validDirections)
     {
         var filteredValidDirection = validDirections.FindAll(
             dir => !gameManager.DirectionsAreOpposite(currentDirection, dir));
         var index = Random.Range(0, filteredValidDirection.Count);
         return filteredValidDirection[index];
+    }
+
+    private Vector2Int ChooseTargetTile()
+    {
+        var pacManTile = gameManager.GetEntityCurrentTileCoordinates(EntityId.Player, gameManager.GetPlayerDirection());
+        switch (entityId)
+        {
+            case EntityId.Blinky:
+                return pacManTile;
+            case EntityId.Pinky:
+                
+        }
     }
 
     public Direction currentDirection { get; set; }
