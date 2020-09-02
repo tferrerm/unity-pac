@@ -82,8 +82,9 @@ public class Player : MonoBehaviour, IEntity
         } else if (other.CompareTag("Ghost"))
         {
             _animator.transform.rotation = Quaternion.Euler(new Vector3(0, 0, 0));
-            _animator.speed = 1; // TODO FIX WHEN GHOST COLLIDES PLAYER STUCK AGAINST WALL
             _animator.SetBool("Disappear", true);
+            _animator.Play("Disappear");
+            _animator.speed = 1;
         }
     }
 
@@ -107,7 +108,7 @@ public class Player : MonoBehaviour, IEntity
 
     public void AnimationPlayback()
     {
-        if (hasCollidedWall)
+        if (hasCollidedWall || _animator.GetBool("Disappear"))
             _animator.speed = 0;
     }
 
