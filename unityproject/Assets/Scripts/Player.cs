@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using UnityEditor.UI;
 using UnityEngine;
 using UnityEngine.UIElements;
 using UnityEngine.XR;
@@ -11,8 +12,10 @@ public enum Direction
     Up = 0, Down = 1, Left = 2, Right = 3,
 };
 
-public class Player : MonoBehaviour, IEntity
+public class Player : MonoBehaviour, IEntity, IPauseable
 {
+    public int lives = 3;
+    
     public float movSpeed = 10f;
     private Direction? nextDirection;
     private bool hasCollidedWall;
@@ -83,8 +86,7 @@ public class Player : MonoBehaviour, IEntity
         {
             _animator.transform.rotation = Quaternion.Euler(new Vector3(0, 0, 0));
             _animator.SetBool("Disappear", true);
-            _animator.Play("Disappear");
-            _animator.speed = 1;
+            gameManager.DecrementLives();
         }
     }
 
@@ -106,6 +108,18 @@ public class Player : MonoBehaviour, IEntity
         set => hasCollidedWall = value;
     }
 
+    public int DecrementLives()
+    {
+        lives--;
+        return lives;
+    }
+
+    // to be used when reaching 10k points
+    public void oneLifeUp()
+    {
+        lives++;
+    }
+
     public void AnimationPlayback()
     {
         if (hasCollidedWall || _animator.GetBool("Disappear"))
@@ -113,4 +127,18 @@ public class Player : MonoBehaviour, IEntity
     }
 
     public Direction currentDirection { get; set; }
+    public void onPauseGame()
+    {
+        
+        if (_animator.GetBool("Disappear"))
+        {
+            _animator.Play("Disappear");
+            _animator.speed = 1;
+        }
+    }
+
+    public void onResumeGame()
+    {
+        throw new NotImplementedException();
+    }
 }

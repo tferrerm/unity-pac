@@ -5,7 +5,7 @@ using UnityEngine;
 using UnityEngine.Tilemaps;
 using Random = UnityEngine.Random;
 
-public class Ghost : MonoBehaviour, IEntity
+public class Ghost : MonoBehaviour, IEntity, IPauseable
 {
     public float movSpeed = 3.9f;
     public Node startingPosition;
@@ -247,4 +247,13 @@ public class Ghost : MonoBehaviour, IEntity
 
     public Direction currentDirection { get; set; }
 
+    public void onPauseGame()
+    {
+        this.enabled = false;
+    }
+
+    public void onResumeGame()
+    {
+        this.enabled = true;
+    }
 }

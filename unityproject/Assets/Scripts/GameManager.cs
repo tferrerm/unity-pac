@@ -35,12 +35,6 @@ public class GameManager : MonoBehaviour
         tileMapHalfWidth = levelManager.TileMapHalfWidth;
     }
 
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
-
     public Vector3 GetValidatedPosition(EntityId entityId, Vector3 position, Direction currentDirection, Direction? nextDirection)
     {
         return entityId == EntityId.Player ?
@@ -118,5 +112,15 @@ public class GameManager : MonoBehaviour
     public Vector2Int GetEntityCurrentTileCoordinates(EntityId entityId, Direction currentDirection)
     {
         return levelManager.GetEntityCurrentTileCoordinates(entityId, currentDirection);
+    }
+
+    public void DecrementLives()
+    {
+        int remainingLives = player.DecrementLives();
+        
+        if (remainingLives == 0)
+        {
+            // TODO: Game over
+        }
     }
 }
