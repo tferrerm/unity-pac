@@ -20,6 +20,9 @@ public class Player : MonoBehaviour, IEntity, IPauseable
     private readonly Dictionary<Direction, int> directionRotationAngles = new Dictionary<Direction, int>();
     private Animator _animator;
 
+    private AudioSource _audioSource;
+    public AudioClip disappearingSound;
+
     public int points = 0; // CHANGE PLACE?
     private const int POINTS_PER_PELLET = 10;
     private const int POINTS_PER_POWER_PELLET = 50;
@@ -40,6 +43,7 @@ public class Player : MonoBehaviour, IEntity, IPauseable
         directionRotationAngles.Add(Direction.Down, 270);
         
         _animator = GetComponent<Animator>();
+        _audioSource = GetComponent<AudioSource>();
     }
 
     // Update is called once per frame
@@ -146,10 +150,9 @@ public class Player : MonoBehaviour, IEntity, IPauseable
         _animator.Play("Disappear");
         _animator.speed = 1;
         gameManager.StopGhosts();
-        Debug.Log(_animator.GetCurrentAnimatorStateInfo(0).length + _animator.GetCurrentAnimatorStateInfo(0).normalizedTime);
-        yield return new WaitForSeconds(
-            _animator.GetCurrentAnimatorStateInfo(0).length +
-            _animator.GetCurrentAnimatorStateInfo(0).normalizedTime);
+        var time = disappearingSound.length;
+        _audioSource.PlayOneShot(disappearingSound);
+        yield return new WaitForSeconds(time);
         Debug.Log("AfterAnimation");
         OnResumeGame();
         gameManager.StartGhosts();
