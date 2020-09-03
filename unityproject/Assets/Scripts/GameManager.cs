@@ -24,12 +24,15 @@ public class GameManager : MonoBehaviour
     private readonly List<Direction> oppositeXDirections = new List<Direction>(new [] {Direction.Left, Direction.Right});
     private readonly List<Direction> oppositeYDirections = new List<Direction>(new [] {Direction.Up, Direction.Down});
     
+    private float tileMapHalfWidth;
+    
     // Start is called before the first frame update
     void Start()
     {
         entityDict = new Dictionary<EntityId, IEntity>();
         entityDict.Add(EntityId.Player, player);
         entityDict.Add(EntityId.Blinky, blinky);
+        tileMapHalfWidth = levelManager.TileMapHalfWidth;
     }
 
     // Update is called once per frame
@@ -77,16 +80,19 @@ public class GameManager : MonoBehaviour
     }
 
     // Get new position based on direction, speed and frame delta time
-    public static Vector3 GetNewEntityPosition(float movSpeed,Vector2 position, Direction currentDirection, Direction? nextDirection)
+    public Vector3 GetNewEntityPosition(float movSpeed,Vector2 position, Direction currentDirection)
     {
         Vector3 newPosition;
+        float posX;
         switch (currentDirection)
         {
             case Direction.Left:
-                newPosition = new Vector3(position.x - movSpeed * Time.deltaTime, position.y, 0);
+                posX = position.x - movSpeed * Time.deltaTime;
+                newPosition = new Vector3(posX < -tileMapHalfWidth ? tileMapHalfWidth : posX, position.y, 0);
                 break;
             case Direction.Right:
-                newPosition = new Vector3(position.x + movSpeed * Time.deltaTime, position.y, 0);
+                posX = position.x + movSpeed * Time.deltaTime;
+                newPosition = new Vector3(posX > tileMapHalfWidth ? -tileMapHalfWidth : posX, position.y, 0);
                 break;
             case Direction.Up:
                 newPosition = new Vector3(position.x, position.y + movSpeed * Time.deltaTime, 0);

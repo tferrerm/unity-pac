@@ -63,7 +63,7 @@ public class Player : MonoBehaviour, IEntity
     {
         if (hasCollidedWall || _animator.GetBool("Disappear")) return;
         
-        Vector3 newPosition = GameManager.GetNewEntityPosition(movSpeed, transform.position, currentDirection, nextDirection);
+        Vector3 newPosition = gameManager.GetNewEntityPosition(movSpeed, transform.position, currentDirection);
         transform.position = gameManager.GetValidatedPosition(EntityId.Player, newPosition, currentDirection, nextDirection);
         _animator.transform.rotation = Quaternion.Euler(new Vector3(0,0, directionRotationAngles[currentDirection]));
         _animator.speed = 1;

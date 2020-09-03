@@ -31,8 +31,11 @@ public class LevelManager : MonoBehaviour
     private const string PowerPelletId = "X";
     private const string BlankId = ".";
 
+    private float tileMapHalfWidth;
+    public float TileMapHalfWidth => tileMapHalfWidth;
+
     // Start is called before the first frame update
-    void Start()
+    void Awake()
     {
         entitiesTargetTileCoordinates = new Dictionary<EntityId, Vector2Int>();
 
@@ -61,6 +64,7 @@ public class LevelManager : MonoBehaviour
         tileMap = new MapComponent[rows][];
         var tileWidth = (int) tileSprites[0].rect.width;
         var tileHeight = (int) tileSprites[0].rect.height;
+        tileMapHalfWidth = (float)(cols * tileWidth) / 2;
         Dictionary<String, Sprite> spriteNameDict = new Dictionary<String, Sprite>();
         tileSprites.ForEach(sprite => spriteNameDict.Add(sprite.name, sprite));
 
@@ -157,10 +161,10 @@ public class LevelManager : MonoBehaviour
                 targetTileCoordinates = new Vector2Int(initX, initY + 1);
                 break;
             case Direction.Left:
-                targetTileCoordinates = new Vector2Int(initX - 1, initY);
+                targetTileCoordinates = new Vector2Int(initX == 0 ? cols - 1 : initX - 1, initY);
                 break;
             case Direction.Right:
-                targetTileCoordinates = new Vector2Int(initX + 1, initY);
+                targetTileCoordinates = new Vector2Int(initX == cols - 1 ? 0 : initX + 1, initY);
                 break;
             default:
                 throw new ArgumentOutOfRangeException();
@@ -216,7 +220,7 @@ public class LevelManager : MonoBehaviour
                     }
                     
                     // Next direction is not valid
-                    if (tileMap[targetTileCoordinates.y - 1][targetTileCoordinates.x].IsWall)
+                    if (!IsValidDirection(targetTileCoordinates, currentDirection))
                     {
                         // Reached a wall, returned position must be exact
                         gameManager.SetPlayerCollidedWall(true);
@@ -242,7 +246,7 @@ public class LevelManager : MonoBehaviour
                     }
                     
                     // Next direction is not valid
-                    if (tileMap[targetTileCoordinates.y + 1][targetTileCoordinates.x].IsWall)
+                    if (!IsValidDirection(targetTileCoordinates, currentDirection))
                     {
                         // Reached a wall, returned position must be exact
                         gameManager.SetPlayerCollidedWall(true);
@@ -255,6 +259,7 @@ public class LevelManager : MonoBehaviour
 
                 break;
             case Direction.Left:
+                if (targetTileCoordinates.x == cols - 1 && position.x < 0) break;
                 if (position.x <= targetTilePosition.x) // Reached target tile
                 {
                     if (nextDirection != null && IsValidDirection(targetTileCoordinates, nextDirection.GetValueOrDefault()))
@@ -268,7 +273,7 @@ public class LevelManager : MonoBehaviour
                     }
                     
                     // Next direction is not valid
-                    if (tileMap[targetTileCoordinates.y][targetTileCoordinates.x - 1].IsWall)
+                    if (!IsValidDirection(targetTileCoordinates, currentDirection))
                     {
                         // Reached a wall, returned position must be exact
                         gameManager.SetPlayerCollidedWall(true);
@@ -281,6 +286,7 @@ public class LevelManager : MonoBehaviour
 
                 break;
             case Direction.Right:
+                if (targetTileCoordinates.x == 0 && position.x > 0) break;
                 if (position.x >= targetTilePosition.x) // Reached target tile
                 {
                     if (nextDirection != null && IsValidDirection(targetTileCoordinates, nextDirection.GetValueOrDefault()))
@@ -294,7 +300,7 @@ public class LevelManager : MonoBehaviour
                     }
 
                     // Next direction is not valid
-                    if (tileMap[targetTileCoordinates.y][targetTileCoordinates.x + 1].IsWall)
+                    if (!IsValidDirection(targetTileCoordinates, currentDirection))
                     {
                         // Reached a wall, returned position must be exact
                         gameManager.SetPlayerCollidedWall(true);
@@ -356,26 +362,33 @@ public class LevelManager : MonoBehaviour
     }
 
     
-    private void UpdateTargetTileCoordinates(EntityId entityId, Vector2Int targetTileCoordinates,
-        Direction nextDirection)
+    private void UpdateTargetTileCoordinates(EntityId entityId, Vector2Int currentTileCoordinates, Direction direction)
     {
-        switch (nextDirection)
+        switch (direction)
         {
             case Direction.Up:
                 entitiesTargetTileCoordinates[entityId] =
-                    new Vector2Int(targetTileCoordinates.x, targetTileCoordinates.y - 1);
+                    new Vector2Int(currentTileCoordinates.x, currentTileCoordinates.y - 1);
                 break;
             case Direction.Down:
                 entitiesTargetTileCoordinates[entityId] =
-                    new Vector2Int(targetTileCoordinates.x, targetTileCoordinates.y + 1);
+                    new Vector2Int(currentTileCoordinates.x, currentTileCoordinates.y + 1);
                 break;
             case Direction.Left:
-                entitiesTargetTileCoordinates[entityId] =
-                    new Vector2Int(targetTileCoordinates.x - 1, targetTileCoordinates.y);
+                if (currentTileCoordinates.x == 0)
+                    entitiesTargetTileCoordinates[entityId] = 
+                        new Vector2Int(cols - 1, currentTileCoordinates.y);
+                else
+                    entitiesTargetTileCoordinates[entityId] = 
+                        new Vector2Int(currentTileCoordinates.x - 1, currentTileCoordinates.y);
                 break;
             case Direction.Right:
-                entitiesTargetTileCoordinates[entityId] =
-                    new Vector2Int(targetTileCoordinates.x + 1, targetTileCoordinates.y);
+                if (currentTileCoordinates.x == cols - 1)
+                    entitiesTargetTileCoordinates[entityId] = 
+                        new Vector2Int(0, currentTileCoordinates.y);
+                else
+                    entitiesTargetTileCoordinates[entityId] = 
+                        new Vector2Int(currentTileCoordinates.x + 1, currentTileCoordinates.y);
                 break;
             default:
                 throw new ArgumentOutOfRangeException();
@@ -392,9 +405,15 @@ public class LevelManager : MonoBehaviour
             case Direction.Down:
                 return !tileMap[tileCoordinates.y + 1][tileCoordinates.x].IsWall;
             case Direction.Left:
-                return !tileMap[tileCoordinates.y][tileCoordinates.x - 1].IsWall;
+                if(tileCoordinates.x == 0)
+                    return !tileMap[tileCoordinates.y][cols - 1].IsWall;
+                else
+                    return !tileMap[tileCoordinates.y][tileCoordinates.x - 1].IsWall;
             case Direction.Right:
-                return !tileMap[tileCoordinates.y][tileCoordinates.x + 1].IsWall;
+                if(tileCoordinates.x == cols - 1)
+                    return !tileMap[tileCoordinates.y][0].IsWall;
+                else
+                    return !tileMap[tileCoordinates.y][tileCoordinates.x + 1].IsWall;
             default:
                 throw new ArgumentOutOfRangeException();
         }
@@ -449,23 +468,35 @@ public class LevelManager : MonoBehaviour
     public List<Direction> GetValidDirectionsForTile(Vector2Int position)
     {
         var validDirections = new List<Direction>();
+        
         if (!tileMap[position.y - 1][position.x].IsWall)
-        {
             validDirections.Add(Direction.Up);
-        }
+        
         if (!tileMap[position.y + 1][position.x].IsWall)
-        {
             validDirections.Add(Direction.Down);
-        }
-        if (!tileMap[position.y][position.x - 1].IsWall)
+
+        if (position.x == 0)
         {
-            validDirections.Add(Direction.Left);
+            if (!tileMap[position.y][cols - 1].IsWall)
+                validDirections.Add(Direction.Left);
         }
-        if (!tileMap[position.y][position.x + 1].IsWall)
+        else
         {
-            validDirections.Add(Direction.Right);
+            if (!tileMap[position.y][position.x - 1].IsWall)
+                validDirections.Add(Direction.Left);
         }
         
+        if (position.x == cols - 1)
+        {
+            if (!tileMap[position.y][0].IsWall)
+                validDirections.Add(Direction.Right);
+        }
+        else
+        {
+            if (!tileMap[position.y][position.x + 1].IsWall)
+                validDirections.Add(Direction.Right);
+        }
+
         return validDirections;
     }
 
@@ -503,9 +534,9 @@ public class LevelManager : MonoBehaviour
             case Direction.Down:
                 return new Vector2Int(targetTileCoordinates.x, targetTileCoordinates.y - 1);
             case Direction.Left:
-                return new Vector2Int(targetTileCoordinates.x + 1, targetTileCoordinates.y);
+                return new Vector2Int(targetTileCoordinates.x == cols - 1 ? 0 : targetTileCoordinates.x + 1, targetTileCoordinates.y);
             case Direction.Right:
-                return new Vector2Int(targetTileCoordinates.x - 1, targetTileCoordinates.y);
+                return new Vector2Int(targetTileCoordinates.x == 0 ? cols - 1 : targetTileCoordinates.x - 1, targetTileCoordinates.y);
             default:
                 throw new ArgumentOutOfRangeException();
         }
@@ -527,7 +558,7 @@ public class LevelManager : MonoBehaviour
                 updatedTargetTile = new Vector2Int(targetTileCoordinates.x, targetTileCoordinates.y + 1);
                 break;
             case Direction.Left:
-                updatedTargetTile = new Vector2Int(targetTileCoordinates.x - 1, targetTileCoordinates.y);
+                updatedTargetTile = new Vector2Int(targetTileCoordinates.x - 1, targetTileCoordinates.y); // TODO FIX WITH PORTAL
                 break;
             case Direction.Right:
                 updatedTargetTile = new Vector2Int(targetTileCoordinates.x + 1, targetTileCoordinates.y);
