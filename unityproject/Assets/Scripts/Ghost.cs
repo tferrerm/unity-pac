@@ -155,7 +155,7 @@ public class Ghost : MonoBehaviour, IEntity
 
     private void Move()
     {
-        Vector3 newPosition = GameManager.GetNewEntityPosition(movSpeed, transform.position, currentDirection, null);
+        Vector3 newPosition = gameManager.GetNewEntityPosition(movSpeed, transform.position, currentDirection);
         if (levelManager.ReachedTargetTile(entityId, newPosition, currentDirection))
         {
             levelManager.UpdateTargetTile(entityId, currentDirection);
