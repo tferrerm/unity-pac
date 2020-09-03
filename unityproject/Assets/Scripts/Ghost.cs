@@ -37,6 +37,7 @@ public class Ghost : MonoBehaviour, IEntity
     public Mode _currentMode = Mode.Scatter;
     private Mode _previousMode;
     public EntityId entityId;
+    public Vector2Int homeTile;
 
 
     public GameManager gameManager;
@@ -175,17 +176,21 @@ public class Ghost : MonoBehaviour, IEntity
     private Direction ChooseNewDirection()
     {
         Direction chosenDirection = currentDirection; // Dummy value
+        var currentTile = gameManager.GetEntityCurrentTileCoordinates(entityId, currentDirection);
+        var validDirections = levelManager.GetValidDirectionsForTile(currentTile);
+        if (validDirections.Count == 1)
+        {
+            return validDirections[0];
+        }
         
         switch (_currentMode)
         {
             case Mode.Chase:
-                var currentTile = gameManager.GetEntityCurrentTileCoordinates(entityId, currentDirection);
-                var validDirections = levelManager.GetValidDirectionsForTile(currentTile);
                 Vector2Int targetTile = ChooseTargetTile();
-                chosenDirection = ChooseChaseModeDirection(currentTile, targetTile, validDirections);
+                chosenDirection = ChooseDirection(currentTile, targetTile, validDirections);
                 break;
             case Mode.Scatter:
-                chosenDirection = ChooseScatterModeDirection(currentTile, targetTile, validDirections);
+                chosenDirection = ChooseDirection(currentTile, homeTile, validDirections);
                 break;
             case Mode.Frightened:
                 break;
@@ -197,7 +202,7 @@ public class Ghost : MonoBehaviour, IEntity
         return chosenDirection;
     }
 
-    private Direction ChooseChaseModeDirection(Vector2Int currentTile, Vector2Int targetTile, List<Direction> validDirections)
+    private Direction ChooseDirection(Vector2Int currentTile, Vector2Int targetTile, List<Direction> validDirections)
     {
         Direction chosenDirection = currentDirection; // Dummy value
         var leastDistance = float.MaxValue;
@@ -238,14 +243,6 @@ public class Ghost : MonoBehaviour, IEntity
 
         return chosenDirection;
     }
-    
-    private Direction ChooseScatterModeDirection(List<Direction> validDirections)
-    {
-        var filteredValidDirection = validDirections.FindAll(
-            dir => !gameManager.DirectionsAreOpposite(currentDirection, dir));
-        var index = Random.Range(0, filteredValidDirection.Count);
-        return filteredValidDirection[index];
-    }
 
     private Vector2Int ChooseTargetTile()
     {
@@ -253,9 +250,87 @@ public class Ghost : MonoBehaviour, IEntity
         switch (entityId)
         {
             case EntityId.Blinky:
-                return pacManTile;
+                return ChooseBlinkyTile(pacManTile);
             case EntityId.Pinky:
-                
+                return ChoosePinkyTile(pacManTile);
+            case EntityId.Inky:
+                return ChooseInkyTile(pacManTile);
+            case EntityId.Clyde:
+                return ChooseInkyTile(pacManTile);
+            default:
+                return new Vector2Int(0,0);
+        }
+    }
+
+    private Vector2Int ChooseBlinkyTile(Vector2Int pacManTile)
+    {
+        return pacManTile;
+    }
+    
+    private Vector2Int ChoosePinkyTile(Vector2Int pacManTile)
+    {
+        var playerDirection = gameManager.GetPlayerDirection();
+        var xTarget = pacManTile.x;
+        var yTarget = pacManTile.y;
+        switch (playerDirection)
+        {
+            case Direction.Down:
+                yTarget += 4;
+                break;
+            case Direction.Up:
+                yTarget += 4;
+                break;
+            case Direction.Left:
+                xTarget -= 4;
+                break;
+            case Direction.Right:
+                xTarget -= 4;
+                break;
+        }
+        return new Vector2Int(xTarget, yTarget);
+    }
+    
+    private Vector2Int ChooseInkyTile(Vector2Int pacManTile)
+    {
+        var playerDirection = gameManager.GetPlayerDirection();
+        var xPivot = pacManTile.x;
+        var yPivot = pacManTile.y;
+        switch (playerDirection)
+        {
+            case Direction.Down:
+                yPivot += 2;
+                break;
+            case Direction.Up:
+                yPivot += 2;
+                break;
+            case Direction.Left:
+                xPivot -= 2;
+                break;
+            case Direction.Right:
+                xPivot -= 2;
+                break;
+        }
+        Vector2Int blinkyPosition =  gameManager.GetEntityCurrentTileCoordinates(EntityId.Blinky, gameManager.GetPlayerDirection());
+        var xDifference = (xPivot - blinkyPosition.x);
+        var yDifference = (yPivot - blinkyPosition.y);
+        var xTarget = xPivot + xDifference;
+        var yTarget = yPivot + yDifference;
+        
+        return new Vector2Int(xTarget, yTarget);
+    }
+
+    private Vector2Int ChooseClydeTile(Vector2Int pacManTile)
+    {
+        var distance = Vector2Int.Distance(pacManTile,
+            gameManager.GetEntityCurrentTileCoordinates(EntityId.Clyde, gameManager.GetPlayerDirection()));
+
+        if (distance > 8)
+        {
+            return pacManTile;
+        }
+        else
+        {
+            return homeTile;
         }
     }
 
