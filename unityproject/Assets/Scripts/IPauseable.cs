@@ -1,6 +1,6 @@
 ﻿public interface IPauseable
 {
-    void onPauseGame();
+    void OnPauseGame();
 
-    void onResumeGame();
+    void OnResumeGame();
 }

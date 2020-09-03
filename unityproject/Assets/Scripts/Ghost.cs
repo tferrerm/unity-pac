@@ -8,6 +8,7 @@ using Random = UnityEngine.Random;
 public class Ghost : MonoBehaviour, IEntity, IPauseable
 {
     public float movSpeed = 3.9f;
+    private float _movSpeedBackup;
     public Node startingPosition;
     
     /*
@@ -247,13 +248,14 @@ public class Ghost : MonoBehaviour, IEntity, IPauseable
 
     public Direction currentDirection { get; set; }
 
-    public void onPauseGame()
+    public void OnPauseGame()
     {
-        this.enabled = false;
+        _movSpeedBackup = movSpeed;
+        movSpeed = 0;
     }
 
-    public void onResumeGame()
+    public void OnResumeGame()
     {
-        this.enabled = true;
+        movSpeed = _movSpeedBackup;
     }
 }

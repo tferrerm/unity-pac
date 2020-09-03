@@ -2,10 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using UnityEditor.UI;
 using UnityEngine;
-using UnityEngine.UIElements;
-using UnityEngine.XR;
 
 public enum Direction  
 {  
@@ -115,7 +112,7 @@ public class Player : MonoBehaviour, IEntity, IPauseable
     }
 
     // to be used when reaching 10k points
-    public void oneLifeUp()
+    public void OneLifeUp()
     {
         lives++;
     }
@@ -127,18 +124,34 @@ public class Player : MonoBehaviour, IEntity, IPauseable
     }
 
     public Direction currentDirection { get; set; }
-    public void onPauseGame()
+    public void OnPauseGame()
     {
-        
+        Debug.Log("OnPauseGame");
         if (_animator.GetBool("Disappear"))
         {
-            _animator.Play("Disappear");
-            _animator.speed = 1;
+            Debug.Log("BeforeAnimation");
+            IEnumerator coroutine = WaitForAnimation();
+            StartCoroutine(coroutine);
         }
     }
 
-    public void onResumeGame()
+    public void OnResumeGame()
     {
-        throw new NotImplementedException();
+        _animator.SetBool("Disappear", false);
+        _animator.Play("Pacman");
+    }
+
+    private IEnumerator WaitForAnimation()
+    {
+        _animator.Play("Disappear");
+        _animator.speed = 1;
+        gameManager.StopGhosts();
+        Debug.Log(_animator.GetCurrentAnimatorStateInfo(0).length + _animator.GetCurrentAnimatorStateInfo(0).normalizedTime);
+        yield return new WaitForSeconds(
+            _animator.GetCurrentAnimatorStateInfo(0).length +
+            _animator.GetCurrentAnimatorStateInfo(0).normalizedTime);
+        Debug.Log("AfterAnimation");
+        OnResumeGame();
+        gameManager.StartGhosts();
     }
 }

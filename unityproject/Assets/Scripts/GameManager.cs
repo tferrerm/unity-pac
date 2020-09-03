@@ -117,10 +117,21 @@ public class GameManager : MonoBehaviour
     public void DecrementLives()
     {
         int remainingLives = player.DecrementLives();
-        
+        player.OnPauseGame();
+
         if (remainingLives == 0)
         {
             // TODO: Game over
         }
+    }
+
+    public void StopGhosts()
+    {
+        blinky.OnPauseGame();
+    }
+
+    public void StartGhosts()
+    {
+        blinky.OnResumeGame();
     }
 }
