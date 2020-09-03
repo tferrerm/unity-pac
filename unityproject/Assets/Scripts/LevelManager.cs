@@ -513,8 +513,12 @@ public class LevelManager : MonoBehaviour
             case Direction.Down:
                 return newPosition.y <= targetTilePosition.y;
             case Direction.Left:
+                if(targetTileCoordinates.x == cols - 1)
+                    return newPosition.x > 0 && newPosition.x <= targetTilePosition.x;
                 return newPosition.x <= targetTilePosition.x;
             case Direction.Right:
+                if(targetTileCoordinates.x == 0)
+                    return newPosition.x < 0 && newPosition.x >= targetTilePosition.x;
                 return newPosition.x >= targetTilePosition.x;
             default:
                 throw new ArgumentOutOfRangeException();
@@ -543,7 +547,7 @@ public class LevelManager : MonoBehaviour
     }
 
     
-    // Called if ghost has reached target tile and no update was done
+    // Called if ghost has reached target tile and no target update was done
     public void UpdateTargetTile(EntityId entityId, Direction currentDirection)
     {
         var targetTileCoordinates = entitiesTargetTileCoordinates[entityId];
@@ -558,10 +562,16 @@ public class LevelManager : MonoBehaviour
                 updatedTargetTile = new Vector2Int(targetTileCoordinates.x, targetTileCoordinates.y + 1);
                 break;
             case Direction.Left:
-                updatedTargetTile = new Vector2Int(targetTileCoordinates.x - 1, targetTileCoordinates.y); // TODO FIX WITH PORTAL
+                if(targetTileCoordinates.x == 0)
+                    updatedTargetTile = new Vector2Int(cols - 1, targetTileCoordinates.y);
+                else
+                    updatedTargetTile = new Vector2Int(targetTileCoordinates.x - 1, targetTileCoordinates.y);
                 break;
             case Direction.Right:
-                updatedTargetTile = new Vector2Int(targetTileCoordinates.x + 1, targetTileCoordinates.y);
+                if(targetTileCoordinates.x == cols - 1)
+                    updatedTargetTile = new Vector2Int(0, targetTileCoordinates.y);
+                else
+                    updatedTargetTile = new Vector2Int(targetTileCoordinates.x + 1, targetTileCoordinates.y);
                 break;
             default:
                 throw new ArgumentOutOfRangeException();
