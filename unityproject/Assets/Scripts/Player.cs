@@ -4,11 +4,6 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
-public enum Direction  
-{  
-    Up = 0, Down = 1, Left = 2, Right = 3,
-};
-
 public class Player : MonoBehaviour, IEntity, IPauseable
 {
     public int lives = 3;

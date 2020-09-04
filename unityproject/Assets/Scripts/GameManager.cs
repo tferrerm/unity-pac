@@ -3,15 +3,6 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-public enum EntityId  
-{  
-    Player = 0,
-    Blinky = 1,
-    Pinky = 2,
-    Inky  = 3,
-    Clyde = 4
-};
-
 public class GameManager : MonoBehaviour
 {
     public LevelManager levelManager;
