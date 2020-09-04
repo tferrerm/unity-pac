@@ -12,7 +12,7 @@ public enum Direction
 public class Player : MonoBehaviour, IEntity, IPauseable
 {
     public int lives = 3;
-    
+
     public float movSpeed = 10f;
     private Direction? nextDirection;
     private bool hasCollidedWall;
@@ -155,6 +155,6 @@ public class Player : MonoBehaviour, IEntity, IPauseable
         yield return new WaitForSeconds(time);
         Debug.Log("AfterAnimation");
         OnResumeGame();
-        gameManager.StartGhosts();
+        gameManager.ResetPositions();
     }
 }

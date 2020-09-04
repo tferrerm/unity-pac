@@ -1,7 +1,7 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public enum EntityId  
 {  
@@ -47,7 +47,7 @@ public class GameManager : MonoBehaviour
         player.CurrentDirection = direction;
         player.NextDirection = null;
     }
-    
+
     public Direction GetPlayerDirection()
     {
         return player.currentDirection;
@@ -121,7 +121,8 @@ public class GameManager : MonoBehaviour
 
         if (remainingLives == 0)
         {
-            // TODO: Game over
+            Debug.Log("Game Over!");
+            SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex - 1);
         }
     }
 
@@ -133,5 +134,11 @@ public class GameManager : MonoBehaviour
     public void StartGhosts()
     {
         blinky.OnResumeGame();
+    }
+    
+    public void ResetPositions()
+    {
+        levelManager.InitializePlayerProperties();
+        StartGhosts();
     }
 }

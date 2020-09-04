@@ -156,6 +156,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   movSpeed: 20
+  startingPosition: {x: 0, y: 16, z: 0}
+  startingDirection: 3
   scatterModeTimer1: 7
   chaseModeTimer1: 20
   scatterModeTimer2: 7
@@ -232,7 +234,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 4
+  m_RootOrder: 5
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!95 &494656772
 Animator:
@@ -357,6 +359,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   movSpeed: 20
+  startingPosition: {x: -12, y: 0, z: 0}
+  startingDirection: 0
   scatterModeTimer1: 7
   chaseModeTimer1: 20
   scatterModeTimer2: 7
@@ -463,7 +467,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 5
+  m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1517139761
 GameObject:
@@ -963,6 +967,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   movSpeed: 20
+  startingPosition: {x: 0, y: 0, z: 0}
+  startingDirection: 1
   scatterModeTimer1: 7
   chaseModeTimer1: 20
   scatterModeTimer2: 7
@@ -1097,7 +1103,11 @@ MonoBehaviour:
   powerPelletPrefab: {fileID: 1425826279440265562, guid: d4bba8314da61b1498093bc3a6872841, type: 3}
   player: {fileID: 1570586584}
   gameManager: {fileID: 1760033258}
-  blinky: {fileID: 0}
+  ghosts:
+  - {fileID: 494656769}
+  - {fileID: 923034327}
+  - {fileID: 1780488382}
+  - {fileID: 1842700900}
 --- !u!4 &1795960092
 Transform:
   m_ObjectHideFlags: 0
@@ -1190,6 +1200,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   movSpeed: 20
+  startingPosition: {x: 0, y: 0, z: 12}
+  startingDirection: 0
   scatterModeTimer1: 7
   chaseModeTimer1: 20
   scatterModeTimer2: 7

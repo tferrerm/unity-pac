@@ -1,15 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
-using UnityEditor.Experimental.GraphView;
 using UnityEngine;
-using UnityEngine.Tilemaps;
 using Random = UnityEngine.Random;
 
 public class Ghost : MonoBehaviour, IEntity, IPauseable
 {
     public float movSpeed = 3.9f;
     private float _movSpeedBackup;
-    public Node startingPosition;
+    public Vector3 startingPosition;
+    public Direction startingDirection;
     
     /*
      * Each timer belongs to a different iteration. We have four iterations, thereby four pairs of timers
@@ -49,8 +48,9 @@ public class Ghost : MonoBehaviour, IEntity, IPauseable
      */
     void Start()
     {
-        currentDirection = Direction.Right;
+        currentDirection = startingDirection;
         _animator = GetComponent<Animator>();
+        transform.position = startingPosition;
     }
 
     /*
@@ -252,10 +252,13 @@ public class Ghost : MonoBehaviour, IEntity, IPauseable
     {
         _movSpeedBackup = movSpeed;
         movSpeed = 0;
+        gameObject.SetActive(false);
     }
 
     public void OnResumeGame()
     {
+        gameObject.SetActive(true);
         movSpeed = _movSpeedBackup;
+        
     }
 }
