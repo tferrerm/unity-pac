@@ -1,16 +1,7 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-
-public enum EntityId  
-{  
-    Player = 0,
-    Blinky = 1,
-    Pinky = 2,
-    Inky  = 3,
-    Clyde = 4
-};
+using UnityEngine.SceneManagement;
 
 public class GameManager : MonoBehaviour
 {
@@ -35,12 +26,6 @@ public class GameManager : MonoBehaviour
         tileMapHalfWidth = levelManager.TileMapHalfWidth;
     }
 
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
-
     public Vector3 GetValidatedPosition(EntityId entityId, Vector3 position, Direction currentDirection, Direction? nextDirection)
     {
         return entityId == EntityId.Player ?
@@ -53,7 +38,7 @@ public class GameManager : MonoBehaviour
         player.CurrentDirection = direction;
         player.NextDirection = null;
     }
-    
+
     public Direction GetPlayerDirection()
     {
         return player.currentDirection;
@@ -118,5 +103,33 @@ public class GameManager : MonoBehaviour
     public Vector2Int GetEntityCurrentTileCoordinates(EntityId entityId, Direction currentDirection)
     {
         return levelManager.GetEntityCurrentTileCoordinates(entityId, currentDirection);
+    }
+
+    public void DecrementLives()
+    {
+        int remainingLives = player.DecrementLives();
+        player.OnPauseGame();
+
+        if (remainingLives == 0)
+        {
+            Debug.Log("Game Over!");
+            SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex - 1);
+        }
+    }
+
+    public void StopGhosts()
+    {
+        blinky.OnPauseGame();
+    }
+
+    public void StartGhosts()
+    {
+        blinky.OnResumeGame();
+    }
+    
+    public void ResetPositions()
+    {
+        levelManager.InitializePlayerProperties();
+        StartGhosts();
     }
 }

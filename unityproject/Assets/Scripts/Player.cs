@@ -3,22 +3,20 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
-using UnityEngine.UIElements;
-using UnityEngine.XR;
 
-public enum Direction  
-{  
-    Up = 0, Down = 1, Left = 2, Right = 3,
-};
-
-public class Player : MonoBehaviour, IEntity
+public class Player : MonoBehaviour, IEntity, IPauseable
 {
+    public int lives = 3;
+
     public float movSpeed = 10f;
     private Direction? nextDirection;
     private bool hasCollidedWall;
     private readonly Dictionary<KeyCode, Direction> keyDirections = new Dictionary<KeyCode, Direction>();
     private readonly Dictionary<Direction, int> directionRotationAngles = new Dictionary<Direction, int>();
     private Animator _animator;
+
+    private AudioSource _audioSource;
+    public AudioClip disappearingSound;
 
     public int points = 0; // CHANGE PLACE?
     private const int POINTS_PER_PELLET = 10;
@@ -40,6 +38,7 @@ public class Player : MonoBehaviour, IEntity
         directionRotationAngles.Add(Direction.Down, 270);
         
         _animator = GetComponent<Animator>();
+        _audioSource = GetComponent<AudioSource>();
     }
 
     // Update is called once per frame
@@ -83,8 +82,7 @@ public class Player : MonoBehaviour, IEntity
         {
             _animator.transform.rotation = Quaternion.Euler(new Vector3(0, 0, 0));
             _animator.SetBool("Disappear", true);
-            _animator.Play("Disappear");
-            _animator.speed = 1;
+            gameManager.DecrementLives();
         }
     }
 
@@ -106,6 +104,18 @@ public class Player : MonoBehaviour, IEntity
         set => hasCollidedWall = value;
     }
 
+    public int DecrementLives()
+    {
+        lives--;
+        return lives;
+    }
+
+    // to be used when reaching 10k points
+    public void OneLifeUp()
+    {
+        lives++;
+    }
+
     public void AnimationPlayback()
     {
         if (hasCollidedWall || _animator.GetBool("Disappear"))
@@ -113,4 +123,33 @@ public class Player : MonoBehaviour, IEntity
     }
 
     public Direction currentDirection { get; set; }
+    public void OnPauseGame()
+    {
+        Debug.Log("OnPauseGame");
+        if (_animator.GetBool("Disappear"))
+        {
+            Debug.Log("BeforeAnimation");
+            IEnumerator coroutine = WaitForAnimation();
+            StartCoroutine(coroutine);
+        }
+    }
+
+    public void OnResumeGame()
+    {
+        _animator.SetBool("Disappear", false);
+        _animator.Play("Pacman");
+    }
+
+    private IEnumerator WaitForAnimation()
+    {
+        _animator.Play("Disappear");
+        _animator.speed = 1;
+        gameManager.StopGhosts();
+        var time = disappearingSound.length;
+        _audioSource.PlayOneShot(disappearingSound);
+        yield return new WaitForSeconds(time);
+        Debug.Log("AfterAnimation");
+        OnResumeGame();
+        gameManager.ResetPositions();
+    }
 }

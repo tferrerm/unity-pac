@@ -25,7 +25,15 @@ public class LevelManager : MonoBehaviour
 
     public Player player;
     public GameManager gameManager;
-    public Ghost blinky;
+    public Ghost[] ghosts = new Ghost[4];
+    private int _ghostCount;
+    private readonly EntityId[] _ghostOrder = new[] {EntityId.Blinky, EntityId.Inky,
+        EntityId.Pinky, EntityId.Clyde};
+
+    private Vector2Int _initialPlayerPosition;
+    private Direction _initialPlayerDirection;
+    private readonly Vector2Int[] _initialGhostPositions = new Vector2Int[4];
+    private readonly Direction[] _initialGhostDirections = new Direction[4];
 
     private const string PelletId = "o";
     private const string PowerPelletId = "X";
@@ -46,8 +54,6 @@ public class LevelManager : MonoBehaviour
                 ParseRowsAndCols(reader);
                 CreateTileMap(reader);
                 InitializePlayerProperties(reader);
-                
-                entitiesTargetTileCoordinates.Add(EntityId.Blinky, new Vector2Int(11, 9)); // TODO HARDCODED
             }
         }
         catch (Exception e)
@@ -57,6 +63,8 @@ public class LevelManager : MonoBehaviour
             Application.Quit();
         }
     }
+    
+    
     
 
     private void CreateTileMap(StreamReader reader)
@@ -133,7 +141,7 @@ public class LevelManager : MonoBehaviour
     }
     
     
-    private void InitializePlayerProperties(StreamReader reader)
+    public void InitializePlayerProperties(StreamReader reader)
     {
         var input = reader.ReadLine();
         var initY = Int32.Parse(input);
@@ -141,36 +149,90 @@ public class LevelManager : MonoBehaviour
         input = reader.ReadLine();
         var initX = Int32.Parse(input);
 
+        ValidateInitialPosition(initX, initY);
+
+        _initialPlayerPosition = new Vector2Int(initX, initY);
+        player.transform.position = tileMap[initY][initX].gameObject.transform.position;
+
+        input = reader.ReadLine();
+        _initialPlayerDirection = (Direction) Int32.Parse(input);
+        gameManager.SetPlayerDirection(_initialPlayerDirection);
+        Vector2Int targetTileCoordinates = TargetTileFromInitDirection(_initialPlayerDirection, initX, initY);
+
+        entitiesTargetTileCoordinates.Add(EntityId.Player, targetTileCoordinates);
+
+        input = reader.ReadLine();
+        _ghostCount = Math.Min(Int32.Parse(input), _ghostOrder.Length);
+
+        for (int i = 0; i < _ghostCount; i++)
+        {
+            input = reader.ReadLine();
+            var ghostX = Int32.Parse(input);
+            input = reader.ReadLine();
+            var ghostY = Int32.Parse(input);
+
+            ValidateInitialPosition(ghostX, ghostY);
+
+            var ghost = ghosts[i];
+            _initialGhostPositions[i] = new Vector2Int(ghostX, ghostY);
+
+            ghost.transform.position = tileMap[ghostY][ghostX].gameObject.transform.position;
+
+            input = reader.ReadLine();
+            _initialGhostDirections[i] = (Direction) Int32.Parse(input);
+
+            ghost.currentDirection = _initialGhostDirections[i];
+            var ghostTargetTile = TargetTileFromInitDirection(_initialGhostDirections[i], ghostX, ghostY);
+            entitiesTargetTileCoordinates.Add(_ghostOrder[i], ghostTargetTile);
+        }
+    }
+
+    public void InitializePlayerProperties()
+    {
+        int initX = _initialPlayerPosition.x;
+        int initY = _initialPlayerPosition.y;
+        player.transform.position = tileMap[initY][initX].gameObject
+            .transform.position;
+        gameManager.SetPlayerDirection(_initialPlayerDirection);
+        Vector2Int targetTileCoordinates = TargetTileFromInitDirection(_initialPlayerDirection, initX, initY);
+        entitiesTargetTileCoordinates[EntityId.Player] = targetTileCoordinates;
+        
+        for (int i = 0; i < _ghostCount; i++)
+        {
+            var ghost = ghosts[i];
+            var ghostX = _initialGhostPositions[i].x;
+            var ghostY = _initialGhostPositions[i].y;
+            _initialGhostPositions[i] = new Vector2Int(ghostX, ghostY);
+            
+            ghost.currentDirection = _initialGhostDirections[i];
+            var ghostTargetTile = TargetTileFromInitDirection(_initialGhostDirections[i], ghostX, ghostY);
+            entitiesTargetTileCoordinates[_ghostOrder[i]] = ghostTargetTile;
+        }
+    }
+
+    private void ValidateInitialPosition(int initX, int initY)
+    {
         if (tileMap[initY][initX].IsWall || initX <= 0 || initX >= cols - 1 || initY <= 0 || initY >= rows - 1)
         {
             throw new Exception("Invalid initial player position.");
         }
+    }
 
-        player.transform.position = tileMap[initY][initX].gameObject.transform.position;
-
-        input = reader.ReadLine();
-        Direction initDirection = (Direction) Int32.Parse(input);
-        gameManager.SetPlayerDirection(initDirection);
-        Vector2Int targetTileCoordinates;
+    private Vector2Int TargetTileFromInitDirection(Direction initDirection, int initX, int initY)
+    {
         switch (initDirection)
         {
             case Direction.Up:
-                targetTileCoordinates = new Vector2Int(initX, initY - 1);
-                break;
+                return new Vector2Int(initX, initY - 1);
             case Direction.Down:
-                targetTileCoordinates = new Vector2Int(initX, initY + 1);
-                break;
+                return new Vector2Int(initX, initY + 1);
             case Direction.Left:
-                targetTileCoordinates = new Vector2Int(initX == 0 ? cols - 1 : initX - 1, initY);
-                break;
+                return new Vector2Int(initX == 0 ? cols - 1 : initX - 1, initY);
             case Direction.Right:
-                targetTileCoordinates = new Vector2Int(initX == cols - 1 ? 0 : initX + 1, initY);
-                break;
+                return new Vector2Int(initX == cols - 1 ? 0 : initX + 1, initY);
             default:
                 throw new ArgumentOutOfRangeException();
         }
-
-        entitiesTargetTileCoordinates.Add(EntityId.Player, targetTileCoordinates);
     }
 
     

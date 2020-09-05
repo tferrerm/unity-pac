@@ -1,11 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using UnityEditor.Experimental.GraphView;
 using UnityEngine;
-using UnityEngine.Tilemaps;
 using Random = UnityEngine.Random;
 
-public class Ghost : MonoBehaviour, IEntity
+public class Ghost : MonoBehaviour, IEntity, IPauseable
 {
     public enum Mode
     {
@@ -14,6 +12,10 @@ public class Ghost : MonoBehaviour, IEntity
         Frightened = 2,
         Consumed = 3,
     }
+    public float movSpeed = 3.9f;
+    private float _movSpeedBackup;
+    public Vector3 startingPosition;
+    public Direction startingDirection;
     
     /*
      * Iteration phases
@@ -68,8 +70,9 @@ public class Ghost : MonoBehaviour, IEntity
      */
     void Start()
     {
-        currentDirection = Direction.Right;
+        currentDirection = startingDirection;
         _animator = GetComponent<Animator>();
+        transform.position = startingPosition;
     }
 
     /*
@@ -335,4 +338,17 @@ public class Ghost : MonoBehaviour, IEntity
 
     public Direction currentDirection { get; set; }
 
+    public void OnPauseGame()
+    {
+        _movSpeedBackup = movSpeed;
+        movSpeed = 0;
+        gameObject.SetActive(false);
+    }
+
+    public void OnResumeGame()
+    {
+        gameObject.SetActive(true);
+        movSpeed = _movSpeedBackup;
+        
+    }
 }
