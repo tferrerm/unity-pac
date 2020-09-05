@@ -27,7 +27,7 @@ public class LevelManager : MonoBehaviour
     public GameManager gameManager;
     public Ghost[] ghosts = new Ghost[4];
     private int _ghostCount;
-    private readonly EntityId[] _ghostOrder = new[] {EntityId.Blinky, EntityId.Inky,
+    private readonly EntityId[] _ghostOrder = {EntityId.Blinky, EntityId.Inky,
         EntityId.Pinky, EntityId.Clyde};
 
     private Vector2Int _initialPlayerPosition;
@@ -184,6 +184,8 @@ public class LevelManager : MonoBehaviour
             ghost.currentDirection = _initialGhostDirections[i];
             var ghostTargetTile = TargetTileFromInitDirection(_initialGhostDirections[i], ghostX, ghostY);
             entitiesTargetTileCoordinates.Add(_ghostOrder[i], ghostTargetTile);
+            
+            Debug.Log($"{_ghostOrder[i]} {ghostX},{ghostY} {ghost.transform.position} {ghost.currentDirection}");
         }
     }
 

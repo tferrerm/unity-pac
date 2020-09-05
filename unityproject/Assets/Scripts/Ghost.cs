@@ -12,10 +12,7 @@ public class Ghost : MonoBehaviour, IEntity, IPauseable
         Frightened = 2,
         Consumed = 3,
     }
-    
-    public Vector3 startingPosition;
-    public Direction startingDirection;
-    
+
     /*
      * Iteration phases
      */
@@ -72,9 +69,7 @@ public class Ghost : MonoBehaviour, IEntity, IPauseable
      */
     void Start()
     {
-        currentDirection = startingDirection;
         _animator = GetComponent<Animator>();
-        transform.position = startingPosition;
     }
 
     /*
@@ -425,12 +420,12 @@ public class Ghost : MonoBehaviour, IEntity, IPauseable
     {
         _movSpeedBackup = movSpeed;
         movSpeed = 0;
-        gameObject.SetActive(false);
+        // gameObject.SetActive(false);
     }
 
     public void OnResumeGame()
     {
-        gameObject.SetActive(true);
+        // gameObject.SetActive(true);
         movSpeed = _movSpeedBackup;
         
     }

@@ -357,7 +357,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 923034324}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 4bc2b296508eb488daf8afddddae2564, type: 3}
   m_Name: 
@@ -882,7 +882,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   levelManager: {fileID: 1795960091}
   player: {fileID: 1570586584}
-  blinky: {fileID: 494656769}
+  ghosts:
+  - {fileID: 494656769}
+  - {fileID: 923034327}
+  - {fileID: 1780488382}
+  - {fileID: 1842700900}
 --- !u!4 &1760033259
 Transform:
   m_ObjectHideFlags: 0
@@ -969,7 +973,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1780488379}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 4bc2b296508eb488daf8afddddae2564, type: 3}
   m_Name: 
@@ -1206,7 +1210,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1842700897}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 4bc2b296508eb488daf8afddddae2564, type: 3}
   m_Name: 

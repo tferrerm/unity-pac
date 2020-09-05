@@ -6,7 +6,7 @@ using UnityEngine;
 
 public class Player : MonoBehaviour, IEntity, IPauseable
 {
-    public int lives = 3;
+    public int lives = 10;
 
     public float movSpeed = 10f;
     private Direction? nextDirection;

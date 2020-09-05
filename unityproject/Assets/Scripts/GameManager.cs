@@ -8,9 +8,7 @@ public class GameManager : MonoBehaviour
     public LevelManager levelManager;
 
     public Player player;
-    public Ghost blinky;
-
-    private Dictionary<EntityId, IEntity> entityDict;
+    public Ghost[] ghosts = new Ghost[4];
 
     private readonly List<Direction> oppositeXDirections = new List<Direction>(new [] {Direction.Left, Direction.Right});
     private readonly List<Direction> oppositeYDirections = new List<Direction>(new [] {Direction.Up, Direction.Down});
@@ -20,9 +18,6 @@ public class GameManager : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        entityDict = new Dictionary<EntityId, IEntity>();
-        entityDict.Add(EntityId.Player, player);
-        entityDict.Add(EntityId.Blinky, blinky);
         tileMapHalfWidth = levelManager.TileMapHalfWidth;
     }
 
@@ -119,12 +114,18 @@ public class GameManager : MonoBehaviour
 
     public void StopGhosts()
     {
-        blinky.OnPauseGame();
+        foreach (var ghost in ghosts)
+        {
+            ghost.OnPauseGame();
+        }
     }
 
     public void StartGhosts()
     {
-        blinky.OnResumeGame();
+        foreach (var ghost in ghosts)
+        {
+            ghost.OnResumeGame();
+        }
     }
     
     public void ResetPositions()
