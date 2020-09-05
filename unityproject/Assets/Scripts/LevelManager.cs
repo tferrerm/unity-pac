@@ -642,4 +642,6 @@ public class LevelManager : MonoBehaviour
         entitiesTargetTileCoordinates[entityId] = updatedTargetTile;
     }
 }
+
+
     
