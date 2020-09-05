@@ -155,7 +155,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4bc2b296508eb488daf8afddddae2564, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  movSpeed: 20
   startingPosition: {x: 0, y: 16, z: 0}
   startingDirection: 3
   scatterModeTimer1: 7
@@ -166,11 +165,16 @@ MonoBehaviour:
   chaseModeTimer3: 20
   scatterModeTimer4: 7
   modeChangeIteration: 1
-  modeChangeTimer: 0
-  _currentMode: 1
+  frightenedModeDuration: 10
+  startBlinkingAt: 7
+  blinkFrequency: 0.1
+  movSpeed: 20
+  frightenedModeSpeed: 3.9
+  currentMode: 1
+  entityId: 1
+  ownCornerTile: {x: 0, y: 0}
   gameManager: {fileID: 1760033258}
   levelManager: {fileID: 1795960091}
-  moveToTile: {x: 0, y: 0}
 --- !u!212 &494656770
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -358,7 +362,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4bc2b296508eb488daf8afddddae2564, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  movSpeed: 20
   startingPosition: {x: -12, y: 0, z: 0}
   startingDirection: 0
   scatterModeTimer1: 7
@@ -369,11 +372,16 @@ MonoBehaviour:
   chaseModeTimer3: 20
   scatterModeTimer4: 7
   modeChangeIteration: 1
-  modeChangeTimer: 0
-  _currentMode: 1
+  frightenedModeDuration: 10
+  startBlinkingAt: 7
+  blinkFrequency: 0.1
+  movSpeed: 20
+  frightenedModeSpeed: 3.9
+  currentMode: 1
+  entityId: 3
+  ownCornerTile: {x: 0, y: 0}
   gameManager: {fileID: 1760033258}
   levelManager: {fileID: 1795960091}
-  moveToTile: {x: 0, y: 0}
 --- !u!212 &923034328
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -966,7 +974,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4bc2b296508eb488daf8afddddae2564, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  movSpeed: 20
   startingPosition: {x: 0, y: 0, z: 0}
   startingDirection: 1
   scatterModeTimer1: 7
@@ -977,11 +984,16 @@ MonoBehaviour:
   chaseModeTimer3: 20
   scatterModeTimer4: 7
   modeChangeIteration: 1
-  modeChangeTimer: 0
-  _currentMode: 1
+  frightenedModeDuration: 10
+  startBlinkingAt: 7
+  blinkFrequency: 0.1
+  movSpeed: 20
+  frightenedModeSpeed: 3.9
+  currentMode: 1
+  entityId: 2
+  ownCornerTile: {x: 0, y: 0}
   gameManager: {fileID: 1760033258}
   levelManager: {fileID: 1795960091}
-  moveToTile: {x: 0, y: 0}
 --- !u!212 &1780488383
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -1098,6 +1110,9 @@ MonoBehaviour:
   - {fileID: 8490642196906846815, guid: e7c0d2614a7094b4ca25ac4c994b9be8, type: 3}
   - {fileID: 4035501790466999928, guid: e7c0d2614a7094b4ca25ac4c994b9be8, type: 3}
   - {fileID: -8717017754119436831, guid: e7c0d2614a7094b4ca25ac4c994b9be8, type: 3}
+  pelletPool: {fileID: 1282872300}
+  pelletPrefab: {fileID: 2907960702836929954, guid: a9a85a99e1515994495ff8b90341b10e, type: 3}
+  powerPelletPrefab: {fileID: 1425826279440265562, guid: d4bba8314da61b1498093bc3a6872841, type: 3}
   player: {fileID: 1570586584}
   gameManager: {fileID: 1760033258}
   ghosts:
@@ -1196,7 +1211,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4bc2b296508eb488daf8afddddae2564, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  movSpeed: 20
   startingPosition: {x: 0, y: 0, z: 12}
   startingDirection: 0
   scatterModeTimer1: 7
@@ -1207,11 +1221,16 @@ MonoBehaviour:
   chaseModeTimer3: 20
   scatterModeTimer4: 7
   modeChangeIteration: 1
-  modeChangeTimer: 0
-  _currentMode: 1
+  frightenedModeDuration: 10
+  startBlinkingAt: 7
+  blinkFrequency: 0.1
+  movSpeed: 20
+  frightenedModeSpeed: 3.9
+  currentMode: 1
+  entityId: 4
+  ownCornerTile: {x: 0, y: 0}
   gameManager: {fileID: 1760033258}
   levelManager: {fileID: 1795960091}
-  moveToTile: {x: 0, y: 0}
 --- !u!212 &1842700901
 SpriteRenderer:
   m_ObjectHideFlags: 0

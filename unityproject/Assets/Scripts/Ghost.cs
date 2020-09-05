@@ -237,7 +237,7 @@ public class Ghost : MonoBehaviour, IEntity, IPauseable
         {
             levelManager.UpdateTargetTile(entityId, currentDirection);
             var chosenDirection = ChooseNewDirection();
-            transform.position = gameManager.GetValidatedPosition(EntityId.Blinky, newPosition, currentDirection, chosenDirection);
+            transform.position = gameManager.GetValidatedPosition(entityId, newPosition, currentDirection, chosenDirection);
             currentDirection = chosenDirection;
             _animator.SetInteger("Direction", (int)currentDirection);
         }
