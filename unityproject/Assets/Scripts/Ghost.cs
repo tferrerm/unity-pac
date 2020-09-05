@@ -7,44 +7,64 @@ using Random = UnityEngine.Random;
 
 public class Ghost : MonoBehaviour, IEntity
 {
-    public float movSpeed = 3.9f;
-    public Node startingPosition;
-    
-    /*
-     * Each timer belongs to a different iteration. We have four iterations, thereby four pairs of timers
-     */
-    public int scatterModeTimer1 = 7;
-    public int chaseModeTimer1 = 20;
-    
-    public int scatterModeTimer2 = 7;
-    public int chaseModeTimer2 = 20;
-    
-    public int scatterModeTimer3 = 7;
-    public int chaseModeTimer3 = 20;
-    
-    public int scatterModeTimer4 = 7;
-
-    public int modeChangeIteration = 1;
-    public float modeChangeTimer = 0;
-
     public enum Mode
     {
         Chase = 0,
         Scatter = 1,
         Frightened = 2,
+        Consumed = 3,
     }
+    
+    /*
+     * Iteration phases
+     */
+    public int scatterModeTimer1 = 7;
+    public int chaseModeTimer1 = 20;
+    public int scatterModeTimer2 = 7;
+    public int chaseModeTimer2 = 20;
+    public int scatterModeTimer3 = 7;
+    public int chaseModeTimer3 = 20;
+    public int scatterModeTimer4 = 7;
+    public int modeChangeIteration = 1;
+    
+    /*
+     * Timers
+     */
+    private float _modeChangeTimer;
+    private float _frightenedModeTimer;
+    private float _blinkTimer;
+    private bool _frightenedModeIsWhite;
 
-    public Mode _currentMode = Mode.Scatter;
-    private Mode _previousMode;
+    /*
+     * Durations
+     */
+    public float frightenedModeDuration = 10;
+    public float startBlinkingAt = 7;
+    public float blinkFrequency = 0.1f;
+    
+    /*
+     * Speeds
+     */
+    public float movSpeed = 3.9f;
+    public float frightenedModeSpeed = 3.9f;
+    private float _previousSpeed;
 
+    /*
+     * Modes
+     */
+    public Mode currentMode = Mode.Scatter;
+    private Mode _previousMode = Mode.Scatter;
+
+    /*
+     * References to other managers 
+     */
     public GameManager gameManager;
     public LevelManager levelManager;
-    public Vector2Int moveToTile;
+    
     private Animator _animator;
     
     /*
      * Start is called before the first frame update.
-     * If this is not working let's make sure that Ghost script is after Pac Man script in execution order
      */
     void Start()
     {
@@ -68,86 +88,141 @@ public class Ghost : MonoBehaviour, IEntity
      */
     private void ModeUpdate()
     {
-        if (_currentMode == Mode.Frightened) return;
-        modeChangeTimer += Time.deltaTime;
-        switch (modeChangeIteration)
+        _modeChangeTimer += Time.deltaTime;
+        if (currentMode != Mode.Frightened)
         {
-            case 1:
+            switch (modeChangeIteration)
             {
-                /*
-                 * Checking if it's time to switch from scatter to chase
-                 */
-                if (_currentMode == Mode.Scatter && modeChangeTimer > scatterModeTimer1)
+                case 1:
                 {
-                    ChangeMode(Mode.Chase);
-                    modeChangeTimer = 0;
-                }
-                /*
-                 * Checking if it's time to switch from chase to scatter
-                 */
-                if (_currentMode == Mode.Chase && modeChangeTimer > chaseModeTimer1)
-                {
-                    modeChangeIteration = 2;
-                    ChangeMode(Mode.Scatter);
-                    modeChangeTimer = 0;
-                }
+                    /*
+                     * Checking if it's time to switch from scatter to chase
+                     */
+                    if (currentMode == Mode.Scatter && _modeChangeTimer > scatterModeTimer1)
+                    {
+                        ChangeMode(Mode.Chase);
+                        _modeChangeTimer = 0;
+                    }
+                    /*
+                     * Checking if it's time to switch from chase to scatter
+                     */
+                    if (currentMode == Mode.Chase && _modeChangeTimer > chaseModeTimer1)
+                    {
+                        modeChangeIteration = 2;
+                        ChangeMode(Mode.Scatter);
+                        _modeChangeTimer = 0;
+                    }
 
-                break;
-            }
-            case 2:
-            {
-                if (_currentMode == Mode.Scatter && modeChangeTimer > scatterModeTimer2)
-                {
-                    ChangeMode(Mode.Chase);
-                    modeChangeTimer = 0;
+                    break;
                 }
-                if (_currentMode == Mode.Chase && modeChangeTimer > chaseModeTimer2)
+                case 2:
                 {
-                    modeChangeIteration = 3;
-                    ChangeMode(Mode.Scatter);
-                    modeChangeTimer = 0;
-                }
+                    if (currentMode == Mode.Scatter && _modeChangeTimer > scatterModeTimer2)
+                    {
+                        ChangeMode(Mode.Chase);
+                        _modeChangeTimer = 0;
+                    }
+                    if (currentMode == Mode.Chase && _modeChangeTimer > chaseModeTimer2)
+                    {
+                        modeChangeIteration = 3;
+                        ChangeMode(Mode.Scatter);
+                        _modeChangeTimer = 0;
+                    }
 
-                break;
-            }
-            case 3:
-            {
-                if (_currentMode == Mode.Scatter && modeChangeTimer > scatterModeTimer3)
-                {
-                    ChangeMode(Mode.Chase);
-                    modeChangeTimer = 0;
+                    break;
                 }
-                if (_currentMode == Mode.Chase && modeChangeTimer > chaseModeTimer3)
+                case 3:
                 {
-                    modeChangeIteration = 4;
-                    ChangeMode(Mode.Scatter);
-                    modeChangeTimer = 0;
-                }
+                    if (currentMode == Mode.Scatter && _modeChangeTimer > scatterModeTimer3)
+                    {
+                        ChangeMode(Mode.Chase);
+                        _modeChangeTimer = 0;
+                    }
+                    if (currentMode == Mode.Chase && _modeChangeTimer > chaseModeTimer3)
+                    {
+                        modeChangeIteration = 4;
+                        ChangeMode(Mode.Scatter);
+                        _modeChangeTimer = 0;
+                    }
 
-                break;
-            }
-            case 4:
-            {
-                /*
-                 * If we're in chase mode in the last iteration we're  in chase mode forever
-                 */
-                if (_currentMode == Mode.Scatter && modeChangeTimer > scatterModeTimer4)
-                {
-                    ChangeMode(Mode.Chase);
-                    modeChangeTimer = 0;
+                    break;
                 }
+                case 4:
+                {
+                    /*
+                     * If we're in chase mode in the last iteration we're  in chase mode forever
+                     */
+                    if (currentMode == Mode.Scatter && _modeChangeTimer > scatterModeTimer4)
+                    {
+                        ChangeMode(Mode.Chase);
+                        _modeChangeTimer = 0;
+                    }
 
-                break;
+                    break;
+                }
             }
         }
+        /*
+         * Handling frightened mode. If less than 3 seconds are left, ghosts start blinking (switching between blue and white)
+         */
+        else if (currentMode == Mode.Frightened)
+        {
+            _frightenedModeTimer += Time.deltaTime;
+
+            if (_frightenedModeTimer > frightenedModeDuration)
+            {
+                _frightenedModeTimer = 0;
+                ChangeMode(_previousMode);
+            }
+
+            if (_frightenedModeTimer > startBlinkingAt)
+            {
+                _blinkTimer += Time.deltaTime;
+
+                if (_blinkTimer >= blinkFrequency)
+                {
+                    _blinkTimer = 0f;
+                    if (_frightenedModeIsWhite)
+                    {
+                        //@paton: animar al fantasmita para que pase de blanco a azul
+                        _frightenedModeIsWhite = false;
+                    }
+                    else
+                    {
+                        //@paton: animar al fantasmita para que pase de azul a blanco
+                        _frightenedModeIsWhite = true;
+                    }
+                }
+            }
+        }
+        
     }
 
-    /**
-     * Changes mode
-     */
+    public void SetFrightenedMode()
+    {
+        _frightenedModeTimer = 0;
+        ChangeMode(Mode.Frightened);
+    }
+    
     private void ChangeMode(Mode m)
     {
-        _currentMode = m;
+        if (currentMode == Mode.Frightened)
+        {
+            movSpeed = _previousSpeed;
+        }
+
+        if (m == Mode.Frightened)
+        {
+            _previousSpeed = movSpeed;
+            movSpeed = frightenedModeSpeed;
+        }
+
+        if (m != _previousMode)
+        {
+            _previousMode = currentMode;
+            currentMode = m;
+        }
+        
     }
 
     private void Move()
@@ -177,7 +252,7 @@ public class Ghost : MonoBehaviour, IEntity
     {
         Direction chosenDirection = currentDirection; // Dummy value
         
-        switch (_currentMode)
+        switch (currentMode)
         {
             case Mode.Chase:
                 chosenDirection = ChooseChaseModeDirection(currentTile, pacManTile, validDirections);
@@ -186,6 +261,11 @@ public class Ghost : MonoBehaviour, IEntity
                 chosenDirection = ChooseScatterModeDirection(currentTile, pacManTile, validDirections);
                 break;
             case Mode.Frightened:
+                var randomIndex = Random.Range(0, validDirections.Count);
+                chosenDirection = validDirections[randomIndex];
+                break;
+            case Mode.Consumed:
+                chosenDirection = ChooseConsumedModeDirection(currentTile, validDirections);
                 break;
             default:
                 throw new ArgumentOutOfRangeException();
@@ -238,6 +318,14 @@ public class Ghost : MonoBehaviour, IEntity
     }
     
     private Direction ChooseScatterModeDirection(Vector2Int currentTile, Vector2Int pacManTile, List<Direction> validDirections)
+    {
+        var filteredValidDirection = validDirections.FindAll(
+            dir => !gameManager.DirectionsAreOpposite(currentDirection, dir));
+        var index = Random.Range(0, filteredValidDirection.Count);
+        return filteredValidDirection[index];
+    }
+    
+    private Direction ChooseConsumedModeDirection(Vector2Int currentTile, List<Direction> validDirections)
     {
         var filteredValidDirection = validDirections.FindAll(
             dir => !gameManager.DirectionsAreOpposite(currentDirection, dir));
