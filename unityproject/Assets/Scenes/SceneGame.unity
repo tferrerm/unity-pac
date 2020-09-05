@@ -155,8 +155,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4bc2b296508eb488daf8afddddae2564, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  startingPosition: {x: 0, y: 16, z: 0}
-  startingDirection: 3
   scatterModeTimer1: 7
   chaseModeTimer1: 20
   scatterModeTimer2: 7
@@ -167,12 +165,10 @@ MonoBehaviour:
   modeChangeIteration: 1
   frightenedModeDuration: 10
   startBlinkingAt: 7
-  blinkFrequency: 0.1
   movSpeed: 20
   frightenedModeSpeed: 3.9
   currentMode: 1
   entityId: 1
-  ownCornerTile: {x: 0, y: 0}
   gameManager: {fileID: 1760033258}
   levelManager: {fileID: 1795960091}
 --- !u!212 &494656770
@@ -362,8 +358,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4bc2b296508eb488daf8afddddae2564, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  startingPosition: {x: -12, y: 0, z: 0}
-  startingDirection: 0
   scatterModeTimer1: 7
   chaseModeTimer1: 20
   scatterModeTimer2: 7
@@ -374,12 +368,10 @@ MonoBehaviour:
   modeChangeIteration: 1
   frightenedModeDuration: 10
   startBlinkingAt: 7
-  blinkFrequency: 0.1
   movSpeed: 20
   frightenedModeSpeed: 3.9
   currentMode: 1
   entityId: 3
-  ownCornerTile: {x: 0, y: 0}
   gameManager: {fileID: 1760033258}
   levelManager: {fileID: 1795960091}
 --- !u!212 &923034328
@@ -978,8 +970,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4bc2b296508eb488daf8afddddae2564, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  startingPosition: {x: 0, y: 0, z: 0}
-  startingDirection: 1
   scatterModeTimer1: 7
   chaseModeTimer1: 20
   scatterModeTimer2: 7
@@ -990,12 +980,10 @@ MonoBehaviour:
   modeChangeIteration: 1
   frightenedModeDuration: 10
   startBlinkingAt: 7
-  blinkFrequency: 0.1
   movSpeed: 20
   frightenedModeSpeed: 3.9
   currentMode: 1
   entityId: 2
-  ownCornerTile: {x: 0, y: 0}
   gameManager: {fileID: 1760033258}
   levelManager: {fileID: 1795960091}
 --- !u!212 &1780488383
@@ -1215,8 +1203,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4bc2b296508eb488daf8afddddae2564, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  startingPosition: {x: 0, y: 0, z: 12}
-  startingDirection: 0
   scatterModeTimer1: 7
   chaseModeTimer1: 20
   scatterModeTimer2: 7
@@ -1227,12 +1213,10 @@ MonoBehaviour:
   modeChangeIteration: 1
   frightenedModeDuration: 10
   startBlinkingAt: 7
-  blinkFrequency: 0.1
   movSpeed: 20
   frightenedModeSpeed: 3.9
   currentMode: 1
   entityId: 4
-  ownCornerTile: {x: 0, y: 0}
   gameManager: {fileID: 1760033258}
   levelManager: {fileID: 1795960091}
 --- !u!212 &1842700901
