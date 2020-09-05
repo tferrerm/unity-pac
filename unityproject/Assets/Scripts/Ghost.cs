@@ -39,7 +39,6 @@ public class Ghost : MonoBehaviour, IEntity, IPauseable
      */
     public float frightenedModeDuration = 10;
     public float startBlinkingAt = 7;
-    public float blinkFrequency = 0.1f;
     
     /*
      * Speeds
@@ -55,7 +54,6 @@ public class Ghost : MonoBehaviour, IEntity, IPauseable
     public Mode currentMode = Mode.Scatter;
     private Mode _previousMode = Mode.Scatter;
     public EntityId entityId;
-    public Vector2Int ownCornerTile;
 
     /*
      * References to other managers 
@@ -253,14 +251,13 @@ public class Ghost : MonoBehaviour, IEntity, IPauseable
                 chosenDirection = ChooseDirection(currentTile, targetTile, validDirections);
                 break;
             case Mode.Scatter:
-                chosenDirection = ChooseDirection(currentTile, ownCornerTile, validDirections);
+                chosenDirection = ChooseDirection(currentTile, levelManager.GetOwnCorner(entityId), validDirections);
                 break;
             case Mode.Frightened:
                 var randomIndex = Random.Range(0, validDirections.Count);
                 chosenDirection = validDirections[randomIndex];
                 break;
             case Mode.Consumed:
-                //setear el home tile a la jaula
                 var homeTile = new Vector2Int(0,0);
                 chosenDirection = ChooseDirection(currentTile, homeTile, validDirections);
                 break;
@@ -398,10 +395,7 @@ public class Ghost : MonoBehaviour, IEntity, IPauseable
         {
             return pacManTile;
         }
-        else
-        {
-            return ownCornerTile;
-        }
+        return levelManager.GetOwnCorner(entityId);
     }
 
     public Direction currentDirection { get; set; }

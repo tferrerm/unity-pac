@@ -643,6 +643,23 @@ public class LevelManager : MonoBehaviour
         
         entitiesTargetTileCoordinates[entityId] = updatedTargetTile;
     }
+
+    public Vector2Int GetOwnCorner(EntityId entityId)
+    {
+        switch (entityId)
+        {
+            case EntityId.Blinky:
+                return new Vector2Int(cols - 2,1);
+            case EntityId.Pinky:
+                return new Vector2Int(1,1);
+            case EntityId.Inky:
+                return new Vector2Int(cols - 2,rows - 2);
+            case EntityId.Clyde:
+                return new Vector2Int(1,rows - 2);
+            default:
+                throw new ArgumentOutOfRangeException(nameof(entityId), entityId, null);
+        }
+    }
 }
 
 
