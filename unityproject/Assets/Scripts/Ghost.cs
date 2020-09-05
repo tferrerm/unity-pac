@@ -43,8 +43,8 @@ public class Ghost : MonoBehaviour, IEntity, IPauseable
     /*
      * Speeds
      */
-    public float movSpeed = 3.9f;
-    public float frightenedModeSpeed = 3.9f;
+    public float movSpeed = 20f;
+    public float frightenedModeSpeed = 16f;
     private float _previousSpeed;
     private float _movSpeedBackup;
 
@@ -186,6 +186,7 @@ public class Ghost : MonoBehaviour, IEntity, IPauseable
 
     public void SetFrightenedMode()
     {
+        _animator.SetBool("FrightenedEnding", false);
         _animator.SetBool("Frightened", true);
         _frightenedModeTimer = 0;
         ChangeMode(Mode.Frightened);
@@ -255,7 +256,7 @@ public class Ghost : MonoBehaviour, IEntity, IPauseable
                 break;
             case Mode.Frightened:
                 var randomIndex = Random.Range(0, validDirections.Count);
-                chosenDirection = validDirections[randomIndex];
+                chosenDirection = ChooseFrightenedModeDirection(validDirections);
                 break;
             case Mode.Consumed:
                 var homeTile = new Vector2Int(0,0);
@@ -309,6 +310,14 @@ public class Ghost : MonoBehaviour, IEntity, IPauseable
         }
 
         return chosenDirection;
+    }
+    
+    private Direction ChooseFrightenedModeDirection(List<Direction> validDirections)
+    {
+        var filteredValidDirection = validDirections.FindAll(
+            dir => !gameManager.DirectionsAreOpposite(currentDirection, dir));
+        var index = Random.Range(0, filteredValidDirection.Count);
+        return filteredValidDirection[index];
     }
 
     private Vector2Int ChooseTargetTile()

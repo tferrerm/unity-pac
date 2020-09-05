@@ -166,7 +166,7 @@ MonoBehaviour:
   frightenedModeDuration: 10
   startBlinkingAt: 7
   movSpeed: 20
-  frightenedModeSpeed: 3.9
+  frightenedModeSpeed: 16
   currentMode: 1
   entityId: 1
   gameManager: {fileID: 1760033258}
@@ -369,7 +369,7 @@ MonoBehaviour:
   frightenedModeDuration: 10
   startBlinkingAt: 7
   movSpeed: 20
-  frightenedModeSpeed: 3.9
+  frightenedModeSpeed: 16
   currentMode: 1
   entityId: 3
   gameManager: {fileID: 1760033258}
@@ -981,7 +981,7 @@ MonoBehaviour:
   frightenedModeDuration: 10
   startBlinkingAt: 7
   movSpeed: 20
-  frightenedModeSpeed: 3.9
+  frightenedModeSpeed: 16
   currentMode: 1
   entityId: 2
   gameManager: {fileID: 1760033258}
@@ -1214,7 +1214,7 @@ MonoBehaviour:
   frightenedModeDuration: 10
   startBlinkingAt: 7
   movSpeed: 20
-  frightenedModeSpeed: 3.9
+  frightenedModeSpeed: 16
   currentMode: 1
   entityId: 4
   gameManager: {fileID: 1760033258}
