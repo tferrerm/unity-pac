@@ -78,6 +78,7 @@ public class Player : MonoBehaviour, IEntity, IPauseable
         {
             points += POINTS_PER_POWER_PELLET;
             Destroy(other.gameObject);
+            gameManager.SetFrightenedMode();
         } else if (other.CompareTag("Ghost"))
         {
             _animator.transform.rotation = Quaternion.Euler(new Vector3(0, 0, 0));

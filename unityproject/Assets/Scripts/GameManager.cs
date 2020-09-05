@@ -127,6 +127,14 @@ public class GameManager : MonoBehaviour
             ghost.OnResumeGame();
         }
     }
+
+    public void SetFrightenedMode()
+    {
+        foreach (var ghost in ghosts)
+        {
+            ghost.SetFrightenedMode();
+        }
+    }
     
     public void ResetPositions()
     {

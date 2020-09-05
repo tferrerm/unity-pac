@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using UnityEditor;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
@@ -168,31 +169,18 @@ public class Ghost : MonoBehaviour, IEntity, IPauseable
         else if (currentMode == Mode.Frightened)
         {
             _frightenedModeTimer += Time.deltaTime;
+            
+            if (_frightenedModeTimer > startBlinkingAt && !_animator.GetBool("FrightenedEnding"))
+            {
+                _animator.SetBool("FrightenedEnding", true);
+            }
 
             if (_frightenedModeTimer > frightenedModeDuration)
             {
+                _animator.SetBool("Frightened", false);
+                _animator.SetBool("FrightenedEnding", false);
                 _frightenedModeTimer = 0;
                 ChangeMode(_previousMode);
-            }
-
-            if (_frightenedModeTimer > startBlinkingAt)
-            {
-                _blinkTimer += Time.deltaTime;
-
-                if (_blinkTimer >= blinkFrequency)
-                {
-                    _blinkTimer = 0f;
-                    if (_frightenedModeIsWhite)
-                    {
-                        //@paton: animar al fantasmita para que pase de blanco a azul
-                        _frightenedModeIsWhite = false;
-                    }
-                    else
-                    {
-                        //@paton: animar al fantasmita para que pase de azul a blanco
-                        _frightenedModeIsWhite = true;
-                    }
-                }
             }
         }
         
@@ -200,6 +188,7 @@ public class Ghost : MonoBehaviour, IEntity, IPauseable
 
     public void SetFrightenedMode()
     {
+        _animator.SetBool("Frightened", true);
         _frightenedModeTimer = 0;
         ChangeMode(Mode.Frightened);
     }
@@ -217,12 +206,13 @@ public class Ghost : MonoBehaviour, IEntity, IPauseable
             movSpeed = frightenedModeSpeed;
         }
 
-        if (m != _previousMode)
+        Debug.Log($"Param: {m}; Previous: {_previousMode}; current: {currentMode}");
+        if (m != currentMode)
         {
             _previousMode = currentMode;
             currentMode = m;
+            Debug.Log($"DENTRO {currentMode} {_previousMode}");
         }
-        
     }
 
     private void Move()
