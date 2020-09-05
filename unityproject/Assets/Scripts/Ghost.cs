@@ -12,8 +12,7 @@ public class Ghost : MonoBehaviour, IEntity, IPauseable
         Frightened = 2,
         Consumed = 3,
     }
-    public float movSpeed = 3.9f;
-    private float _movSpeedBackup;
+    
     public Vector3 startingPosition;
     public Direction startingDirection;
     
@@ -50,6 +49,7 @@ public class Ghost : MonoBehaviour, IEntity, IPauseable
     public float movSpeed = 3.9f;
     public float frightenedModeSpeed = 3.9f;
     private float _previousSpeed;
+    private float _movSpeedBackup;
 
     /*
      * Modes
@@ -57,7 +57,7 @@ public class Ghost : MonoBehaviour, IEntity, IPauseable
     public Mode currentMode = Mode.Scatter;
     private Mode _previousMode = Mode.Scatter;
     public EntityId entityId;
-    public Vector2Int homeTile;
+    public Vector2Int ownCornerTile;
 
     /*
      * References to other managers 
@@ -254,6 +254,7 @@ public class Ghost : MonoBehaviour, IEntity, IPauseable
     {
         Direction chosenDirection = currentDirection; // Dummy value
         var currentTile = gameManager.GetEntityCurrentTileCoordinates(entityId, currentDirection);
+        
         var validDirections = levelManager.GetValidDirectionsForTile(currentTile);
         if (validDirections.Count == 1)
         {
@@ -267,14 +268,16 @@ public class Ghost : MonoBehaviour, IEntity, IPauseable
                 chosenDirection = ChooseDirection(currentTile, targetTile, validDirections);
                 break;
             case Mode.Scatter:
-                chosenDirection = ChooseDirection(currentTile, homeTile, validDirections);
+                chosenDirection = ChooseDirection(currentTile, ownCornerTile, validDirections);
                 break;
             case Mode.Frightened:
                 var randomIndex = Random.Range(0, validDirections.Count);
                 chosenDirection = validDirections[randomIndex];
                 break;
             case Mode.Consumed:
-                chosenDirection = ChooseConsumedModeDirection(currentTile, validDirections);
+                //setear el home tile a la jaula
+                var homeTile = new Vector2Int(0,0);
+                chosenDirection = ChooseDirection(currentTile, homeTile, validDirections);
                 break;
             default:
                 throw new ArgumentOutOfRangeException();
@@ -338,7 +341,7 @@ public class Ghost : MonoBehaviour, IEntity, IPauseable
             case EntityId.Inky:
                 return ChooseInkyTile(pacManTile);
             case EntityId.Clyde:
-                return ChooseInkyTile(pacManTile);
+                return ChooseClydeTile(pacManTile);
             default:
                 return new Vector2Int(0,0);
         }
@@ -371,6 +374,35 @@ public class Ghost : MonoBehaviour, IEntity, IPauseable
         }
         return new Vector2Int(xTarget, yTarget);
     }
+    
+    private Vector2Int ChooseInkyTile(Vector2Int pacManTile)
+    {
+        var playerDirection = gameManager.GetPlayerDirection();
+        var xPivot = pacManTile.x;
+        var yPivot = pacManTile.y;
+        switch (playerDirection)
+        {
+            case Direction.Down:
+                yPivot += 2;
+                break;
+            case Direction.Up:
+                yPivot += 2;
+                break;
+            case Direction.Left:
+                xPivot -= 2;
+                break;
+            case Direction.Right:
+                xPivot -= 2;
+                break;
+        }
+        Vector2Int blinkyPosition =  gameManager.GetEntityCurrentTileCoordinates(EntityId.Blinky, gameManager.GetPlayerDirection());
+        var xDifference = (xPivot - blinkyPosition.x);
+        var yDifference = (yPivot - blinkyPosition.y);
+        var xTarget = xPivot + xDifference;
+        var yTarget = yPivot + yDifference;
+        
+        return new Vector2Int(xTarget, yTarget);
+    }
 
     private Vector2Int ChooseClydeTile(Vector2Int pacManTile)
     {
@@ -383,7 +415,7 @@ public class Ghost : MonoBehaviour, IEntity, IPauseable
         }
         else
         {
-            return homeTile;
+            return ownCornerTile;
         }
     }
 
