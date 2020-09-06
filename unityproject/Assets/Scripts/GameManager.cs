@@ -11,15 +11,17 @@ public class GameManager : MonoBehaviour
     public Player player;
     public Ghost[] ghosts = new Ghost[4];
 
-    private readonly List<Direction> oppositeXDirections = new List<Direction>(new [] {Direction.Left, Direction.Right});
-    private readonly List<Direction> oppositeYDirections = new List<Direction>(new [] {Direction.Up, Direction.Down});
+    private readonly List<Direction> _oppositeXDirections = new List<Direction>(
+        new [] {Direction.Left, Direction.Right});
+    private readonly List<Direction> _oppositeYDirections = new List<Direction>(
+        new [] {Direction.Up, Direction.Down});
     
-    private float tileMapHalfWidth;
+    private float _tileMapHalfWidth;
     
     // Start is called before the first frame update
     void Start()
     {
-        tileMapHalfWidth = levelManager.TileMapHalfWidth;
+        _tileMapHalfWidth = levelManager.TileMapHalfWidth;
     }
 
     public Vector3 GetValidatedPosition(EntityId entityId, Vector3 position, Direction currentDirection, Direction? nextDirection)
@@ -69,11 +71,11 @@ public class GameManager : MonoBehaviour
         {
             case Direction.Left:
                 posX = position.x - movSpeed * Time.deltaTime;
-                newPosition = new Vector3(posX < -tileMapHalfWidth ? tileMapHalfWidth : posX, position.y, 0);
+                newPosition = new Vector3(posX < -_tileMapHalfWidth ? _tileMapHalfWidth : posX, position.y, 0);
                 break;
             case Direction.Right:
                 posX = position.x + movSpeed * Time.deltaTime;
-                newPosition = new Vector3(posX > tileMapHalfWidth ? -tileMapHalfWidth : posX, position.y, 0);
+                newPosition = new Vector3(posX > _tileMapHalfWidth ? -_tileMapHalfWidth : posX, position.y, 0);
                 break;
             case Direction.Up:
                 newPosition = new Vector3(position.x, position.y + movSpeed * Time.deltaTime, 0);
@@ -92,8 +94,8 @@ public class GameManager : MonoBehaviour
     {
         if (direction1 == direction2) return false;
         
-        return (oppositeXDirections.Contains(direction1) && oppositeXDirections.Contains(direction2)) ||
-               (oppositeYDirections.Contains(direction1) && oppositeYDirections.Contains(direction2));
+        return (_oppositeXDirections.Contains(direction1) && _oppositeXDirections.Contains(direction2)) ||
+               (_oppositeYDirections.Contains(direction1) && _oppositeYDirections.Contains(direction2));
     }
 
     public Vector2Int GetEntityCurrentTileCoordinates(EntityId entityId, Direction currentDirection)

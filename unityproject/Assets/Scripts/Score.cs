@@ -1,12 +1,11 @@
 ﻿using System;
 using TMPro;
 using UnityEngine;
-using UnityEngine.UI;
 
 public class Score : MonoBehaviour
 {
-    private const int POINTS_PER_PELLET = 10;
-    private const int POINTS_PER_POWER_PELLET = 50;
+    private const int PointsPerPellet = 10;
+    private const int PointsPerPowerPellet = 50;
     
     private int _score;
     public TMP_Text scoreText;
@@ -18,12 +17,12 @@ public class Score : MonoBehaviour
 
     public void AddPelletPoints()
     {
-        _score += POINTS_PER_PELLET;
+        _score += PointsPerPellet;
     }
 
     public void AddPowerPelletPoints()
     {
-        _score += POINTS_PER_POWER_PELLET;
+        _score += PointsPerPowerPellet;
     }
 
     public void AddEatenGhostPoints(int eatenGhosts)
