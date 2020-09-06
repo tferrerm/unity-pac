@@ -155,18 +155,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4bc2b296508eb488daf8afddddae2564, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  scatterModeTimer1: 7
-  chaseModeTimer1: 20
-  scatterModeTimer2: 7
-  chaseModeTimer2: 20
-  scatterModeTimer3: 7
-  chaseModeTimer3: 20
-  scatterModeTimer4: 7
+  chaseModeDuration: 20
+  firstTwoScatterDuration: 7
+  lastTwoScatterDuration: 5
   modeChangeIteration: 1
   frightenedModeDuration: 10
   startBlinkingAt: 7
-  movSpeed: 20
-  frightenedModeSpeed: 16
+  movSpeed: 24
+  frightenedModeSpeed: 20
   currentMode: 1
   entityId: 1
   gameManager: {fileID: 1760033258}
@@ -358,18 +354,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4bc2b296508eb488daf8afddddae2564, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  scatterModeTimer1: 7
-  chaseModeTimer1: 20
-  scatterModeTimer2: 7
-  chaseModeTimer2: 20
-  scatterModeTimer3: 7
-  chaseModeTimer3: 20
-  scatterModeTimer4: 7
+  chaseModeDuration: 20
+  firstTwoScatterDuration: 7
+  lastTwoScatterDuration: 5
   modeChangeIteration: 1
   frightenedModeDuration: 10
   startBlinkingAt: 7
-  movSpeed: 20
-  frightenedModeSpeed: 16
+  movSpeed: 24
+  frightenedModeSpeed: 20
   currentMode: 1
   entityId: 3
   gameManager: {fileID: 1760033258}
@@ -972,18 +964,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4bc2b296508eb488daf8afddddae2564, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  scatterModeTimer1: 7
-  chaseModeTimer1: 20
-  scatterModeTimer2: 7
-  chaseModeTimer2: 20
-  scatterModeTimer3: 7
-  chaseModeTimer3: 20
-  scatterModeTimer4: 7
+  chaseModeDuration: 20
+  firstTwoScatterDuration: 7
+  lastTwoScatterDuration: 5
   modeChangeIteration: 1
   frightenedModeDuration: 10
   startBlinkingAt: 7
-  movSpeed: 20
-  frightenedModeSpeed: 16
+  movSpeed: 24
+  frightenedModeSpeed: 20
   currentMode: 1
   entityId: 2
   gameManager: {fileID: 1760033258}
@@ -1305,18 +1293,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4bc2b296508eb488daf8afddddae2564, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  scatterModeTimer1: 7
-  chaseModeTimer1: 20
-  scatterModeTimer2: 7
-  chaseModeTimer2: 20
-  scatterModeTimer3: 7
-  chaseModeTimer3: 20
-  scatterModeTimer4: 7
+  chaseModeDuration: 20
+  firstTwoScatterDuration: 7
+  lastTwoScatterDuration: 5
   modeChangeIteration: 1
   frightenedModeDuration: 10
   startBlinkingAt: 7
-  movSpeed: 20
-  frightenedModeSpeed: 16
+  movSpeed: 24
+  frightenedModeSpeed: 20
   currentMode: 1
   entityId: 4
   gameManager: {fileID: 1760033258}

@@ -15,16 +15,14 @@ public class Ghost : MonoBehaviour, IEntity, IPauseable
     }
 
     /*
-     * Iteration phases
+     * Durations
      */
-    public int scatterModeTimer1 = 7;
-    public int chaseModeTimer1 = 20;
-    public int scatterModeTimer2 = 7;
-    public int chaseModeTimer2 = 20;
-    public int scatterModeTimer3 = 7;
-    public int chaseModeTimer3 = 20;
-    public int scatterModeTimer4 = 7;
+    public int chaseModeDuration = 20;
+    public int firstTwoScatterDuration = 7;
+    public int lastTwoScatterDuration = 5;
     public int modeChangeIteration = 1;
+    public float frightenedModeDuration = 10;
+    public float startBlinkingAt = 7;
     
     /*
      * Timers
@@ -33,18 +31,12 @@ public class Ghost : MonoBehaviour, IEntity, IPauseable
     private float _frightenedModeTimer;
     private float _blinkTimer;
     private bool _frightenedModeIsWhite;
-
-    /*
-     * Durations
-     */
-    public float frightenedModeDuration = 10;
-    public float startBlinkingAt = 7;
     
     /*
      * Speeds
      */
-    public float movSpeed = 20f;
-    public float frightenedModeSpeed = 16f;
+    public float movSpeed = 24f;
+    public float frightenedModeSpeed = 20f;
     private float _previousSpeed;
     private float _movSpeedBackup;
 
@@ -62,6 +54,7 @@ public class Ghost : MonoBehaviour, IEntity, IPauseable
     public LevelManager levelManager;
     
     private Animator _animator;
+    private bool _reverseDirection = false;
 
     /*
      * Start is called before the first frame update.
@@ -93,37 +86,24 @@ public class Ghost : MonoBehaviour, IEntity, IPauseable
             switch (modeChangeIteration)
             {
                 case 1:
+                case 2:
                 {
                     /*
                      * Checking if it's time to switch from scatter to chase
                      */
-                    if (currentMode == Mode.Scatter && _modeChangeTimer > scatterModeTimer1)
+                    if (currentMode == Mode.Scatter && _modeChangeTimer > firstTwoScatterDuration)
                     {
+                        _reverseDirection = true;
                         ChangeMode(Mode.Chase);
                         _modeChangeTimer = 0;
                     }
                     /*
                      * Checking if it's time to switch from chase to scatter
                      */
-                    if (currentMode == Mode.Chase && _modeChangeTimer > chaseModeTimer1)
+                    if (currentMode == Mode.Chase && _modeChangeTimer > chaseModeDuration)
                     {
-                        modeChangeIteration = 2;
-                        ChangeMode(Mode.Scatter);
-                        _modeChangeTimer = 0;
-                    }
-
-                    break;
-                }
-                case 2:
-                {
-                    if (currentMode == Mode.Scatter && _modeChangeTimer > scatterModeTimer2)
-                    {
-                        ChangeMode(Mode.Chase);
-                        _modeChangeTimer = 0;
-                    }
-                    if (currentMode == Mode.Chase && _modeChangeTimer > chaseModeTimer2)
-                    {
-                        modeChangeIteration = 3;
+                        _reverseDirection = true;
+                        modeChangeIteration++;
                         ChangeMode(Mode.Scatter);
                         _modeChangeTimer = 0;
                     }
@@ -132,13 +112,15 @@ public class Ghost : MonoBehaviour, IEntity, IPauseable
                 }
                 case 3:
                 {
-                    if (currentMode == Mode.Scatter && _modeChangeTimer > scatterModeTimer3)
+                    if (currentMode == Mode.Scatter && _modeChangeTimer > lastTwoScatterDuration)
                     {
+                        _reverseDirection = true;
                         ChangeMode(Mode.Chase);
                         _modeChangeTimer = 0;
                     }
-                    if (currentMode == Mode.Chase && _modeChangeTimer > chaseModeTimer3)
+                    if (currentMode == Mode.Chase && _modeChangeTimer > chaseModeDuration)
                     {
+                        _reverseDirection = true;
                         modeChangeIteration = 4;
                         ChangeMode(Mode.Scatter);
                         _modeChangeTimer = 0;
@@ -151,8 +133,9 @@ public class Ghost : MonoBehaviour, IEntity, IPauseable
                     /*
                      * If we're in chase mode in the last iteration we're  in chase mode forever
                      */
-                    if (currentMode == Mode.Scatter && _modeChangeTimer > scatterModeTimer4)
+                    if (currentMode == Mode.Scatter && _modeChangeTimer > lastTwoScatterDuration)
                     {
+                        _reverseDirection = true;
                         ChangeMode(Mode.Chase);
                         _modeChangeTimer = 0;
                     }
@@ -190,6 +173,7 @@ public class Ghost : MonoBehaviour, IEntity, IPauseable
         _animator.SetBool("FrightenedEnding", false);
         _animator.SetBool("Frightened", true);
         _frightenedModeTimer = 0;
+        _reverseDirection = true;
         ChangeMode(Mode.Frightened);
     }
     
@@ -237,6 +221,12 @@ public class Ghost : MonoBehaviour, IEntity, IPauseable
      */
     private Direction ChooseNewDirection()
     {
+        if (_reverseDirection)
+        {
+            _reverseDirection = false;
+            return GetOppositeDirection(currentDirection);
+        }
+        
         Direction chosenDirection = currentDirection; // Dummy value
         var currentTile = gameManager.GetEntityCurrentTileCoordinates(entityId, currentDirection);
         
@@ -422,5 +412,22 @@ public class Ghost : MonoBehaviour, IEntity, IPauseable
         // gameObject.SetActive(true);
         movSpeed = _movSpeedBackup;
         
+    }
+
+    private Direction GetOppositeDirection(Direction direction)
+    {
+        switch (direction)
+        {
+            case Direction.Up:
+                return Direction.Down;
+            case Direction.Down:
+                return Direction.Up;
+            case Direction.Left:
+                return Direction.Right;
+            case Direction.Right:
+                return Direction.Left;
+            default:
+                throw new ArgumentOutOfRangeException(nameof(direction), direction, null);
+        }
     }
 }
