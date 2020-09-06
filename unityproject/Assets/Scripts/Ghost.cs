@@ -62,7 +62,7 @@ public class Ghost : MonoBehaviour, IEntity, IPauseable
     public LevelManager levelManager;
     
     private Animator _animator;
-    
+
     /*
      * Start is called before the first frame update.
      */

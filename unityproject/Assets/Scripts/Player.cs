@@ -17,6 +17,8 @@ public class Player : MonoBehaviour, IEntity, IPauseable
 
     private AudioSource _audioSource;
     public AudioClip disappearingSound;
+    public AudioClip wakaWaka;
+    public AudioClip eatingGhost; 
 
     public int points = 0; // CHANGE PLACE?
     private const int POINTS_PER_PELLET = 10;
@@ -74,6 +76,7 @@ public class Player : MonoBehaviour, IEntity, IPauseable
         {
             points += POINTS_PER_PELLET;
             Destroy(other.gameObject);
+            _audioSource.PlayOneShot(wakaWaka);
         } else if (other.CompareTag("PowerPellet"))
         {
             points += POINTS_PER_POWER_PELLET;
@@ -81,6 +84,15 @@ public class Player : MonoBehaviour, IEntity, IPauseable
             gameManager.SetFrightenedMode();
         } else if (other.CompareTag("Ghost"))
         {
+            Ghost ghost = other.GetComponent<Ghost>();
+            if (ghost.currentMode == Ghost.Mode.Consumed) return;
+            
+            if (ghost.currentMode == Ghost.Mode.Frightened)
+            {
+                // TODO: put ghost in consumed mode
+                _audioSource.PlayOneShot(eatingGhost);
+                return;
+            }
             _animator.transform.rotation = Quaternion.Euler(new Vector3(0, 0, 0));
             _animator.SetBool("Disappear", true);
             gameManager.DecrementLives();

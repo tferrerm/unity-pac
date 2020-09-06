@@ -42,6 +42,11 @@ public class LevelManager : MonoBehaviour
     private float tileMapHalfWidth;
     public float TileMapHalfWidth => tileMapHalfWidth;
 
+    private AudioSource _audioSource;
+    public AudioClip siren;
+    public AudioClip frightenedMode;
+    public AudioClip consumedGhost;
+
     // Start is called before the first frame update
     void Awake()
     {
@@ -63,9 +68,11 @@ public class LevelManager : MonoBehaviour
             Application.Quit();
         }
     }
-    
-    
-    
+
+    private void Start()
+    {
+        PlaySiren();
+    }
 
     private void CreateTileMap(StreamReader reader)
     {
@@ -659,6 +666,28 @@ public class LevelManager : MonoBehaviour
             default:
                 throw new ArgumentOutOfRangeException(nameof(entityId), entityId, null);
         }
+    }
+
+    public void PlaySiren()
+    {
+        PlayLoop(siren);
+    }
+
+    public void PlayFrightenedMode()
+    {
+        PlayLoop(frightenedMode);
+    }
+
+    public void PlayConsumedGhost()
+    {
+        PlayLoop(consumedGhost);
+    }
+
+    private void PlayLoop(AudioClip clip)
+    {
+        _audioSource.clip = clip;
+        _audioSource.loop = true;
+        _audioSource.Play();
     }
 }
 
