@@ -603,7 +603,7 @@ MonoBehaviour:
   lives: 3
   movSpeed: 30
   disappearingSound: {fileID: 8300000, guid: c7411a62f339d4c5caed5068ccaff22f, type: 3}
-  wakaWaka: {fileID: 8300000, guid: 5eb64215e7f784144952b6f5d591bb5c, type: 3}
+  wakaWaka: {fileID: 8300000, guid: 3321135d7dfa442f68176b566ef08d49, type: 3}
   eatingGhost: {fileID: 8300000, guid: ba7b35d81259c4fbab5a68ba8dcb8729, type: 3}
   points: 0
   gameManager: {fileID: 1760033258}
@@ -1142,7 +1142,7 @@ AudioSource:
   m_Enabled: 1
   serializedVersion: 4
   OutputAudioMixerGroup: {fileID: 0}
-  m_audioClip: {fileID: 8300000, guid: b022c5d1e8ce34bf0bce6a65c6255344, type: 3}
+  m_audioClip: {fileID: 8300000, guid: 3072effd678f64c7786920a60652ce4b, type: 3}
   m_PlayOnAwake: 1
   m_Volume: 1
   m_Pitch: 1
