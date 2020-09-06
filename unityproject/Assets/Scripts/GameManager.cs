@@ -7,6 +7,7 @@ public class GameManager : MonoBehaviour
 {
     public LevelManager levelManager;
     public Score score;
+    public LivesManager livesManager;
 
     public Player player;
     public Ghost[] ghosts = new Ghost[4];
@@ -105,13 +106,17 @@ public class GameManager : MonoBehaviour
 
     public void DecrementLives()
     {
-        int remainingLives = player.DecrementLives();
+        int remainingLives = livesManager.DecrementLives();
         player.OnPauseGame();
 
         if (remainingLives == 0)
         {
             Debug.Log("Game Over!");
             SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex - 1);
+        }
+        else
+        {
+            PlaySiren();
         }
     }
 

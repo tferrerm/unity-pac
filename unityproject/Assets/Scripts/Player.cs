@@ -5,8 +5,6 @@ using UnityEngine;
 
 public class Player : MonoBehaviour, IEntity, IPauseable
 {
-    public int lives = 10;
-
     public float movSpeed = 10f;
     private Direction? nextDirection;
     private bool hasCollidedWall;
@@ -118,18 +116,6 @@ public class Player : MonoBehaviour, IEntity, IPauseable
         set => hasCollidedWall = value;
     }
 
-    public int DecrementLives()
-    {
-        lives--;
-        return lives;
-    }
-
-    // to be used when reaching 10k points
-    public void OneLifeUp()
-    {
-        lives++;
-    }
-
     public void AnimationPlayback()
     {
         if (hasCollidedWall || _animator.GetBool("Disappear"))
@@ -152,8 +138,7 @@ public class Player : MonoBehaviour, IEntity, IPauseable
     {
         _animator.SetBool("Disappear", false);
         _animator.Play("Pacman");
-        if (lives > 0)
-            gameManager.PlaySiren();
+
     }
 
     private IEnumerator WaitForAnimation()
