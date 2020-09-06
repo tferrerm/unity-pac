@@ -26,6 +26,8 @@ public class Player : MonoBehaviour, IEntity, IPauseable
 
     public GameManager gameManager;
 
+    private int _eatenGhosts = 0;
+
     // Start is called before the first frame update
     private void Start()
     {
@@ -81,6 +83,7 @@ public class Player : MonoBehaviour, IEntity, IPauseable
         {
             points += POINTS_PER_POWER_PELLET;
             Destroy(other.gameObject);
+            _audioSource.PlayOneShot(wakaWaka);
             gameManager.SetFrightenedMode();
         } else if (other.CompareTag("Ghost"))
         {
@@ -91,6 +94,8 @@ public class Player : MonoBehaviour, IEntity, IPauseable
             {
                 // TODO: put ghost in consumed mode
                 _audioSource.PlayOneShot(eatingGhost);
+                gameManager.EatGhost(ghost.entityId);
+                _eatenGhosts++;
                 return;
             }
             _animator.transform.rotation = Quaternion.Euler(new Vector3(0, 0, 0));
@@ -151,6 +156,8 @@ public class Player : MonoBehaviour, IEntity, IPauseable
     {
         _animator.SetBool("Disappear", false);
         _animator.Play("Pacman");
+        if (lives > 0)
+            gameManager.PlaySiren();
     }
 
     private IEnumerator WaitForAnimation()
@@ -159,6 +166,7 @@ public class Player : MonoBehaviour, IEntity, IPauseable
         _animator.speed = 1;
         gameManager.StopGhosts();
         var time = disappearingSound.length;
+        gameManager.StopSiren();
         _audioSource.PlayOneShot(disappearingSound);
         yield return new WaitForSeconds(time);
         Debug.Log("AfterAnimation");

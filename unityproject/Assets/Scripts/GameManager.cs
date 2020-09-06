@@ -130,15 +130,36 @@ public class GameManager : MonoBehaviour
 
     public void SetFrightenedMode()
     {
+        levelManager.PlayFrightenedMode();
         foreach (var ghost in ghosts)
         {
             ghost.SetFrightenedMode();
         }
+    }
+
+    public void StopFrightenedMode()
+    {
+        levelManager.PlaySiren();
+    }
+
+    public void StopSiren()
+    {
+        levelManager.StopSiren();
+    }
+
+    public void PlaySiren()
+    {
+        levelManager.PlaySiren();
     }
     
     public void ResetPositions()
     {
         levelManager.InitializePlayerProperties();
         StartGhosts();
+    }
+
+    public void EatGhost(EntityId entityId)
+    {
+        levelManager.PlayConsumedGhost();
     }
 }

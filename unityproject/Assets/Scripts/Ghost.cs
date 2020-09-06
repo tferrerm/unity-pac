@@ -178,6 +178,7 @@ public class Ghost : MonoBehaviour, IEntity, IPauseable
                 _animator.SetBool("Frightened", false);
                 _animator.SetBool("FrightenedEnding", false);
                 _frightenedModeTimer = 0;
+                gameManager.StopFrightenedMode();
                 ChangeMode(_previousMode);
             }
         }

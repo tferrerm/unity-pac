@@ -71,6 +71,7 @@ public class LevelManager : MonoBehaviour
 
     private void Start()
     {
+        _audioSource = GetComponent<AudioSource>();
         PlaySiren();
     }
 
@@ -681,6 +682,11 @@ public class LevelManager : MonoBehaviour
     public void PlayConsumedGhost()
     {
         PlayLoop(consumedGhost);
+    }
+
+    public void StopSiren()
+    {
+        _audioSource.Stop();
     }
 
     private void PlayLoop(AudioClip clip)

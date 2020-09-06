@@ -1115,9 +1115,9 @@ MonoBehaviour:
   - {fileID: 923034327}
   - {fileID: 1780488382}
   - {fileID: 1842700900}
-  siren: {fileID: 8300000, guid: b022c5d1e8ce34bf0bce6a65c6255344, type: 3}
-  frightenedMode: {fileID: 0}
-  consumedGhost: {fileID: 0}
+  siren: {fileID: 8300000, guid: 3072effd678f64c7786920a60652ce4b, type: 3}
+  frightenedMode: {fileID: 8300000, guid: 10c1b2d654d6145d98874dade9aa31ba, type: 3}
+  consumedGhost: {fileID: 8300000, guid: 68abe3ff67b88433cb7f9eb6e5c718c7, type: 3}
 --- !u!4 &1795960092
 Transform:
   m_ObjectHideFlags: 0
@@ -1142,7 +1142,7 @@ AudioSource:
   m_Enabled: 1
   serializedVersion: 4
   OutputAudioMixerGroup: {fileID: 0}
-  m_audioClip: {fileID: 8300000, guid: 3072effd678f64c7786920a60652ce4b, type: 3}
+  m_audioClip: {fileID: 0}
   m_PlayOnAwake: 1
   m_Volume: 1
   m_Pitch: 1
