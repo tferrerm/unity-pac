@@ -126,16 +126,16 @@ public class GameManager : MonoBehaviour
     private IEnumerator WaitForDisappearing()
     {
         StopGhosts();
-        StopSiren();
+        levelManager.StopSiren();
         var time = player.GetDisappearingWaitTime();
         player.OnPauseGame();
         yield return new WaitForSeconds(time);
         player.OnResumeGame();
         ResetPositions();
-        PlaySiren();
+        levelManager.PlaySiren();
     }
 
-    public void StopGhosts()
+    private void StopGhosts()
     {
         foreach (var ghost in ghosts)
         {
@@ -143,7 +143,7 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    public void StartGhosts()
+    private void StartGhosts()
     {
         foreach (var ghost in ghosts)
         {
@@ -166,17 +166,7 @@ public class GameManager : MonoBehaviour
         levelManager.PlaySiren();
     }
 
-    public void StopSiren()
-    {
-        levelManager.StopSiren();
-    }
-
-    public void PlaySiren()
-    {
-        levelManager.PlaySiren();
-    }
-    
-    public void ResetPositions()
+    private void ResetPositions()
     {
         levelManager.InitializePlayerProperties();
         StartGhosts();
