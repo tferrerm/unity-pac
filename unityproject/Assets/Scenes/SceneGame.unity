@@ -1104,7 +1104,7 @@ MonoBehaviour:
   - {fileID: 1780488382}
   - {fileID: 1842700900}
   siren: {fileID: 8300000, guid: 3072effd678f64c7786920a60652ce4b, type: 3}
-  frightenedMode: {fileID: 8300000, guid: 10c1b2d654d6145d98874dade9aa31ba, type: 3}
+  frightenedMode: {fileID: 8300000, guid: 62aa1421829ec4233996c46b44e73af1, type: 3}
   consumedGhost: {fileID: 8300000, guid: 68abe3ff67b88433cb7f9eb6e5c718c7, type: 3}
 --- !u!4 &1795960092
 Transform:
