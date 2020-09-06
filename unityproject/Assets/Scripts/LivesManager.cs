@@ -1,12 +1,18 @@
-﻿using TMPro;
+﻿using System;
+using TMPro;
 using UnityEngine;
 
 public class LivesManager : MonoBehaviour
 {
-    public const int MaxLives = 3;
+    public int maxLives = 3;
 
-    private int _lives = MaxLives;
+    private int _lives;
     public TMP_Text livesText;
+
+    private void Start()
+    {
+        _lives = maxLives;
+    }
 
     void Update()
     {
