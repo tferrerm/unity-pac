@@ -6,6 +6,7 @@ using UnityEngine.SceneManagement;
 public class GameManager : MonoBehaviour
 {
     public LevelManager levelManager;
+    public Score score;
 
     public Player player;
     public Ghost[] ghosts = new Ghost[4];
@@ -139,6 +140,7 @@ public class GameManager : MonoBehaviour
 
     public void StopFrightenedMode()
     {
+        player.ResetEatenGhosts();
         levelManager.PlaySiren();
     }
 
@@ -161,5 +163,20 @@ public class GameManager : MonoBehaviour
     public void EatGhost(EntityId entityId)
     {
         levelManager.PlayConsumedGhost();
+    }
+
+    public void AddPelletPoints()
+    {
+        score.AddPelletPoints();
+    }
+
+    public void AddPowerPelletPoints()
+    {
+        score.AddPowerPelletPoints();
+    }
+
+    public void AddEatenGhostPoints(int eatenGhosts)
+    {
+        score.AddEatenGhostPoints(eatenGhosts);
     }
 }
