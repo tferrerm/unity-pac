@@ -125,13 +125,17 @@ public class Player : MonoBehaviour, IEntity, IPauseable
     public Direction currentDirection { get; set; }
     public void OnPauseGame()
     {
-        Debug.Log("OnPauseGame");
         if (_animator.GetBool("Disappear"))
         {
-            Debug.Log("BeforeAnimation");
-            IEnumerator coroutine = WaitForAnimation();
-            StartCoroutine(coroutine);
+            _animator.Play("Disappear");
+            _animator.speed = 1;
+            _audioSource.PlayOneShot(disappearingSound);
         }
+    }
+
+    public float GetDisappearingWaitTime()
+    {
+        return disappearingSound.length;
     }
 
     public void OnResumeGame()
@@ -139,20 +143,6 @@ public class Player : MonoBehaviour, IEntity, IPauseable
         _animator.SetBool("Disappear", false);
         _animator.Play("Pacman");
 
-    }
-
-    private IEnumerator WaitForAnimation()
-    {
-        _animator.Play("Disappear");
-        _animator.speed = 1;
-        gameManager.StopGhosts();
-        var time = disappearingSound.length;
-        gameManager.StopSiren();
-        _audioSource.PlayOneShot(disappearingSound);
-        yield return new WaitForSeconds(time);
-        Debug.Log("AfterAnimation");
-        OnResumeGame();
-        gameManager.ResetPositions();
     }
 
     public void ResetEatenGhosts()

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -107,17 +108,31 @@ public class GameManager : MonoBehaviour
     public void DecrementLives()
     {
         int remainingLives = livesManager.DecrementLives();
-        player.OnPauseGame();
+        DisappearAndReset();
 
         if (remainingLives == 0)
         {
             Debug.Log("Game Over!");
             SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex - 1);
         }
-        else
-        {
-            PlaySiren();
-        }
+    }
+
+    private void DisappearAndReset()
+    {
+        IEnumerator coroutine = WaitForDisappearing();
+        StartCoroutine(coroutine);
+    }
+    
+    private IEnumerator WaitForDisappearing()
+    {
+        StopGhosts();
+        StopSiren();
+        var time = player.GetDisappearingWaitTime();
+        player.OnPauseGame();
+        yield return new WaitForSeconds(time);
+        player.OnResumeGame();
+        ResetPositions();
+        PlaySiren();
     }
 
     public void StopGhosts()
