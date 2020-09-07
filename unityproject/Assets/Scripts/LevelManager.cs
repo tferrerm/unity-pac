@@ -49,12 +49,6 @@ public class LevelManager : MonoBehaviour
     private float tileMapHalfWidth;
     public float TileMapHalfWidth => tileMapHalfWidth;
 
-    private AudioSource _audioSource;
-    public AudioClip intro;
-    public AudioClip siren;
-    public AudioClip frightenedMode;
-    public AudioClip consumedGhost;
-
     // Start is called before the first frame update
     void Awake()
     {
@@ -75,8 +69,6 @@ public class LevelManager : MonoBehaviour
             Debug.LogError(e.Message);
             Application.Quit();
         }
-        
-        _audioSource = GetComponent<AudioSource>();
     }
 
     private void Update()
@@ -699,43 +691,6 @@ public class LevelManager : MonoBehaviour
             default:
                 throw new ArgumentOutOfRangeException(nameof(entityId), entityId, null);
         }
-    }
-
-    public void PlaySiren()
-    {
-        PlayLoop(siren);
-    }
-
-    public void PlayFrightenedMode()
-    {
-        PlayLoop(frightenedMode);
-    }
-
-    public void PlayConsumedGhost()
-    {
-        PlayLoop(consumedGhost);
-    }
-
-    public void PlayIntro()
-    {
-        _audioSource.PlayOneShot(intro);
-    }
-
-    public float GetIntroWaitTime()
-    {
-        return intro.length;
-    }
-
-    public void StopSound()
-    {
-        _audioSource.Stop();
-    }
-
-    private void PlayLoop(AudioClip clip)
-    {
-        _audioSource.clip = clip;
-        _audioSource.loop = true;
-        _audioSource.Play();
     }
 
     public bool ReachedBoxDoorEntrance(EntityId entityId)

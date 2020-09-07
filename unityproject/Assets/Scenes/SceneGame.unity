@@ -924,9 +924,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   movSpeed: 30
-  disappearingSound: {fileID: 8300000, guid: c7411a62f339d4c5caed5068ccaff22f, type: 3}
-  wakaWaka: {fileID: 8300000, guid: 3321135d7dfa442f68176b566ef08d49, type: 3}
-  eatingGhost: {fileID: 8300000, guid: ba7b35d81259c4fbab5a68ba8dcb8729, type: 3}
   gameManager: {fileID: 1760033258}
 --- !u!212 &1570586585
 SpriteRenderer:
@@ -1376,6 +1373,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1760033259}
   - component: {fileID: 1760033258}
+  - component: {fileID: 1760033260}
   m_Layer: 0
   m_Name: GameController
   m_TagString: GameController
@@ -1419,6 +1417,27 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1760033260
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1760033257}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3121f38aa7c8d5744a7d4fd7ae83ddab, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  playerAudioSource: {fileID: 1570586591}
+  tileMapAudioSource: {fileID: 1795960093}
+  disappearingSound: {fileID: 8300000, guid: c7411a62f339d4c5caed5068ccaff22f, type: 3}
+  wakaWaka: {fileID: 8300000, guid: 3321135d7dfa442f68176b566ef08d49, type: 3}
+  eatingGhost: {fileID: 8300000, guid: ba7b35d81259c4fbab5a68ba8dcb8729, type: 3}
+  intro: {fileID: 8300000, guid: d071b5e2bf0164d88bccf26c8e766635, type: 3}
+  siren: {fileID: 8300000, guid: 3072effd678f64c7786920a60652ce4b, type: 3}
+  frightenedMode: {fileID: 8300000, guid: 62aa1421829ec4233996c46b44e73af1, type: 3}
+  consumedGhost: {fileID: 8300000, guid: 68abe3ff67b88433cb7f9eb6e5c718c7, type: 3}
 --- !u!1 &1766515223
 GameObject:
   m_ObjectHideFlags: 0
@@ -1771,10 +1790,6 @@ MonoBehaviour:
   - {fileID: 923034327}
   - {fileID: 1780488382}
   - {fileID: 1842700900}
-  intro: {fileID: 8300000, guid: d071b5e2bf0164d88bccf26c8e766635, type: 3}
-  siren: {fileID: 8300000, guid: 3072effd678f64c7786920a60652ce4b, type: 3}
-  frightenedMode: {fileID: 8300000, guid: 62aa1421829ec4233996c46b44e73af1, type: 3}
-  consumedGhost: {fileID: 8300000, guid: 68abe3ff67b88433cb7f9eb6e5c718c7, type: 3}
 --- !u!4 &1795960092
 Transform:
   m_ObjectHideFlags: 0

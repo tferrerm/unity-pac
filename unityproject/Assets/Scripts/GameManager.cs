@@ -23,10 +23,13 @@ public class GameManager : MonoBehaviour
     private float _tileMapHalfWidth;
 
     public TMP_Text introReadyText;
+
+    private SoundManager soundManager;
     
     // Start is called before the first frame update
     void Start()
     {
+        soundManager = GetComponent<SoundManager>();
         _tileMapHalfWidth = levelManager.TileMapHalfWidth;
         IEnumerator coroutine = WaitForIntroMusic();
         StartCoroutine(coroutine);
@@ -132,24 +135,24 @@ public class GameManager : MonoBehaviour
     private IEnumerator WaitForDisappearing()
     {
         StopGhosts();
-        levelManager.StopSound();
-        var time = player.GetDisappearingWaitTime();
+        soundManager.StopTileMapSound();
+        var time = soundManager.GetDisappearingWaitTime();
         player.OnPauseGame();
         yield return new WaitForSeconds(time);
         player.OnResumeGame();
         ResetPositions();
-        levelManager.PlaySiren();
+        soundManager.PlaySiren();
     }
 
     private IEnumerator WaitForIntroMusic()
     {
         Time.timeScale = 0;
-        var time = levelManager.GetIntroWaitTime();
+        var time = soundManager.GetIntroWaitTime();
         Debug.Log($"introTime: {time}");
-        levelManager.PlayIntro();
+        soundManager.PlayIntro();
         yield return new WaitForSecondsRealtime(time);
         introReadyText.gameObject.SetActive(false);
-        levelManager.PlaySiren();
+        soundManager.PlaySiren();
         Time.timeScale = 1;
     }
 
@@ -171,7 +174,7 @@ public class GameManager : MonoBehaviour
 
     public void SetFrightenedMode()
     {
-        levelManager.PlayFrightenedMode();
+        soundManager.PlayFrightenedMode();
         foreach (var ghost in ghosts.Where(
             x => x.currentMode == Ghost.Mode.Chase || x.currentMode == Ghost.Mode.Scatter)
         )
@@ -183,7 +186,7 @@ public class GameManager : MonoBehaviour
     public void StopFrightenedMode()
     {
         player.ResetEatenGhosts();
-        levelManager.PlaySiren();
+        soundManager.PlaySiren();
     }
 
     private void ResetPositions()
@@ -192,10 +195,26 @@ public class GameManager : MonoBehaviour
         StartGhosts();
     }
 
-    public void EatGhost(EntityId entityId)
+    public void CollideGhost(Ghost ghost)
     {
-        // TODO: Move EatGhost here
-        levelManager.PlayConsumedGhost();
+        if (ghost.currentMode == Ghost.Mode.Consumed) return;
+            
+        if (ghost.currentMode == Ghost.Mode.Frightened)
+        {
+            player.IncrementEatenGhost();
+            soundManager.PlayEatingGhostSound();
+            AddEatenGhostPoints(player.EatenGhosts);
+            EatGhost(ghost);
+            return;
+        }
+        player.PlayDisappearingAnimation();
+        DecrementLives();
+    }
+
+    public void EatGhost(Ghost ghost)
+    {
+        ghost.Consume();
+        soundManager.PlayConsumedGhost();
     }
 
     public void AddPelletPoints()
@@ -217,6 +236,22 @@ public class GameManager : MonoBehaviour
     {
         Time.timeScale = 0;
         StopGhosts();
-        levelManager.StopSound();
+        soundManager.StopTileMapSound();
+    }
+
+    public void EatPellet(GameObject pelletGO, bool isPowerPellet)
+    {
+        if (isPowerPellet)
+        {
+            AddPowerPelletPoints();
+            SetFrightenedMode();
+        }
+        else
+        {
+            AddPelletPoints();
+        }
+        
+        Destroy(pelletGO);
+        soundManager.PlayWakaWakaSound();
     }
 }

@@ -12,14 +12,10 @@ public class Player : MonoBehaviour, IEntity, IPauseable
     private readonly Dictionary<Direction, int> directionRotationAngles = new Dictionary<Direction, int>();
     private Animator _animator;
 
-    private AudioSource _audioSource;
-    public AudioClip disappearingSound;
-    public AudioClip wakaWaka;
-    public AudioClip eatingGhost; 
-
     private int _eatenGhosts = 0;
 
     public GameManager gameManager;
+    private SoundManager soundManager;
 
     // Start is called before the first frame update
     private void Start()
@@ -35,7 +31,7 @@ public class Player : MonoBehaviour, IEntity, IPauseable
         directionRotationAngles.Add(Direction.Down, 270);
         
         _animator = GetComponent<Animator>();
-        _audioSource = GetComponent<AudioSource>();
+        soundManager = gameManager.GetComponent<SoundManager>();
     }
 
     // Update is called once per frame
@@ -69,32 +65,14 @@ public class Player : MonoBehaviour, IEntity, IPauseable
     {
         if (other.CompareTag("Pellet"))
         {
-            gameManager.AddPelletPoints();
-            Destroy(other.gameObject);
-            _audioSource.PlayOneShot(wakaWaka);
+            gameManager.EatPellet(other.gameObject, false);
         } else if (other.CompareTag("PowerPellet"))
         {
-            gameManager.AddPowerPelletPoints();
-            Destroy(other.gameObject);
-            _audioSource.PlayOneShot(wakaWaka);
-            gameManager.SetFrightenedMode();
+            gameManager.EatPellet(other.gameObject, true);
         } else if (other.CompareTag("Ghost"))
         {
             Ghost ghost = other.GetComponent<Ghost>();
-            if (ghost.currentMode == Ghost.Mode.Consumed) return;
-            
-            if (ghost.currentMode == Ghost.Mode.Frightened)
-            {
-                _eatenGhosts++;
-                _audioSource.PlayOneShot(eatingGhost);
-                ghost.Consume(); // TODO: Move this method call to EatGhost
-                gameManager.AddEatenGhostPoints(_eatenGhosts);
-                gameManager.EatGhost(ghost.entityId);
-                return;
-            }
-            _animator.transform.rotation = Quaternion.Euler(new Vector3(0, 0, 0));
-            _animator.SetBool("Disappear", true);
-            gameManager.DecrementLives();
+            gameManager.CollideGhost(ghost);
         }
     }
 
@@ -129,13 +107,8 @@ public class Player : MonoBehaviour, IEntity, IPauseable
         {
             _animator.Play("Disappear");
             _animator.speed = 1;
-            _audioSource.PlayOneShot(disappearingSound);
+            soundManager.PlayDisappearingSound();
         }
-    }
-
-    public float GetDisappearingWaitTime()
-    {
-        return disappearingSound.length;
     }
 
     public void OnResumeGame()
@@ -149,4 +122,19 @@ public class Player : MonoBehaviour, IEntity, IPauseable
     {
         _eatenGhosts = 0;
     }
+
+    public void IncrementEatenGhost()
+    {
+        _eatenGhosts++;
+    }
+
+    public void PlayDisappearingAnimation()
+    {
+        _animator.transform.rotation = Quaternion.Euler(new Vector3(0, 0, 0));
+        _animator.SetBool("Disappear", true);
+    }
+
+    public int EatenGhosts => _eatenGhosts;
+    
+    
 }
