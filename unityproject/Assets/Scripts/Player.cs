@@ -87,6 +87,7 @@ public class Player : MonoBehaviour, IEntity, IPauseable
             {
                 // TODO: put ghost in consumed mode
                 _eatenGhosts++;
+                ghost.currentMode = Ghost.Mode.Consumed;
                 gameManager.AddEatenGhostPoints(_eatenGhosts);
                 _audioSource.PlayOneShot(eatingGhost);
                 gameManager.EatGhost(ghost.entityId);

@@ -50,6 +50,7 @@ public class Ghost : MonoBehaviour, IEntity, IPauseable
     private Mode _previousMode = Mode.Scatter;
     public EntityId entityId;
     public bool isInBox;
+    private Vector2Int consumedBoxTile;
 
     /*
      * References to other managers 
@@ -98,6 +99,8 @@ public class Ghost : MonoBehaviour, IEntity, IPauseable
             {
                 _waitingTimer += Time.deltaTime;
             }
+
+            return;
         }
         if (currentMode == Mode.LeavingBox)
         {
@@ -219,7 +222,7 @@ public class Ghost : MonoBehaviour, IEntity, IPauseable
 
         if (m != currentMode)
         {
-            if(m != Mode.LeavingBox)
+            if(m != Mode.LeavingBox && m != Mode.Consumed)
                 _previousMode = currentMode;
             currentMode = m;
         }
@@ -232,10 +235,16 @@ public class Ghost : MonoBehaviour, IEntity, IPauseable
         Vector3 newPosition = gameManager.GetNewEntityPosition(movSpeed, transform.position, currentDirection);
         if (levelManager.ReachedTargetTile(entityId, newPosition, currentDirection))
         {
-            if (isInBox && levelManager.ReachedBoxDoorEntrance(entityId))
+            if ((currentMode == Mode.LeavingBox || currentMode == Mode.Consumed) && levelManager.ReachedBoxDoorEntrance(entityId))
             {
-                isInBox = false;
+                isInBox = (currentMode == Mode.Consumed);
             }
+
+            if (currentMode == Mode.Consumed && levelManager.ReachedTile(entityId, consumedBoxTile))
+            {
+                ChangeMode(Mode.LeavingBox); // OUT OF PLACE?
+            }
+
             levelManager.UpdateTargetTile(entityId, currentDirection);
             var chosenDirection = ChooseNewDirection();
             transform.position = gameManager.GetValidatedPosition(entityId, newPosition, currentDirection, chosenDirection);
@@ -283,8 +292,8 @@ public class Ghost : MonoBehaviour, IEntity, IPauseable
                 chosenDirection = ChooseFrightenedModeDirection(validDirections);
                 break;
             case Mode.Consumed:
-                var homeTile = new Vector2Int(0,0);
-                chosenDirection = ChooseDirection(currentTile, homeTile, validDirections);
+                consumedBoxTile = levelManager.GetRandomBoxTileCoordinates();
+                chosenDirection = ChooseDirection(currentTile, consumedBoxTile, validDirections);
                 break;
             case Mode.LeavingBox:
                 chosenDirection = ChooseDirection(currentTile, levelManager.BoxDoorEntranceCoordinates, validDirections);
