@@ -81,7 +81,7 @@ public class LevelManager : MonoBehaviour
 
     private void Update()
     {
-        if (transform.childCount == 0)
+        if (pelletPool.transform.childCount == 0)
         {
             gameManager.WinGame();
         }
