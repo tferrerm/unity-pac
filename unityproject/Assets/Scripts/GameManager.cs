@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -6,19 +7,23 @@ using UnityEngine.SceneManagement;
 public class GameManager : MonoBehaviour
 {
     public LevelManager levelManager;
+    public Score score;
+    public LivesManager livesManager;
 
     public Player player;
     public Ghost[] ghosts = new Ghost[4];
 
-    private readonly List<Direction> oppositeXDirections = new List<Direction>(new [] {Direction.Left, Direction.Right});
-    private readonly List<Direction> oppositeYDirections = new List<Direction>(new [] {Direction.Up, Direction.Down});
+    private readonly List<Direction> _oppositeXDirections = new List<Direction>(
+        new [] {Direction.Left, Direction.Right});
+    private readonly List<Direction> _oppositeYDirections = new List<Direction>(
+        new [] {Direction.Up, Direction.Down});
     
-    private float tileMapHalfWidth;
+    private float _tileMapHalfWidth;
     
     // Start is called before the first frame update
     void Start()
     {
-        tileMapHalfWidth = levelManager.TileMapHalfWidth;
+        _tileMapHalfWidth = levelManager.TileMapHalfWidth;
     }
 
     public Vector3 GetValidatedPosition(EntityId entityId, Vector3 position, Direction currentDirection, Direction? nextDirection)
@@ -68,11 +73,11 @@ public class GameManager : MonoBehaviour
         {
             case Direction.Left:
                 posX = position.x - movSpeed * Time.deltaTime;
-                newPosition = new Vector3(posX < -tileMapHalfWidth ? tileMapHalfWidth : posX, position.y, 0);
+                newPosition = new Vector3(posX < -_tileMapHalfWidth ? _tileMapHalfWidth : posX, position.y, 0);
                 break;
             case Direction.Right:
                 posX = position.x + movSpeed * Time.deltaTime;
-                newPosition = new Vector3(posX > tileMapHalfWidth ? -tileMapHalfWidth : posX, position.y, 0);
+                newPosition = new Vector3(posX > _tileMapHalfWidth ? -_tileMapHalfWidth : posX, position.y, 0);
                 break;
             case Direction.Up:
                 newPosition = new Vector3(position.x, position.y + movSpeed * Time.deltaTime, 0);
@@ -91,8 +96,8 @@ public class GameManager : MonoBehaviour
     {
         if (direction1 == direction2) return false;
         
-        return (oppositeXDirections.Contains(direction1) && oppositeXDirections.Contains(direction2)) ||
-               (oppositeYDirections.Contains(direction1) && oppositeYDirections.Contains(direction2));
+        return (_oppositeXDirections.Contains(direction1) && _oppositeXDirections.Contains(direction2)) ||
+               (_oppositeYDirections.Contains(direction1) && _oppositeYDirections.Contains(direction2));
     }
 
     public Vector2Int GetEntityCurrentTileCoordinates(EntityId entityId, Direction currentDirection)
@@ -102,8 +107,8 @@ public class GameManager : MonoBehaviour
 
     public void DecrementLives()
     {
-        int remainingLives = player.DecrementLives();
-        player.OnPauseGame();
+        int remainingLives = livesManager.DecrementLives();
+        DisappearAndReset();
 
         if (remainingLives == 0)
         {
@@ -112,7 +117,25 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    public void StopGhosts()
+    private void DisappearAndReset()
+    {
+        IEnumerator coroutine = WaitForDisappearing();
+        StartCoroutine(coroutine);
+    }
+    
+    private IEnumerator WaitForDisappearing()
+    {
+        StopGhosts();
+        levelManager.StopSiren();
+        var time = player.GetDisappearingWaitTime();
+        player.OnPauseGame();
+        yield return new WaitForSeconds(time);
+        player.OnResumeGame();
+        ResetPositions();
+        levelManager.PlaySiren();
+    }
+
+    private void StopGhosts()
     {
         foreach (var ghost in ghosts)
         {
@@ -120,7 +143,7 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    public void StartGhosts()
+    private void StartGhosts()
     {
         foreach (var ghost in ghosts)
         {
@@ -139,20 +162,11 @@ public class GameManager : MonoBehaviour
 
     public void StopFrightenedMode()
     {
+        player.ResetEatenGhosts();
         levelManager.PlaySiren();
     }
 
-    public void StopSiren()
-    {
-        levelManager.StopSiren();
-    }
-
-    public void PlaySiren()
-    {
-        levelManager.PlaySiren();
-    }
-    
-    public void ResetPositions()
+    private void ResetPositions()
     {
         levelManager.InitializePlayerProperties();
         StartGhosts();
@@ -161,5 +175,20 @@ public class GameManager : MonoBehaviour
     public void EatGhost(EntityId entityId)
     {
         levelManager.PlayConsumedGhost();
+    }
+
+    public void AddPelletPoints()
+    {
+        score.AddPelletPoints();
+    }
+
+    public void AddPowerPelletPoints()
+    {
+        score.AddPowerPelletPoints();
+    }
+
+    public void AddEatenGhostPoints(int eatenGhosts)
+    {
+        score.AddEatenGhostPoints(eatenGhosts);
     }
 }

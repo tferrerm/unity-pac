@@ -1,13 +1,10 @@
-﻿using System;
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
 public class Player : MonoBehaviour, IEntity, IPauseable
 {
-    public int lives = 10;
-
     public float movSpeed = 10f;
     private Direction? nextDirection;
     private bool hasCollidedWall;
@@ -20,13 +17,9 @@ public class Player : MonoBehaviour, IEntity, IPauseable
     public AudioClip wakaWaka;
     public AudioClip eatingGhost; 
 
-    public int points = 0; // CHANGE PLACE?
-    private const int POINTS_PER_PELLET = 10;
-    private const int POINTS_PER_POWER_PELLET = 50;
+    private int _eatenGhosts = 0;
 
     public GameManager gameManager;
-
-    private int _eatenGhosts = 0;
 
     // Start is called before the first frame update
     private void Start()
@@ -76,12 +69,12 @@ public class Player : MonoBehaviour, IEntity, IPauseable
     {
         if (other.CompareTag("Pellet"))
         {
-            points += POINTS_PER_PELLET;
+            gameManager.AddPelletPoints();
             Destroy(other.gameObject);
             _audioSource.PlayOneShot(wakaWaka);
         } else if (other.CompareTag("PowerPellet"))
         {
-            points += POINTS_PER_POWER_PELLET;
+            gameManager.AddPowerPelletPoints();
             Destroy(other.gameObject);
             _audioSource.PlayOneShot(wakaWaka);
             gameManager.SetFrightenedMode();
@@ -93,9 +86,10 @@ public class Player : MonoBehaviour, IEntity, IPauseable
             if (ghost.currentMode == Ghost.Mode.Frightened)
             {
                 // TODO: put ghost in consumed mode
+                _eatenGhosts++;
+                gameManager.AddEatenGhostPoints(_eatenGhosts);
                 _audioSource.PlayOneShot(eatingGhost);
                 gameManager.EatGhost(ghost.entityId);
-                _eatenGhosts++;
                 return;
             }
             _animator.transform.rotation = Quaternion.Euler(new Vector3(0, 0, 0));
@@ -122,18 +116,6 @@ public class Player : MonoBehaviour, IEntity, IPauseable
         set => hasCollidedWall = value;
     }
 
-    public int DecrementLives()
-    {
-        lives--;
-        return lives;
-    }
-
-    // to be used when reaching 10k points
-    public void OneLifeUp()
-    {
-        lives++;
-    }
-
     public void AnimationPlayback()
     {
         if (hasCollidedWall || _animator.GetBool("Disappear"))
@@ -143,34 +125,28 @@ public class Player : MonoBehaviour, IEntity, IPauseable
     public Direction currentDirection { get; set; }
     public void OnPauseGame()
     {
-        Debug.Log("OnPauseGame");
         if (_animator.GetBool("Disappear"))
         {
-            Debug.Log("BeforeAnimation");
-            IEnumerator coroutine = WaitForAnimation();
-            StartCoroutine(coroutine);
+            _animator.Play("Disappear");
+            _animator.speed = 1;
+            _audioSource.PlayOneShot(disappearingSound);
         }
+    }
+
+    public float GetDisappearingWaitTime()
+    {
+        return disappearingSound.length;
     }
 
     public void OnResumeGame()
     {
         _animator.SetBool("Disappear", false);
         _animator.Play("Pacman");
-        if (lives > 0)
-            gameManager.PlaySiren();
+
     }
 
-    private IEnumerator WaitForAnimation()
+    public void ResetEatenGhosts()
     {
-        _animator.Play("Disappear");
-        _animator.speed = 1;
-        gameManager.StopGhosts();
-        var time = disappearingSound.length;
-        gameManager.StopSiren();
-        _audioSource.PlayOneShot(disappearingSound);
-        yield return new WaitForSeconds(time);
-        Debug.Log("AfterAnimation");
-        OnResumeGame();
-        gameManager.ResetPositions();
+        _eatenGhosts = 0;
     }
 }
