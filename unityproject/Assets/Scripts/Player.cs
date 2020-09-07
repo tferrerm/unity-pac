@@ -85,11 +85,10 @@ public class Player : MonoBehaviour, IEntity, IPauseable
             
             if (ghost.currentMode == Ghost.Mode.Frightened)
             {
-                // TODO: put ghost in consumed mode
                 _eatenGhosts++;
-                ghost.currentMode = Ghost.Mode.Consumed;
-                gameManager.AddEatenGhostPoints(_eatenGhosts);
                 _audioSource.PlayOneShot(eatingGhost);
+                ghost.Consume(); // TODO: Move this method call to EatGhost
+                gameManager.AddEatenGhostPoints(_eatenGhosts);
                 gameManager.EatGhost(ghost.entityId);
                 return;
             }

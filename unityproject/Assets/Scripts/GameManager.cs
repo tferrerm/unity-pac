@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -171,7 +172,9 @@ public class GameManager : MonoBehaviour
     public void SetFrightenedMode()
     {
         levelManager.PlayFrightenedMode();
-        foreach (var ghost in ghosts)
+        foreach (var ghost in ghosts.Where(
+            x => x.currentMode == Ghost.Mode.Chase || x.currentMode == Ghost.Mode.Scatter)
+        )
         {
             ghost.SetFrightenedMode();
         }
@@ -191,6 +194,7 @@ public class GameManager : MonoBehaviour
 
     public void EatGhost(EntityId entityId)
     {
+        // TODO: Move EatGhost here
         levelManager.PlayConsumedGhost();
     }
 
@@ -212,6 +216,7 @@ public class GameManager : MonoBehaviour
     public void WinGame()
     {
         Time.timeScale = 0;
+        StopGhosts();
         levelManager.StopSound();
     }
 }

@@ -242,6 +242,7 @@ public class Ghost : MonoBehaviour, IEntity, IPauseable
 
             if (currentMode == Mode.Consumed && levelManager.ReachedTile(entityId, consumedBoxTile))
             {
+                _animator.SetBool("Eaten", false);
                 ChangeMode(Mode.LeavingBox); // OUT OF PLACE?
             }
 
@@ -472,5 +473,13 @@ public class Ghost : MonoBehaviour, IEntity, IPauseable
             default:
                 throw new ArgumentOutOfRangeException(nameof(direction), direction, null);
         }
+    }
+
+    public void Consume()
+    {
+        _animator.SetBool("Eaten", true);
+        _animator.SetBool("Frightened", false);
+        _animator.SetBool("FrightenedEnding", false);
+        ChangeMode(Mode.Consumed);
     }
 }
