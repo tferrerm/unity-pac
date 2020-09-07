@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
+using Random = UnityEngine.Random;
 
 public class LevelManager : MonoBehaviour
 {
@@ -741,7 +742,14 @@ public class LevelManager : MonoBehaviour
     {
         return entitiesTargetTileCoordinates[entityId].Equals(boxDoorEntranceCoordinates);
     }
+
+    public Vector2Int GetRandomBoxTileCoordinates()
+    {
+        return boxTiles[Random.Range(0, boxTiles.Count)];
+    }
+
+    public bool ReachedTile(EntityId entityId, Vector2Int tile)
+    {
+        return entitiesTargetTileCoordinates[entityId].Equals(tile);
+    }
 }
-
-
-    
