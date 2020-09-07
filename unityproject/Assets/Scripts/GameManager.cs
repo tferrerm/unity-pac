@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -19,11 +20,15 @@ public class GameManager : MonoBehaviour
         new [] {Direction.Up, Direction.Down});
     
     private float _tileMapHalfWidth;
+
+    public TMP_Text introReadyText;
     
     // Start is called before the first frame update
     void Start()
     {
         _tileMapHalfWidth = levelManager.TileMapHalfWidth;
+        IEnumerator coroutine = WaitForIntroMusic();
+        StartCoroutine(coroutine);
     }
 
     public Vector3 GetValidatedPosition(EntityId entityId, Vector3 position, Direction currentDirection, Direction? nextDirection)
@@ -133,6 +138,18 @@ public class GameManager : MonoBehaviour
         player.OnResumeGame();
         ResetPositions();
         levelManager.PlaySiren();
+    }
+
+    private IEnumerator WaitForIntroMusic()
+    {
+        Time.timeScale = 0;
+        var time = levelManager.GetIntroWaitTime();
+        Debug.Log($"introTime: {time}");
+        levelManager.PlayIntro();
+        yield return new WaitForSecondsRealtime(time);
+        introReadyText.gameObject.SetActive(false);
+        levelManager.PlaySiren();
+        Time.timeScale = 1;
     }
 
     private void StopGhosts()

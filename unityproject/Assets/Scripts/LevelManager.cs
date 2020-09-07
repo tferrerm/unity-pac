@@ -49,6 +49,7 @@ public class LevelManager : MonoBehaviour
     public float TileMapHalfWidth => tileMapHalfWidth;
 
     private AudioSource _audioSource;
+    public AudioClip intro;
     public AudioClip siren;
     public AudioClip frightenedMode;
     public AudioClip consumedGhost;
@@ -73,12 +74,8 @@ public class LevelManager : MonoBehaviour
             Debug.LogError(e.Message);
             Application.Quit();
         }
-    }
-
-    private void Start()
-    {
+        
         _audioSource = GetComponent<AudioSource>();
-        PlaySiren();
     }
 
     private void CreateTileMap(StreamReader reader)
@@ -708,6 +705,16 @@ public class LevelManager : MonoBehaviour
     public void PlayConsumedGhost()
     {
         PlayLoop(consumedGhost);
+    }
+
+    public void PlayIntro()
+    {
+        _audioSource.PlayOneShot(intro);
+    }
+
+    public float GetIntroWaitTime()
+    {
+        return intro.length;
     }
 
     public void StopSiren()
