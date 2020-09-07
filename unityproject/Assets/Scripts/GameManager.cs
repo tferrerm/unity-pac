@@ -131,7 +131,7 @@ public class GameManager : MonoBehaviour
     private IEnumerator WaitForDisappearing()
     {
         StopGhosts();
-        levelManager.StopSiren();
+        levelManager.StopSound();
         var time = player.GetDisappearingWaitTime();
         player.OnPauseGame();
         yield return new WaitForSeconds(time);
@@ -207,5 +207,11 @@ public class GameManager : MonoBehaviour
     public void AddEatenGhostPoints(int eatenGhosts)
     {
         score.AddEatenGhostPoints(eatenGhosts);
+    }
+
+    public void WinGame()
+    {
+        Time.timeScale = 0;
+        levelManager.StopSound();
     }
 }

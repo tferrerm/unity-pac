@@ -78,6 +78,14 @@ public class LevelManager : MonoBehaviour
         _audioSource = GetComponent<AudioSource>();
     }
 
+    private void Update()
+    {
+        if (transform.childCount == 0)
+        {
+            gameManager.WinGame();
+        }
+    }
+
     private void CreateTileMap(StreamReader reader)
     {
         tileMap = new MapComponent[rows][];
@@ -717,7 +725,7 @@ public class LevelManager : MonoBehaviour
         return intro.length;
     }
 
-    public void StopSiren()
+    public void StopSound()
     {
         _audioSource.Stop();
     }
