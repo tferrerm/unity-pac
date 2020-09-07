@@ -5,6 +5,7 @@ using UnityEngine;
 public class MapComponent : MonoBehaviour
 {
     private bool isWall;
+    private bool isBoxDoor;
     private bool hasPellet;
     private bool hasPowerPellet;
 
@@ -12,6 +13,12 @@ public class MapComponent : MonoBehaviour
     {
         get => isWall;
         set => isWall = value;
+    }
+
+    public bool IsBoxDoor
+    {
+        get => isBoxDoor;
+        set => isBoxDoor = value;
     }
 
     public bool HasPellet
@@ -34,6 +41,6 @@ public class MapComponent : MonoBehaviour
 
     public bool IsBlank()
     {
-        return !isWall && !hasPellet && !hasPowerPellet;
+        return !isWall && !isBoxDoor && !hasPellet && !hasPowerPellet;
     }
 }

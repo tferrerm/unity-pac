@@ -12,6 +12,8 @@ public class Ghost : MonoBehaviour, IEntity, IPauseable
         Scatter = 1,
         Frightened = 2,
         Consumed = 3,
+        Waiting = 4,
+        LeavingBox = 5
     }
 
     /*
@@ -23,6 +25,7 @@ public class Ghost : MonoBehaviour, IEntity, IPauseable
     public int modeChangeIteration = 1;
     public float frightenedModeDuration = 10;
     public float startBlinkingAt = 7;
+    public float waitingDuration;
     
     /*
      * Timers
@@ -31,6 +34,7 @@ public class Ghost : MonoBehaviour, IEntity, IPauseable
     private float _frightenedModeTimer;
     private float _blinkTimer;
     private bool _frightenedModeIsWhite;
+    private float _waitingTimer;
     
     /*
      * Speeds
@@ -43,9 +47,10 @@ public class Ghost : MonoBehaviour, IEntity, IPauseable
     /*
      * Modes
      */
-    public Mode currentMode = Mode.Scatter;
+    public Mode currentMode;// = Mode.Scatter;
     private Mode _previousMode = Mode.Scatter;
     public EntityId entityId;
+    public bool isInBox;
 
     /*
      * References to other managers 
@@ -62,6 +67,7 @@ public class Ghost : MonoBehaviour, IEntity, IPauseable
     void Start()
     {
         _animator = GetComponent<Animator>();
+        _animator.SetInteger("Direction", (int)currentDirection);
     }
 
     /*
@@ -81,6 +87,27 @@ public class Ghost : MonoBehaviour, IEntity, IPauseable
     private void ModeUpdate()
     {
         _modeChangeTimer += Time.deltaTime;
+        
+        if (currentMode == Mode.Waiting)
+        {
+            if (_waitingTimer >= waitingDuration)
+            {
+                ChangeMode(Mode.LeavingBox);
+                _waitingTimer = 0;
+            }
+            else
+            {
+                _waitingTimer += Time.deltaTime;
+            }
+        }
+        if (currentMode == Mode.LeavingBox)
+        {
+            if (!isInBox)
+                ChangeMode(_previousMode);
+            else
+                return;
+        }
+
         if (currentMode != Mode.Frightened)
         {
             switch (modeChangeIteration)
@@ -173,7 +200,8 @@ public class Ghost : MonoBehaviour, IEntity, IPauseable
         _animator.SetBool("FrightenedEnding", false);
         _animator.SetBool("Frightened", true);
         _frightenedModeTimer = 0;
-        _reverseDirection = true;
+        if(currentMode != Mode.LeavingBox)
+            _reverseDirection = true;
         ChangeMode(Mode.Frightened);
     }
     
@@ -190,20 +218,25 @@ public class Ghost : MonoBehaviour, IEntity, IPauseable
             movSpeed = frightenedModeSpeed;
         }
 
-        Debug.Log($"Param: {m}; Previous: {_previousMode}; current: {currentMode}");
         if (m != currentMode)
         {
-            _previousMode = currentMode;
+            if(m != Mode.LeavingBox)
+                _previousMode = currentMode;
             currentMode = m;
-            Debug.Log($"DENTRO {currentMode} {_previousMode}");
         }
     }
 
     private void Move()
     {
+        if (currentMode == Mode.Waiting) return; // Ghost cannot move yet
+        
         Vector3 newPosition = gameManager.GetNewEntityPosition(movSpeed, transform.position, currentDirection);
         if (levelManager.ReachedTargetTile(entityId, newPosition, currentDirection))
         {
+            if (isInBox && levelManager.ReachedBoxDoorEntrance(entityId))
+            {
+                isInBox = false;
+            }
             levelManager.UpdateTargetTile(entityId, currentDirection);
             var chosenDirection = ChooseNewDirection();
             transform.position = gameManager.GetValidatedPosition(entityId, newPosition, currentDirection, chosenDirection);
@@ -230,7 +263,8 @@ public class Ghost : MonoBehaviour, IEntity, IPauseable
         Direction chosenDirection = currentDirection; // Dummy value
         var currentTile = gameManager.GetEntityCurrentTileCoordinates(entityId, currentDirection);
         
-        var validDirections = levelManager.GetValidDirectionsForTile(currentTile);
+        var validDirections = levelManager.GetValidDirectionsForTile(currentTile, currentMode == Mode.LeavingBox || currentMode == Mode.Consumed);
+        
         if (validDirections.Count == 1)
         {
             return validDirections[0];
@@ -253,10 +287,12 @@ public class Ghost : MonoBehaviour, IEntity, IPauseable
                 var homeTile = new Vector2Int(0,0);
                 chosenDirection = ChooseDirection(currentTile, homeTile, validDirections);
                 break;
+            case Mode.LeavingBox:
+                chosenDirection = ChooseDirection(currentTile, levelManager.BoxDoorEntranceCoordinates, validDirections);
+                break;
             default:
                 throw new ArgumentOutOfRangeException();
         }
-        
 
         return chosenDirection;
     }
@@ -299,7 +335,6 @@ public class Ghost : MonoBehaviour, IEntity, IPauseable
                 leastDistance = distance;
             }
         }
-
         return chosenDirection;
     }
     

@@ -161,10 +161,12 @@ MonoBehaviour:
   modeChangeIteration: 1
   frightenedModeDuration: 10
   startBlinkingAt: 7
+  waitingDuration: 0
   movSpeed: 24
   frightenedModeSpeed: 20
   currentMode: 1
   entityId: 1
+  isInBox: 0
   gameManager: {fileID: 1760033258}
   levelManager: {fileID: 1795960091}
 --- !u!212 &494656770
@@ -360,10 +362,12 @@ MonoBehaviour:
   modeChangeIteration: 1
   frightenedModeDuration: 10
   startBlinkingAt: 7
+  waitingDuration: 8
   movSpeed: 24
   frightenedModeSpeed: 20
-  currentMode: 1
+  currentMode: 4
   entityId: 3
+  isInBox: 1
   gameManager: {fileID: 1760033258}
   levelManager: {fileID: 1795960091}
 --- !u!212 &923034328
@@ -970,10 +974,12 @@ MonoBehaviour:
   modeChangeIteration: 1
   frightenedModeDuration: 10
   startBlinkingAt: 7
+  waitingDuration: 4
   movSpeed: 24
   frightenedModeSpeed: 20
-  currentMode: 1
+  currentMode: 4
   entityId: 2
+  isInBox: 1
   gameManager: {fileID: 1760033258}
   levelManager: {fileID: 1795960091}
 --- !u!212 &1780488383
@@ -1299,10 +1305,12 @@ MonoBehaviour:
   modeChangeIteration: 1
   frightenedModeDuration: 10
   startBlinkingAt: 7
+  waitingDuration: 12
   movSpeed: 24
   frightenedModeSpeed: 20
-  currentMode: 1
+  currentMode: 4
   entityId: 4
+  isInBox: 1
   gameManager: {fileID: 1760033258}
   levelManager: {fileID: 1795960091}
 --- !u!212 &1842700901

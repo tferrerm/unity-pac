@@ -35,6 +35,13 @@ public class LevelManager : MonoBehaviour
     private readonly Vector2Int[] _initialGhostPositions = new Vector2Int[4];
     private readonly Direction[] _initialGhostDirections = new Direction[4];
 
+    private List<Vector2Int> boxTiles = new List<Vector2Int>();
+    private Vector2Int boxDoorCoordinates;
+    private Vector2Int boxDoorEntranceCoordinates;
+    public Vector2Int BoxDoorEntranceCoordinates => boxDoorEntranceCoordinates;
+    private const string BoxId = "B";
+    private const string BoxDoorId = "_";
+
     private const string PelletId = "o";
     private const string PowerPelletId = "X";
     private const string BlankId = ".";
@@ -100,6 +107,12 @@ public class LevelManager : MonoBehaviour
             reader.ReadLine();
             positionPointer = new Vector3(-cols / 2 * tileWidth, positionPointer.y - tileHeight, 0);
         }
+
+        if (boxTiles.Count < ghosts.Length - 1)
+        {
+            Debug.LogError("Insufficient box tiles in map file.");
+            Application.Quit();
+        }
     }
 
 
@@ -118,6 +131,20 @@ public class LevelManager : MonoBehaviour
                 break;
             case PowerPelletId:
                 mapComponent.HasPowerPellet = true;
+                break;
+            case BoxId:
+                boxTiles.Add(new Vector2Int(col, row));
+                break;
+            case BoxDoorId:
+                /*if (boxDoorCoordinates != null)
+                {
+                    Debug.LogError("Only one box door tile is allowed.");
+                    Application.Quit();
+                }*/
+                boxDoorCoordinates = new Vector2Int(col, row);
+                boxDoorEntranceCoordinates = new Vector2Int(col, row - 1);
+                mapComponent.IsBoxDoor = true;
+                mapComponent.IsWall = true;
                 break;
             case BlankId:
                 break;
@@ -142,7 +169,7 @@ public class LevelManager : MonoBehaviour
         }
         else
         {
-            tileGO.GetComponent<SpriteRenderer>().sprite = spriteDict[input];
+            tileGO.GetComponent<SpriteRenderer>().sprite = input == BoxId ? spriteDict[BlankId] : spriteDict[input];
         }
         
         tileGO.name = $"Tile ({col}, {row})";
@@ -193,7 +220,7 @@ public class LevelManager : MonoBehaviour
             var ghostTargetTile = TargetTileFromInitDirection(_initialGhostDirections[i], ghostX, ghostY);
             entitiesTargetTileCoordinates.Add(_ghostOrder[i], ghostTargetTile);
             
-            Debug.Log($"{_ghostOrder[i]} {ghostX},{ghostY} {ghost.transform.position} {ghost.currentDirection}");
+            Debug.Log($"{_ghostOrder[i]} {ghostX},{ghostY} {ghost.transform.position} {ghost.currentDirection} Target: {ghostTargetTile}");
         }
     }
 
@@ -537,14 +564,14 @@ public class LevelManager : MonoBehaviour
     }
 
     
-    public List<Direction> GetValidDirectionsForTile(Vector2Int position)
+    public List<Direction> GetValidDirectionsForTile(Vector2Int position, bool ignoreBoxDoorWall)
     {
         var validDirections = new List<Direction>();
         
-        if (!tileMap[position.y - 1][position.x].IsWall)
+        if ((ignoreBoxDoorWall && tileMap[position.y - 1][position.x].IsBoxDoor) || !tileMap[position.y - 1][position.x].IsWall)
             validDirections.Add(Direction.Up);
         
-        if (!tileMap[position.y + 1][position.x].IsWall)
+        if ((ignoreBoxDoorWall && tileMap[position.y + 1][position.x].IsBoxDoor) || !tileMap[position.y + 1][position.x].IsWall)
             validDirections.Add(Direction.Down);
 
         if (position.x == 0)
@@ -568,7 +595,7 @@ public class LevelManager : MonoBehaviour
             if (!tileMap[position.y][position.x + 1].IsWall)
                 validDirections.Add(Direction.Right);
         }
-
+        
         return validDirections;
     }
 
@@ -694,6 +721,11 @@ public class LevelManager : MonoBehaviour
         _audioSource.clip = clip;
         _audioSource.loop = true;
         _audioSource.Play();
+    }
+
+    public bool ReachedBoxDoorEntrance(EntityId entityId)
+    {
+        return entitiesTargetTileCoordinates[entityId].Equals(boxDoorEntranceCoordinates);
     }
 }
 
