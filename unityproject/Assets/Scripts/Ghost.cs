@@ -93,8 +93,9 @@ public class Ghost : MonoBehaviour, IEntity
     private void Move()
     {
         if (currentState == GhostState.Waiting) return;
-        
-        Vector3 newPosition = gameManager.GetNewEntityPosition(modeManager.movSpeed, transform.position, currentDirection);
+
+        var speed = (currentState == GhostState.Consumed) ? modeManager.consumedStateSpeed : modeManager.movSpeed;
+        Vector3 newPosition = gameManager.GetNewEntityPosition(speed, transform.position, currentDirection);
         if (levelManager.ReachedTargetTile(entityId, newPosition, currentDirection))
         {
             if ((currentState == GhostState.LeavingBox || currentState == GhostState.Consumed) && levelManager.ReachedBoxDoorEntrance(entityId))

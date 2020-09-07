@@ -412,8 +412,10 @@ MonoBehaviour:
   frightenedModeDuration: 10
   startBlinkingAt: 7
   currentMode: 1
-  movSpeed: 24
-  frightenedModeSpeed: 20
+  movSpeed: 25
+  normalSpeed: 25
+  frightenedModeSpeed: 15
+  consumedStateSpeed: 40
   ghosts:
   - {fileID: 494656769}
   - {fileID: 923034327}

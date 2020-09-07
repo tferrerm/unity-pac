@@ -39,9 +39,10 @@ public class ModeManager : MonoBehaviour, IPauseable
     /*
      * Speeds
      */
-    public float movSpeed = 24f;
-    public float frightenedModeSpeed = 20f;
-    private float _previousSpeed;
+    public float movSpeed = 25f;
+    public float normalSpeed = 25f;
+    public float frightenedModeSpeed = 15f;
+    public float consumedStateSpeed = 40f;
 
     public List<Ghost> ghosts;
 
@@ -165,12 +166,11 @@ public class ModeManager : MonoBehaviour, IPauseable
     {
         if (currentMode == Mode.Frightened)
         {
-            movSpeed = _previousSpeed;
+            movSpeed = normalSpeed;
         }
 
         if (m == Mode.Frightened)
         {
-            _previousSpeed = movSpeed;
             movSpeed = frightenedModeSpeed;
         }
 
@@ -183,7 +183,6 @@ public class ModeManager : MonoBehaviour, IPauseable
 
     public void OnPauseGame()
     {
-        _previousSpeed = movSpeed;
         movSpeed = 0;
         // TODO gameObject.SetActive(false);
     }
@@ -191,6 +190,6 @@ public class ModeManager : MonoBehaviour, IPauseable
     public void OnResumeGame()
     {
         // TODO gameObject.SetActive(true);
-        movSpeed = _previousSpeed;
+        movSpeed = normalSpeed;
     }
 }
