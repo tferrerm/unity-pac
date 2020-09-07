@@ -3,51 +3,20 @@ using System.Collections.Generic;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
-public class Ghost : MonoBehaviour, IEntity, IPauseable
+public class Ghost : MonoBehaviour, IEntity
 {
-    public enum Mode
+    public enum GhostState
     {
-        Chase = 0,
-        Scatter = 1,
-        Frightened = 2,
-        Consumed = 3,
-        Waiting = 4,
-        LeavingBox = 5
+        Roaming = 0,
+        Waiting = 1,
+        LeavingBox = 2,
+        Consumed = 3
     }
-
-    /*
-     * Durations
-     */
-    public int chaseModeDuration = 20;
-    public int firstTwoScatterDuration = 7;
-    public int lastTwoScatterDuration = 5;
-    public int modeChangeIteration = 1;
-    public float frightenedModeDuration = 10;
-    public float startBlinkingAt = 7;
+    
     public float waitingDuration;
-    
-    /*
-     * Timers
-     */
-    private float _modeChangeTimer;
-    private float _frightenedModeTimer;
-    private float _blinkTimer;
-    private bool _frightenedModeIsWhite;
     private float _waitingTimer;
-    
-    /*
-     * Speeds
-     */
-    public float movSpeed = 24f;
-    public float frightenedModeSpeed = 20f;
-    private float _previousSpeed;
-    private float _movSpeedBackup;
 
-    /*
-     * Modes
-     */
-    public Mode currentMode;// = Mode.Scatter;
-    private Mode _previousMode = Mode.Scatter;
+    public GhostState currentState;
     public EntityId entityId;
     public bool isInBox;
     private Vector2Int consumedBoxTile;
@@ -57,6 +26,7 @@ public class Ghost : MonoBehaviour, IEntity, IPauseable
      */
     public GameManager gameManager;
     public LevelManager levelManager;
+    public ModeManager modeManager;
     
     private Animator _animator;
     private bool _reverseDirection = false;
@@ -75,7 +45,7 @@ public class Ghost : MonoBehaviour, IEntity, IPauseable
      */
     void Update()
     {
-        ModeUpdate();
+        StateUpdate();
         Move();
     }
     
@@ -84,166 +54,58 @@ public class Ghost : MonoBehaviour, IEntity, IPauseable
      * Ghosts iterate doing the scatter-chase combination. After every chase period, iteration number is
      * incremented.
      */
-    private void ModeUpdate()
+    private void StateUpdate()
     {
-        _modeChangeTimer += Time.deltaTime;
-        
-        if (currentMode == Mode.Waiting)
+        if (currentState == GhostState.Waiting)
         {
             if (_waitingTimer >= waitingDuration)
             {
-                ChangeMode(Mode.LeavingBox);
+                currentState = GhostState.LeavingBox;
                 _waitingTimer = 0;
             }
             else
             {
                 _waitingTimer += Time.deltaTime;
             }
-
-            return;
-        }
-        if (currentMode == Mode.LeavingBox)
+        } else if (currentState == GhostState.LeavingBox && !isInBox)
         {
-            if (!isInBox)
-                ChangeMode(_previousMode);
-            else
-                return;
+            currentState = GhostState.Roaming;
         }
-
-        if (currentMode != Mode.Frightened)
-        {
-            switch (modeChangeIteration)
-            {
-                case 1:
-                case 2:
-                {
-                    /*
-                     * Checking if it's time to switch from scatter to chase
-                     */
-                    if (currentMode == Mode.Scatter && _modeChangeTimer > firstTwoScatterDuration)
-                    {
-                        _reverseDirection = true;
-                        ChangeMode(Mode.Chase);
-                        _modeChangeTimer = 0;
-                    }
-                    /*
-                     * Checking if it's time to switch from chase to scatter
-                     */
-                    if (currentMode == Mode.Chase && _modeChangeTimer > chaseModeDuration)
-                    {
-                        _reverseDirection = true;
-                        modeChangeIteration++;
-                        ChangeMode(Mode.Scatter);
-                        _modeChangeTimer = 0;
-                    }
-
-                    break;
-                }
-                case 3:
-                {
-                    if (currentMode == Mode.Scatter && _modeChangeTimer > lastTwoScatterDuration)
-                    {
-                        _reverseDirection = true;
-                        ChangeMode(Mode.Chase);
-                        _modeChangeTimer = 0;
-                    }
-                    if (currentMode == Mode.Chase && _modeChangeTimer > chaseModeDuration)
-                    {
-                        _reverseDirection = true;
-                        modeChangeIteration = 4;
-                        ChangeMode(Mode.Scatter);
-                        _modeChangeTimer = 0;
-                    }
-
-                    break;
-                }
-                case 4:
-                {
-                    /*
-                     * If we're in chase mode in the last iteration we're  in chase mode forever
-                     */
-                    if (currentMode == Mode.Scatter && _modeChangeTimer > lastTwoScatterDuration)
-                    {
-                        _reverseDirection = true;
-                        ChangeMode(Mode.Chase);
-                        _modeChangeTimer = 0;
-                    }
-
-                    break;
-                }
-            }
-        }
-        /*
-         * Handling frightened mode. If less than 3 seconds are left, ghosts start blinking (switching between blue and white)
-         */
-        else if (currentMode == Mode.Frightened)
-        {
-            _frightenedModeTimer += Time.deltaTime;
-            
-            if (_frightenedModeTimer > startBlinkingAt && !_animator.GetBool("FrightenedEnding"))
-            {
-                _animator.SetBool("FrightenedEnding", true);
-            }
-
-            if (_frightenedModeTimer > frightenedModeDuration)
-            {
-                _animator.SetBool("Frightened", false);
-                _animator.SetBool("FrightenedEnding", false);
-                _frightenedModeTimer = 0;
-                gameManager.StopFrightenedMode();
-                ChangeMode(_previousMode);
-            }
-        }
-        
     }
 
-    public void SetFrightenedMode()
+    public void SetFrightenedAnimation()
     {
         _animator.SetBool("FrightenedEnding", false);
         _animator.SetBool("Frightened", true);
-        _frightenedModeTimer = 0;
-        if(currentMode != Mode.LeavingBox)
-            _reverseDirection = true;
-        ChangeMode(Mode.Frightened);
     }
     
-    private void ChangeMode(Mode m)
+    public void SetFrightenedEndingAnimation()
     {
-        if (currentMode == Mode.Frightened)
-        {
-            movSpeed = _previousSpeed;
-        }
+        _animator.SetBool("FrightenedEnding", true);
+    }
 
-        if (m == Mode.Frightened)
-        {
-            _previousSpeed = movSpeed;
-            movSpeed = frightenedModeSpeed;
-        }
-
-        if (m != currentMode)
-        {
-            if(m != Mode.LeavingBox && m != Mode.Consumed)
-                _previousMode = currentMode;
-            currentMode = m;
-        }
+    public void SetStandardAnimation()
+    {
+        _animator.SetBool("Frightened", false);
+        _animator.SetBool("FrightenedEnding", false);
     }
 
     private void Move()
     {
-        if (currentMode == Mode.Waiting) return; // Ghost cannot move yet
+        if (currentState == GhostState.Waiting) return;
         
-        Vector3 newPosition = gameManager.GetNewEntityPosition(movSpeed, transform.position, currentDirection);
+        Vector3 newPosition = gameManager.GetNewEntityPosition(modeManager.movSpeed, transform.position, currentDirection);
         if (levelManager.ReachedTargetTile(entityId, newPosition, currentDirection))
         {
-            if ((currentMode == Mode.LeavingBox || currentMode == Mode.Consumed) && levelManager.ReachedBoxDoorEntrance(entityId))
+            if ((currentState == GhostState.LeavingBox || currentState == GhostState.Consumed) && levelManager.ReachedBoxDoorEntrance(entityId))
             {
-                isInBox = (currentMode == Mode.Consumed);
+                isInBox = (currentState == GhostState.Consumed);
             }
 
-            if (currentMode == Mode.Consumed && levelManager.ReachedTile(entityId, consumedBoxTile))
+            if (currentState == GhostState.Consumed && levelManager.ReachedTile(entityId, consumedBoxTile))
             {
                 _animator.SetBool("Eaten", false);
-                ChangeMode(Mode.LeavingBox); // OUT OF PLACE?
+                currentState = GhostState.LeavingBox;
             }
 
             levelManager.UpdateTargetTile(entityId, currentDirection);
@@ -272,35 +134,41 @@ public class Ghost : MonoBehaviour, IEntity, IPauseable
         Direction chosenDirection = currentDirection; // Dummy value
         var currentTile = gameManager.GetEntityCurrentTileCoordinates(entityId, currentDirection);
         
-        var validDirections = levelManager.GetValidDirectionsForTile(currentTile, currentMode == Mode.LeavingBox || currentMode == Mode.Consumed);
+        var validDirections = levelManager.GetValidDirectionsForTile(currentTile,
+            currentState == GhostState.LeavingBox || currentState == GhostState.Consumed);
         
         if (validDirections.Count == 1)
         {
             return validDirections[0];
         }
-        
-        switch (currentMode)
+
+        if (currentState == GhostState.LeavingBox)
         {
-            case Mode.Chase:
-                Vector2Int targetTile = ChooseTargetTile();
-                chosenDirection = ChooseDirection(currentTile, targetTile, validDirections);
-                break;
-            case Mode.Scatter:
-                chosenDirection = ChooseDirection(currentTile, levelManager.GetOwnCorner(entityId), validDirections);
-                break;
-            case Mode.Frightened:
-                var randomIndex = Random.Range(0, validDirections.Count);
-                chosenDirection = ChooseFrightenedModeDirection(validDirections);
-                break;
-            case Mode.Consumed:
-                consumedBoxTile = levelManager.GetRandomBoxTileCoordinates();
-                chosenDirection = ChooseDirection(currentTile, consumedBoxTile, validDirections);
-                break;
-            case Mode.LeavingBox:
-                chosenDirection = ChooseDirection(currentTile, levelManager.BoxDoorEntranceCoordinates, validDirections);
-                break;
-            default:
-                throw new ArgumentOutOfRangeException();
+            chosenDirection = ChooseDirection(currentTile, levelManager.BoxDoorEntranceCoordinates, validDirections);
+        }
+        else if (currentState == GhostState.Consumed)
+        {
+            consumedBoxTile = levelManager.GetRandomBoxTileCoordinates();
+            chosenDirection = ChooseDirection(currentTile, consumedBoxTile, validDirections);
+        }
+        else if(currentState == GhostState.Roaming)
+        {
+            var mode = modeManager.currentMode;
+            switch (mode)
+            {
+                case ModeManager.Mode.Chase:
+                    Vector2Int targetTile = ChooseTargetTile();
+                    chosenDirection = ChooseDirection(currentTile, targetTile, validDirections);
+                    break;
+                case ModeManager.Mode.Scatter:
+                    chosenDirection = ChooseDirection(currentTile, levelManager.GetOwnCorner(entityId), validDirections);
+                    break;
+                case ModeManager.Mode.Frightened:
+                    chosenDirection = ChooseFrightenedModeDirection(validDirections);
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
         }
 
         return chosenDirection;
@@ -361,24 +229,24 @@ public class Ghost : MonoBehaviour, IEntity, IPauseable
         switch (entityId)
         {
             case EntityId.Blinky:
-                return ChooseBlinkyTile(pacManTile);
+                return ChooseBlinkyTargetTile(pacManTile);
             case EntityId.Pinky:
-                return ChoosePinkyTile(pacManTile);
+                return ChoosePinkyTargetTile(pacManTile);
             case EntityId.Inky:
-                return ChooseInkyTile(pacManTile);
+                return ChooseInkyTargetTile(pacManTile);
             case EntityId.Clyde:
-                return ChooseClydeTile(pacManTile);
+                return ChooseClydeTargetTile(pacManTile);
             default:
                 return new Vector2Int(0,0);
         }
     }
 
-    private Vector2Int ChooseBlinkyTile(Vector2Int pacManTile)
+    private Vector2Int ChooseBlinkyTargetTile(Vector2Int pacManTile)
     {
         return pacManTile;
     }
     
-    private Vector2Int ChoosePinkyTile(Vector2Int pacManTile)
+    private Vector2Int ChoosePinkyTargetTile(Vector2Int pacManTile)
     {
         var playerDirection = gameManager.GetPlayerDirection();
         var xTarget = pacManTile.x;
@@ -401,7 +269,7 @@ public class Ghost : MonoBehaviour, IEntity, IPauseable
         return new Vector2Int(xTarget, yTarget);
     }
     
-    private Vector2Int ChooseInkyTile(Vector2Int pacManTile)
+    private Vector2Int ChooseInkyTargetTile(Vector2Int pacManTile)
     {
         var playerDirection = gameManager.GetPlayerDirection();
         var xPivot = pacManTile.x;
@@ -430,7 +298,7 @@ public class Ghost : MonoBehaviour, IEntity, IPauseable
         return new Vector2Int(xTarget, yTarget);
     }
 
-    private Vector2Int ChooseClydeTile(Vector2Int pacManTile)
+    private Vector2Int ChooseClydeTargetTile(Vector2Int pacManTile)
     {
         var distance = Vector2Int.Distance(pacManTile,
             gameManager.GetEntityCurrentTileCoordinates(EntityId.Clyde, gameManager.GetPlayerDirection()));
@@ -443,20 +311,6 @@ public class Ghost : MonoBehaviour, IEntity, IPauseable
     }
 
     public Direction currentDirection { get; set; }
-
-    public void OnPauseGame()
-    {
-        _movSpeedBackup = movSpeed;
-        movSpeed = 0;
-        // gameObject.SetActive(false);
-    }
-
-    public void OnResumeGame()
-    {
-        // gameObject.SetActive(true);
-        movSpeed = _movSpeedBackup;
-        
-    }
 
     private Direction GetOppositeDirection(Direction direction)
     {
@@ -480,6 +334,12 @@ public class Ghost : MonoBehaviour, IEntity, IPauseable
         _animator.SetBool("Eaten", true);
         _animator.SetBool("Frightened", false);
         _animator.SetBool("FrightenedEnding", false);
-        ChangeMode(Mode.Consumed);
+        currentState = GhostState.Consumed;
+    }
+
+    public void Reverse()
+    {
+        if(currentState == GhostState.Roaming)
+            _reverseDirection = true;
     }
 }

@@ -220,7 +220,7 @@ RectTransform:
   - {fileID: 1766515224}
   - {fileID: 2014334507}
   m_Father: {fileID: 0}
-  m_RootOrder: 10
+  m_RootOrder: 6
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
@@ -259,20 +259,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4bc2b296508eb488daf8afddddae2564, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  chaseModeDuration: 20
-  firstTwoScatterDuration: 7
-  lastTwoScatterDuration: 5
-  modeChangeIteration: 1
-  frightenedModeDuration: 10
-  startBlinkingAt: 7
   waitingDuration: 0
-  movSpeed: 24
-  frightenedModeSpeed: 20
-  currentMode: 1
+  currentState: 0
   entityId: 1
   isInBox: 0
   gameManager: {fileID: 1760033258}
   levelManager: {fileID: 1795960091}
+  modeManager: {fileID: 797399382}
 --- !u!212 &494656770
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -331,12 +324,12 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 494656768}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 16, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
-  m_Father: {fileID: 0}
-  m_RootOrder: 5
+  m_Father: {fileID: 797399383}
+  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!95 &494656772
 Animator:
@@ -383,6 +376,68 @@ BoxCollider2D:
   serializedVersion: 2
   m_Size: {x: 6, y: 6}
   m_EdgeRadius: 0
+--- !u!1 &797399381
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 797399383}
+  - component: {fileID: 797399382}
+  m_Layer: 0
+  m_Name: GhostSet
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &797399382
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 797399381}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: dd8b9ffb0f535bc4ca676f6f3b89af48, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  chaseModeDuration: 20
+  firstTwoScatterDuration: 7
+  lastTwoScatterDuration: 5
+  modeChangeIteration: 1
+  frightenedModeDuration: 10
+  startBlinkingAt: 7
+  currentMode: 1
+  movSpeed: 24
+  frightenedModeSpeed: 20
+  ghosts:
+  - {fileID: 494656769}
+  - {fileID: 923034327}
+  - {fileID: 1780488382}
+  - {fileID: 1842700900}
+  gameManager: {fileID: 1760033258}
+--- !u!4 &797399383
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 797399381}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children:
+  - {fileID: 494656771}
+  - {fileID: 923034329}
+  - {fileID: 1780488384}
+  - {fileID: 1842700902}
+  m_Father: {fileID: 0}
+  m_RootOrder: 7
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &923034324
 GameObject:
   m_ObjectHideFlags: 0
@@ -460,20 +515,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4bc2b296508eb488daf8afddddae2564, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  chaseModeDuration: 20
-  firstTwoScatterDuration: 7
-  lastTwoScatterDuration: 5
-  modeChangeIteration: 1
-  frightenedModeDuration: 10
-  startBlinkingAt: 7
   waitingDuration: 8
-  movSpeed: 24
-  frightenedModeSpeed: 20
-  currentMode: 4
+  currentState: 1
   entityId: 3
   isInBox: 1
   gameManager: {fileID: 1760033258}
   levelManager: {fileID: 1795960091}
+  modeManager: {fileID: 797399382}
 --- !u!212 &923034328
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -532,12 +580,12 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 923034324}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: -12, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
-  m_Father: {fileID: 0}
-  m_RootOrder: 7
+  m_Father: {fileID: 797399383}
+  m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1114728508
 GameObject:
@@ -1361,7 +1409,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 9
+  m_RootOrder: 5
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1760033257
 GameObject:
@@ -1403,6 +1451,7 @@ MonoBehaviour:
   - {fileID: 1780488382}
   - {fileID: 1842700900}
   introReadyText: {fileID: 1813596381}
+  modeManager: {fileID: 797399382}
 --- !u!4 &1760033259
 Transform:
   m_ObjectHideFlags: 0
@@ -1649,20 +1698,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4bc2b296508eb488daf8afddddae2564, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  chaseModeDuration: 20
-  firstTwoScatterDuration: 7
-  lastTwoScatterDuration: 5
-  modeChangeIteration: 1
-  frightenedModeDuration: 10
-  startBlinkingAt: 7
   waitingDuration: 4
-  movSpeed: 24
-  frightenedModeSpeed: 20
-  currentMode: 4
+  currentState: 1
   entityId: 2
   isInBox: 1
   gameManager: {fileID: 1760033258}
   levelManager: {fileID: 1795960091}
+  modeManager: {fileID: 797399382}
 --- !u!212 &1780488383
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -1721,12 +1763,12 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1780488379}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
-  m_Father: {fileID: 0}
-  m_RootOrder: 6
+  m_Father: {fileID: 797399383}
+  m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1795960090
 GameObject:
@@ -2111,20 +2153,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4bc2b296508eb488daf8afddddae2564, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  chaseModeDuration: 20
-  firstTwoScatterDuration: 7
-  lastTwoScatterDuration: 5
-  modeChangeIteration: 1
-  frightenedModeDuration: 10
-  startBlinkingAt: 7
   waitingDuration: 12
-  movSpeed: 24
-  frightenedModeSpeed: 20
-  currentMode: 4
+  currentState: 1
   entityId: 4
   isInBox: 1
   gameManager: {fileID: 1760033258}
   levelManager: {fileID: 1795960091}
+  modeManager: {fileID: 797399382}
 --- !u!212 &1842700901
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -2183,12 +2218,12 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1842700897}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 12, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
-  m_Father: {fileID: 0}
-  m_RootOrder: 8
+  m_Father: {fileID: 797399383}
+  m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &2014334506
 GameObject:

@@ -24,6 +24,7 @@ public class GameManager : MonoBehaviour
 
     public TMP_Text introReadyText;
 
+    public ModeManager modeManager;
     private SoundManager soundManager;
     
     // Start is called before the first frame update
@@ -158,29 +159,18 @@ public class GameManager : MonoBehaviour
 
     private void StopGhosts()
     {
-        foreach (var ghost in ghosts)
-        {
-            ghost.OnPauseGame();
-        }
+        modeManager.OnPauseGame();
     }
 
     private void StartGhosts()
     {
-        foreach (var ghost in ghosts)
-        {
-            ghost.OnResumeGame();
-        }
+        modeManager.OnResumeGame();
     }
 
     public void SetFrightenedMode()
     {
         soundManager.PlayFrightenedMode();
-        foreach (var ghost in ghosts.Where(
-            x => x.currentMode == Ghost.Mode.Chase || x.currentMode == Ghost.Mode.Scatter)
-        )
-        {
-            ghost.SetFrightenedMode();
-        }
+        modeManager.SetFrightenedMode();
     }
 
     public void StopFrightenedMode()
@@ -197,9 +187,9 @@ public class GameManager : MonoBehaviour
 
     public void CollideGhost(Ghost ghost)
     {
-        if (ghost.currentMode == Ghost.Mode.Consumed) return;
+        if (ghost.currentState == Ghost.GhostState.Consumed) return;
             
-        if (ghost.currentMode == Ghost.Mode.Frightened)
+        if (modeManager.currentMode == ModeManager.Mode.Frightened)
         {
             player.IncrementEatenGhost();
             soundManager.PlayEatingGhostSound();
