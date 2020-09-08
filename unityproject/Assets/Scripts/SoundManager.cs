@@ -69,6 +69,11 @@ public class SoundManager : MonoBehaviour
     {
         return intro.length;
     }
+    
+    public float GetConsumptionWaitTime()
+    {
+        return eatingGhost.length;
+    }
 
     public void StopTileMapSound()
     {

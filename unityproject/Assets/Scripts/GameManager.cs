@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
@@ -185,6 +185,15 @@ public class GameManager : MonoBehaviour
         Time.timeScale = 1;
         soundManager.PlaySiren();
     }
+    
+    private IEnumerator WaitForGhostConsumption()
+    {
+        player.OnPauseGame();
+        var time = soundManager.GetConsumptionWaitTime();
+        soundManager.PlayEatingGhostSound();
+        yield return new WaitForSeconds(time);
+        player.OnResumeGame();
+    }
 
     private IEnumerator WaitForIntroMusic()
     {
@@ -232,8 +241,9 @@ public class GameManager : MonoBehaviour
         if (modeManager.currentMode == ModeManager.Mode.Frightened && !ghost.hasBeenEaten)
         {
             player.IncrementEatenGhost();
-            soundManager.PlayEatingGhostSound();
             AddEatenGhostPoints(player.EatenGhosts);
+            IEnumerator coroutine = WaitForGhostConsumption();
+            StartCoroutine(coroutine);
             EatGhost(ghost);
             return;
         }
