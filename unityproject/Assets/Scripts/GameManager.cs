@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
 using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -123,6 +122,7 @@ public class GameManager : MonoBehaviour
         if (remainingLives == 0)
         {
             Debug.Log("Game Over!");
+            score.SaveScore("PAC");
             SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex - 1);
         }
     }
@@ -226,6 +226,7 @@ public class GameManager : MonoBehaviour
         Time.timeScale = 0;
         StopGhosts();
         soundManager.StopTileMapSound();
+        score.SaveScore("PAC");
     }
 
     public void EatPellet(GameObject pelletGO, bool isPowerPellet)
