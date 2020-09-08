@@ -156,7 +156,7 @@ public class ModeManager : MonoBehaviour, IPauseable
     
     public void SetFrightenedMode()
     {
-        ghosts.Where(ghost => ghost.currentState != Ghost.GhostState.Consumed).ToList().ForEach(ghost => ghost.SetFrightenedAnimation());
+        ghosts.Where(ghost => ghost.currentState != Ghost.GhostState.Consumed).ToList().ForEach(ghost => ghost.SetFrightenedMode());
         _frightenedModeTimer = 0;
         ghosts.ForEach(ghost => ghost.Reverse());
         ChangeMode(Mode.Frightened);
@@ -181,15 +181,20 @@ public class ModeManager : MonoBehaviour, IPauseable
         }
     }
 
+    // Called when player is disappearing
     public void OnPauseGame()
     {
         movSpeed = 0;
-        // TODO gameObject.SetActive(false);
+        ghosts.ForEach(ghost => ghost.gameObject.SetActive(false));
     }
     
+    // Called after player has disappeared
     public void OnResumeGame()
     {
-        // TODO gameObject.SetActive(true);
+        ghosts.ForEach(ghost => ghost.Reset());
         movSpeed = normalSpeed;
+        ghosts.ForEach(ghost => ghost.gameObject.SetActive(true));
+        if(currentMode == Mode.Frightened)
+            ChangeMode(_previousMode);
     }
 }

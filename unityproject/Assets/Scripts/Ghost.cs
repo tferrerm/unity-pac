@@ -16,10 +16,13 @@ public class Ghost : MonoBehaviour, IEntity
     public float waitingDuration;
     private float _waitingTimer;
 
+    public GhostState initialState;
     public GhostState currentState;
     public EntityId entityId;
-    public bool isInBox;
+    public bool isInitiallyInBox;
+    private bool isInBox;
     private Vector2Int consumedBoxTile;
+    public bool hasBeenEaten;
 
     /*
      * References to other managers 
@@ -36,6 +39,8 @@ public class Ghost : MonoBehaviour, IEntity
      */
     void Start()
     {
+        currentState = initialState;
+        isInBox = isInitiallyInBox;
         _animator = GetComponent<Animator>();
         _animator.SetInteger("Direction", (int)currentDirection);
     }
@@ -73,8 +78,9 @@ public class Ghost : MonoBehaviour, IEntity
         }
     }
 
-    public void SetFrightenedAnimation()
+    public void SetFrightenedMode()
     {
+        hasBeenEaten = false;
         _animator.SetBool("FrightenedEnding", false);
         _animator.SetBool("Frightened", true);
     }
@@ -109,6 +115,7 @@ public class Ghost : MonoBehaviour, IEntity
                 if (modeManager.currentMode == ModeManager.Mode.Frightened)
                     gameManager.PlayFrightenedModeMelody();
                 currentState = GhostState.LeavingBox;
+                hasBeenEaten = true;
             }
 
             levelManager.UpdateTargetTile(entityId, currentDirection);
@@ -344,5 +351,14 @@ public class Ghost : MonoBehaviour, IEntity
     {
         if(currentState == GhostState.Roaming)
             _reverseDirection = true;
+    }
+
+    public void Reset()
+    {
+        currentState = initialState;
+        hasBeenEaten = false;
+        _animator.SetBool("Eaten", false);
+        _animator.SetBool("Frightened", false);
+        _animator.SetBool("FrightenedEnding", false);
     }
 }

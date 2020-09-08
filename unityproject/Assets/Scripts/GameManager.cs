@@ -199,7 +199,7 @@ public class GameManager : MonoBehaviour
     {
         if (ghost.currentState == Ghost.GhostState.Consumed) return;
             
-        if (modeManager.currentMode == ModeManager.Mode.Frightened)
+        if (modeManager.currentMode == ModeManager.Mode.Frightened && !ghost.hasBeenEaten)
         {
             player.IncrementEatenGhost();
             soundManager.PlayEatingGhostSound();

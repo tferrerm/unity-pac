@@ -261,9 +261,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   waitingDuration: 0
+  initialState: 0
   currentState: 0
   entityId: 1
-  isInBox: 0
+  isInitiallyInBox: 0
+  hasBeenEaten: 0
   gameManager: {fileID: 1760033258}
   levelManager: {fileID: 1795960091}
   modeManager: {fileID: 797399382}
@@ -519,9 +521,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   waitingDuration: 8
+  initialState: 1
   currentState: 1
   entityId: 3
-  isInBox: 1
+  isInitiallyInBox: 1
+  hasBeenEaten: 0
   gameManager: {fileID: 1760033258}
   levelManager: {fileID: 1795960091}
   modeManager: {fileID: 797399382}
@@ -1703,9 +1707,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   waitingDuration: 4
+  initialState: 1
   currentState: 1
   entityId: 2
-  isInBox: 1
+  isInitiallyInBox: 1
+  hasBeenEaten: 0
   gameManager: {fileID: 1760033258}
   levelManager: {fileID: 1795960091}
   modeManager: {fileID: 797399382}
@@ -2292,9 +2298,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   waitingDuration: 12
+  initialState: 1
   currentState: 1
   entityId: 4
-  isInBox: 1
+  isInitiallyInBox: 1
+  hasBeenEaten: 0
   gameManager: {fileID: 1760033258}
   levelManager: {fileID: 1795960091}
   modeManager: {fileID: 797399382}
