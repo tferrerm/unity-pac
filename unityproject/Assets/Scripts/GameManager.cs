@@ -149,7 +149,6 @@ public class GameManager : MonoBehaviour
     {
         Time.timeScale = 0;
         var time = soundManager.GetIntroWaitTime();
-        Debug.Log($"introTime: {time}");
         soundManager.PlayIntro();
         yield return new WaitForSecondsRealtime(time);
         introReadyText.gameObject.SetActive(false);

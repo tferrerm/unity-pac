@@ -238,9 +238,13 @@ public class LevelManager : MonoBehaviour
             var ghostY = _initialGhostPositions[i].y;
             _initialGhostPositions[i] = new Vector2Int(ghostX, ghostY);
             
+            ghost.transform.position = tileMap[ghostY][ghostX].gameObject.transform.position;
+            
             ghost.currentDirection = _initialGhostDirections[i];
             var ghostTargetTile = TargetTileFromInitDirection(_initialGhostDirections[i], ghostX, ghostY);
             entitiesTargetTileCoordinates[_ghostOrder[i]] = ghostTargetTile;
+            
+            Debug.Log($"{_ghostOrder[i]} {ghostX},{ghostY} {ghost.transform.position} {ghost.currentDirection} Target: {ghostTargetTile}");
         }
     }
 
