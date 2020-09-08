@@ -142,6 +142,17 @@ public class GameManager : MonoBehaviour
         yield return new WaitForSeconds(time);
         player.OnResumeGame();
         ResetPositions();
+        introReadyText.gameObject.SetActive(true);
+        IEnumerator coroutine = WaitAfterResetEntities();
+        StartCoroutine(coroutine);
+    }
+
+    private IEnumerator WaitAfterResetEntities()
+    {
+        Time.timeScale = 0;
+        yield return new WaitForSecondsRealtime(2);
+        introReadyText.gameObject.SetActive(false);
+        Time.timeScale = 1;
         soundManager.PlaySiren();
     }
 
