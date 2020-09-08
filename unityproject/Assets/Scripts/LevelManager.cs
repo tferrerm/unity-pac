@@ -49,6 +49,8 @@ public class LevelManager : MonoBehaviour
     private float tileMapHalfWidth;
     public float TileMapHalfWidth => tileMapHalfWidth;
 
+    private bool finishedGame;
+
     // Start is called before the first frame update
     void Awake()
     {
@@ -60,7 +62,7 @@ public class LevelManager : MonoBehaviour
             {
                 ParseRowsAndCols(reader);
                 CreateTileMap(reader);
-                InitializePlayerProperties(reader);
+                InitializeEntitiesProperties(reader);
             }
         }
         catch (Exception e)
@@ -73,9 +75,10 @@ public class LevelManager : MonoBehaviour
 
     private void Update()
     {
-        if (pelletPool.transform.childCount == 0)
+        if (pelletPool.transform.childCount == 0 && !finishedGame)
         {
-            gameManager.WinGame();
+            finishedGame = true;
+            gameManager.GameOver(true);
         }
     }
 
@@ -173,13 +176,15 @@ public class LevelManager : MonoBehaviour
     }
     
     
-    public void InitializePlayerProperties(StreamReader reader)
+    public void InitializeEntitiesProperties(StreamReader reader)
     {
+        reader.ReadLine(); // Player Header
+        
         var input = reader.ReadLine();
-        var initY = Int32.Parse(input);
+        var initX = Int32.Parse(input);
 
         input = reader.ReadLine();
-        var initX = Int32.Parse(input);
+        var initY = Int32.Parse(input);
 
         ValidateInitialPosition(initX, initY);
 
@@ -193,11 +198,15 @@ public class LevelManager : MonoBehaviour
 
         entitiesTargetTileCoordinates.Add(EntityId.Player, targetTileCoordinates);
 
+        reader.ReadLine(); // Ghosts Header
+        
         input = reader.ReadLine();
         _ghostCount = Math.Min(Int32.Parse(input), _ghostOrder.Length);
 
         for (int i = 0; i < _ghostCount; i++)
         {
+            reader.ReadLine(); // Ghost Header
+            
             input = reader.ReadLine();
             var ghostX = Int32.Parse(input);
             input = reader.ReadLine();
@@ -212,16 +221,14 @@ public class LevelManager : MonoBehaviour
 
             input = reader.ReadLine();
             _initialGhostDirections[i] = (Direction) Int32.Parse(input);
-
+            
             ghost.currentDirection = _initialGhostDirections[i];
             var ghostTargetTile = TargetTileFromInitDirection(_initialGhostDirections[i], ghostX, ghostY);
             entitiesTargetTileCoordinates.Add(_ghostOrder[i], ghostTargetTile);
-            
-            Debug.Log($"{_ghostOrder[i]} {ghostX},{ghostY} {ghost.transform.position} {ghost.currentDirection} Target: {ghostTargetTile}");
         }
     }
 
-    public void InitializePlayerProperties()
+    public void InitializeEntitiesProperties()
     {
         int initX = _initialPlayerPosition.x;
         int initY = _initialPlayerPosition.y;
@@ -243,8 +250,6 @@ public class LevelManager : MonoBehaviour
             ghost.currentDirection = _initialGhostDirections[i];
             var ghostTargetTile = TargetTileFromInitDirection(_initialGhostDirections[i], ghostX, ghostY);
             entitiesTargetTileCoordinates[_ghostOrder[i]] = ghostTargetTile;
-            
-            Debug.Log($"{_ghostOrder[i]} {ghostX},{ghostY} {ghost.transform.position} {ghost.currentDirection} Target: {ghostTargetTile}");
         }
     }
 

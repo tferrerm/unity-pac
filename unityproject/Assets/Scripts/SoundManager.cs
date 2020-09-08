@@ -15,6 +15,8 @@ public class SoundManager : MonoBehaviour
     public AudioClip siren;
     public AudioClip frightenedMode;
     public AudioClip consumedGhost;
+
+    public AudioClip outro;
     
     public void PlayEatingGhostSound()
     {
@@ -55,6 +57,13 @@ public class SoundManager : MonoBehaviour
     {
         tileMapAudioSource.PlayOneShot(intro);
     }
+    
+    public void PlayOutro()
+    {
+        tileMapAudioSource.clip = outro;
+        tileMapAudioSource.loop = false;
+        tileMapAudioSource.Play();
+    }
 
     public float GetIntroWaitTime()
     {
@@ -71,5 +80,10 @@ public class SoundManager : MonoBehaviour
         source.clip = clip;
         source.loop = true;
         source.Play();
+    }
+
+    public float GetOutroWaitTime()
+    {
+        return outro.length;
     }
 }

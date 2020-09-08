@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.Serialization;
 
 public class GameManager : MonoBehaviour
 {
@@ -21,7 +22,7 @@ public class GameManager : MonoBehaviour
     
     private float _tileMapHalfWidth;
 
-    public TMP_Text introReadyText;
+    public TMP_Text centerText;
 
     public ModeManager modeManager;
     private SoundManager soundManager;
@@ -121,10 +122,39 @@ public class GameManager : MonoBehaviour
 
         if (remainingLives == 0)
         {
-            Debug.Log("Game Over!");
-            score.SaveScore("PAC");
-            SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex - 1);
+            GameOver(false);
         }
+    }
+
+    public void GameOver(bool wonGame)
+    {
+        StopGhosts();
+        player.gameObject.SetActive(false);
+        score.SaveScore("PAC");
+        if (wonGame)
+        {
+            centerText.text = "YOU WIN!";
+            centerText.color = Color.green;
+            centerText.gameObject.SetActive(true);
+            soundManager.PlayOutro();
+            IEnumerator coroutine = WaitForOutro();
+            StartCoroutine(coroutine);
+        }
+        else
+        {
+            centerText.text = "GAME OVER";
+            centerText.color = Color.red;
+            centerText.gameObject.SetActive(true);
+            IEnumerator coroutine = WaitForOutro();
+            StartCoroutine(coroutine);
+        }
+        //SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex + 1); TODO HIGHSCORE SCENE
+    }
+
+    private IEnumerator WaitForOutro()
+    {
+        var time = soundManager.GetOutroWaitTime();
+        yield return new WaitForSeconds(time);
     }
 
     private void DisappearAndReset()
@@ -142,7 +172,7 @@ public class GameManager : MonoBehaviour
         yield return new WaitForSeconds(time);
         player.OnResumeGame();
         ResetPositions();
-        introReadyText.gameObject.SetActive(true);
+        centerText.gameObject.SetActive(true);
         IEnumerator coroutine = WaitAfterResetEntities();
         StartCoroutine(coroutine);
     }
@@ -151,7 +181,7 @@ public class GameManager : MonoBehaviour
     {
         Time.timeScale = 0;
         yield return new WaitForSecondsRealtime(2);
-        introReadyText.gameObject.SetActive(false);
+        centerText.gameObject.SetActive(false);
         Time.timeScale = 1;
         soundManager.PlaySiren();
     }
@@ -162,7 +192,7 @@ public class GameManager : MonoBehaviour
         var time = soundManager.GetIntroWaitTime();
         soundManager.PlayIntro();
         yield return new WaitForSecondsRealtime(time);
-        introReadyText.gameObject.SetActive(false);
+        centerText.gameObject.SetActive(false);
         soundManager.PlaySiren();
         Time.timeScale = 1;
     }
@@ -191,7 +221,7 @@ public class GameManager : MonoBehaviour
 
     private void ResetPositions()
     {
-        levelManager.InitializePlayerProperties();
+        levelManager.InitializeEntitiesProperties();
         StartGhosts();
     }
 
@@ -230,14 +260,6 @@ public class GameManager : MonoBehaviour
     public void AddEatenGhostPoints(int eatenGhosts)
     {
         score.AddEatenGhostPoints(eatenGhosts);
-    }
-
-    public void WinGame()
-    {
-        Time.timeScale = 0;
-        StopGhosts();
-        soundManager.StopTileMapSound();
-        score.SaveScore("PAC");
     }
 
     public void EatPellet(GameObject pelletGO, bool isPowerPellet)

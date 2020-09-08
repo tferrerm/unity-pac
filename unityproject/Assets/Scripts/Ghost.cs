@@ -357,6 +357,7 @@ public class Ghost : MonoBehaviour, IEntity
     {
         currentState = initialState;
         hasBeenEaten = false;
+        _waitingTimer = 0;
         _animator.SetBool("Eaten", false);
         _animator.SetBool("Frightened", false);
         _animator.SetBool("FrightenedEnding", false);

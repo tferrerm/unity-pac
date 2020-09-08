@@ -1458,7 +1458,7 @@ MonoBehaviour:
   - {fileID: 923034327}
   - {fileID: 1780488382}
   - {fileID: 1842700900}
-  introReadyText: {fileID: 1813596381}
+  centerText: {fileID: 1813596381}
   modeManager: {fileID: 797399382}
 --- !u!4 &1760033259
 Transform:
@@ -1495,6 +1495,7 @@ MonoBehaviour:
   siren: {fileID: 8300000, guid: 3072effd678f64c7786920a60652ce4b, type: 3}
   frightenedMode: {fileID: 8300000, guid: 62aa1421829ec4233996c46b44e73af1, type: 3}
   consumedGhost: {fileID: 8300000, guid: 68abe3ff67b88433cb7f9eb6e5c718c7, type: 3}
+  outro: {fileID: 8300000, guid: 2ce86dadf476a479db00e892d2c001c6, type: 3}
 --- !u!1 &1766515223
 GameObject:
   m_ObjectHideFlags: 0
