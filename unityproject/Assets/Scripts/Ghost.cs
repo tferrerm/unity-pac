@@ -106,6 +106,8 @@ public class Ghost : MonoBehaviour, IEntity
             if (currentState == GhostState.Consumed && levelManager.ReachedTile(entityId, consumedBoxTile))
             {
                 _animator.SetBool("Eaten", false);
+                if (modeManager.currentMode == ModeManager.Mode.Frightened)
+                    gameManager.PlayFrightenedModeMelody();
                 currentState = GhostState.LeavingBox;
             }
 

@@ -243,4 +243,9 @@ public class GameManager : MonoBehaviour
         Destroy(pelletGO);
         soundManager.PlayWakaWakaSound();
     }
+
+    public void PlayFrightenedModeMelody()
+    {
+        soundManager.PlayFrightenedMode();
+    }
 }
