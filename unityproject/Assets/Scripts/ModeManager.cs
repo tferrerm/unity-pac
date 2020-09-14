@@ -180,6 +180,18 @@ public class ModeManager : MonoBehaviour, IPauseable
             currentMode = m;
         }
     }
+    
+    // Called when ghost is eaten
+    public void OnPauseGameWhenEaten(Ghost ghost, int ghostsEaten)
+    {
+        movSpeed = 0;
+        ghost.SetPointsAnimation(ghostsEaten);
+    }
+    
+    public void OnResumeGameWhenEaten(Ghost ghost)
+    {
+        movSpeed = frightenedModeSpeed;
+    }
 
     // Called when player is disappearing
     public void OnPauseGame()

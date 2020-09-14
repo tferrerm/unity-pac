@@ -94,6 +94,12 @@ public class Ghost : MonoBehaviour, IEntity
     {
         _animator.SetBool("Frightened", false);
         _animator.SetBool("FrightenedEnding", false);
+        _animator.SetInteger("Points", 0);
+    }
+
+    public void SetPointsAnimation(int eatenGhosts)
+    {
+        _animator.SetInteger("Points", eatenGhosts);
     }
 
     private void Move()

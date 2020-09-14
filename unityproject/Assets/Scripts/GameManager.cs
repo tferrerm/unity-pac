@@ -186,13 +186,16 @@ public class GameManager : MonoBehaviour
         soundManager.PlaySiren();
     }
     
-    private IEnumerator WaitForGhostConsumption()
+    private IEnumerator WaitForGhostConsumption(Ghost ghost)
     {
-        player.OnPauseGame();
+        player.OnPauseGameWhenEating();
+        modeManager.OnPauseGameWhenEaten(ghost, player.EatenGhosts);
         var time = soundManager.GetConsumptionWaitTime();
         soundManager.PlayEatingGhostSound();
         yield return new WaitForSeconds(time);
-        player.OnResumeGame();
+        EatGhost(ghost);
+        player.OnResumeGameWhenEating();
+        modeManager.OnResumeGameWhenEaten(ghost);
     }
 
     private IEnumerator WaitForIntroMusic()
@@ -242,9 +245,8 @@ public class GameManager : MonoBehaviour
         {
             player.IncrementEatenGhost();
             AddEatenGhostPoints(player.EatenGhosts);
-            IEnumerator coroutine = WaitForGhostConsumption();
+            IEnumerator coroutine = WaitForGhostConsumption(ghost);
             StartCoroutine(coroutine);
-            EatGhost(ghost);
             return;
         }
         player.PlayDisappearingAnimation();

@@ -5,12 +5,14 @@ using UnityEngine;
 
 public class Player : MonoBehaviour, IEntity, IPauseable
 {
-    public float movSpeed = 10f;
+    private float movSpeed;
+    public float normalSpeed = 30f;
     private Direction? nextDirection;
     private bool hasCollidedWall;
     private readonly Dictionary<KeyCode, Direction> keyDirections = new Dictionary<KeyCode, Direction>();
     private readonly Dictionary<Direction, int> directionRotationAngles = new Dictionary<Direction, int>();
     private Animator _animator;
+    private SpriteRenderer _spriteRenderer;
 
     private int _eatenGhosts = 0;
 
@@ -20,6 +22,8 @@ public class Player : MonoBehaviour, IEntity, IPauseable
     // Start is called before the first frame update
     private void Start()
     {
+        movSpeed = normalSpeed;
+        
         keyDirections.Add(KeyCode.LeftArrow, Direction.Left);
         keyDirections.Add(KeyCode.RightArrow, Direction.Right);
         keyDirections.Add(KeyCode.UpArrow, Direction.Up);
@@ -31,6 +35,7 @@ public class Player : MonoBehaviour, IEntity, IPauseable
         directionRotationAngles.Add(Direction.Down, 270);
         
         _animator = GetComponent<Animator>();
+        _spriteRenderer = GetComponent<SpriteRenderer>();
         soundManager = gameManager.GetComponent<SoundManager>();
     }
 
@@ -115,7 +120,6 @@ public class Player : MonoBehaviour, IEntity, IPauseable
     {
         _animator.SetBool("Disappear", false);
         _animator.Play("Pacman");
-
     }
 
     public void ResetEatenGhosts()
@@ -132,6 +136,18 @@ public class Player : MonoBehaviour, IEntity, IPauseable
     {
         _animator.transform.rotation = Quaternion.Euler(new Vector3(0, 0, 0));
         _animator.SetBool("Disappear", true);
+    }
+
+    public void OnPauseGameWhenEating()
+    {
+        movSpeed = 0;
+        _spriteRenderer.enabled = false;
+    }
+    
+    public void OnResumeGameWhenEating()
+    {
+        _spriteRenderer.enabled = true;
+        movSpeed = normalSpeed;
     }
 
     public int EatenGhosts => _eatenGhosts;
