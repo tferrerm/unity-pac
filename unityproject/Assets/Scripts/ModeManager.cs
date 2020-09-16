@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -33,8 +34,9 @@ public class ModeManager : MonoBehaviour, IPauseable
     /*
      * Modes
      */
-    public Mode currentMode = Mode.Scatter;
+    public Mode currentMode;
     private Mode _previousMode = Mode.Scatter;
+    public Mode initialMode = Mode.Scatter;
     
     /*
      * Speeds
@@ -43,6 +45,8 @@ public class ModeManager : MonoBehaviour, IPauseable
     public float normalSpeed = 25f;
     public float frightenedModeSpeed = 15f;
     public float consumedStateSpeed = 40f;
+    public float maxGameSpeed = 50f;
+    private float roundSpeedMultiplier = 1.1f;
 
     public List<Ghost> ghosts;
 
@@ -51,7 +55,7 @@ public class ModeManager : MonoBehaviour, IPauseable
     // Start is called before the first frame update
     void Start()
     {
-        
+        currentMode = initialMode;
     }
 
     // Update is called once per frame
@@ -208,5 +212,17 @@ public class ModeManager : MonoBehaviour, IPauseable
         ghosts.ForEach(ghost => ghost.gameObject.SetActive(true));
         if(currentMode == Mode.Frightened)
             ChangeMode(_previousMode);
+    }
+
+    public void OnResetToNextRound()
+    {
+        currentMode = initialMode;
+        _modeChangeTimer = 0;
+
+        normalSpeed = Mathf.Min(normalSpeed * roundSpeedMultiplier, maxGameSpeed);
+        
+        ghosts.ForEach(ghost => ghost.Reset());
+        movSpeed = normalSpeed;
+        ghosts.ForEach(ghost => ghost.gameObject.SetActive(true));
     }
 }

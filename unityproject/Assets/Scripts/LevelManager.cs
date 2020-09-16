@@ -19,6 +19,7 @@ public class LevelManager : MonoBehaviour
     public GameObject pelletPool;
     public GameObject pelletPrefab;
     public GameObject powerPelletPrefab;
+    private List<Transform> pelletTransforms = new List<Transform>();
     
     private MapComponent[][] tileMap;
     private Dictionary<EntityId, Vector2Int> entitiesTargetTileCoordinates;
@@ -75,11 +76,17 @@ public class LevelManager : MonoBehaviour
 
     private void Update()
     {
-        if (pelletPool.transform.childCount == 0 && !finishedGame)
+        if (finishedGame)
+            return;
+        
+        foreach (Transform child in pelletPool.transform)
         {
-            finishedGame = true;
-            gameManager.GameOver(true);
+            if (child.gameObject.activeSelf)
+                return;
         }
+        
+        finishedGame = true;
+        gameManager.GameOver(true);
     }
 
     private void CreateTileMap(StreamReader reader)
@@ -155,17 +162,20 @@ public class LevelManager : MonoBehaviour
         tileMap[row][col] = mapComponent;
 
         tileGO.AddComponent<SpriteRenderer>();
+        GameObject pellet;
         if (mapComponent.HasPellet)
         {
             // Instantiate pellet
             tileGO.GetComponent<SpriteRenderer>().sprite = spriteDict["."];
-            Instantiate(pelletPrefab, positionPointer, Quaternion.identity, pelletPool.transform);
+            pellet = Instantiate(pelletPrefab, positionPointer, Quaternion.identity, pelletPool.transform);
+            pelletTransforms.Add(pellet.transform);
         }
         else if (mapComponent.HasPowerPellet)
         {
             // Instantiate power pellet
             tileGO.GetComponent<SpriteRenderer>().sprite = spriteDict["."];
-            Instantiate(powerPelletPrefab, positionPointer, Quaternion.identity, pelletPool.transform);
+            pellet = Instantiate(powerPelletPrefab, positionPointer, Quaternion.identity, pelletPool.transform);
+            pelletTransforms.Add(pellet.transform);
         }
         else
         {
@@ -232,8 +242,7 @@ public class LevelManager : MonoBehaviour
     {
         int initX = _initialPlayerPosition.x;
         int initY = _initialPlayerPosition.y;
-        player.transform.position = tileMap[initY][initX].gameObject
-            .transform.position;
+        player.transform.position = tileMap[initY][initX].gameObject.transform.position;
         gameManager.SetPlayerDirection(_initialPlayerDirection);
         Vector2Int targetTileCoordinates = TargetTileFromInitDirection(_initialPlayerDirection, initX, initY);
         entitiesTargetTileCoordinates[EntityId.Player] = targetTileCoordinates;
@@ -715,5 +724,10 @@ public class LevelManager : MonoBehaviour
     public bool ReachedTile(EntityId entityId, Vector2Int tile)
     {
         return entitiesTargetTileCoordinates[entityId].Equals(tile);
+    }
+
+    public void SetAllPelletsActive()
+    {
+        pelletTransforms.ForEach(pellet => pellet.gameObject.SetActive(true));
     }
 }

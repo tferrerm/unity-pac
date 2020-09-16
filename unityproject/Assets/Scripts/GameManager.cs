@@ -49,6 +49,7 @@ public class GameManager : MonoBehaviour
     {
         player.CurrentDirection = direction;
         player.NextDirection = null;
+        player.HasCollidedWall = false;
     }
 
     public Direction GetPlayerDirection()
@@ -132,31 +133,61 @@ public class GameManager : MonoBehaviour
     {
         StopGhosts();
         player.gameObject.SetActive(false);
-        score.SaveScore("PAC");
         if (wonGame)
         {
-            centerText.text = "YOU WIN!";
+            centerText.text = "ROUND OVER!";
             centerText.color = Color.green;
             centerText.gameObject.SetActive(true);
+            
             soundManager.PlayOutro();
-            IEnumerator coroutine = WaitForOutro();
+            IEnumerator coroutine = WaitForNextRound();
             StartCoroutine(coroutine);
         }
         else
         {
+            score.SaveScore("PAC");
             centerText.text = "GAME OVER";
             centerText.color = Color.red;
             centerText.gameObject.SetActive(true);
             IEnumerator coroutine = WaitForOutro();
             StartCoroutine(coroutine);
+            //SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex + 1); TODO HIGHSCORE SCENE
         }
-        //SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex + 1); TODO HIGHSCORE SCENE
+    }
+
+    private IEnumerator WaitForNextRound()
+    {
+        Time.timeScale = 0;
+        
+        player.CanReadInput = false;
+        
+        var time = soundManager.GetOutroWaitTime();
+        yield return new WaitForSecondsRealtime(time);
+        
+        centerText.text = "READY!";
+        centerText.color = Color.yellow;
+        
+        levelManager.InitializeEntitiesProperties();
+        levelManager.SetAllPelletsActive();
+        modeManager.OnResetToNextRound();
+        player.gameObject.SetActive(true);
+        
+        yield return new WaitForSecondsRealtime(WaitingTimeAfterReset);
+        
+        centerText.gameObject.SetActive(false);
+        soundManager.PlaySiren();
+        player.CanReadInput = true;
+        
+        Time.timeScale = 1;
     }
 
     private IEnumerator WaitForOutro()
     {
+        Time.timeScale = 0;
         var time = soundManager.GetOutroWaitTime();
-        yield return new WaitForSeconds(time);
+        yield return new WaitForSecondsRealtime(time);
+        centerText.gameObject.SetActive(false);
+        Time.timeScale = 1;
     }
 
     private void DisappearAndReset()
@@ -292,7 +323,7 @@ public class GameManager : MonoBehaviour
             AddPelletPoints();
         }
         
-        Destroy(pelletGO);
+        pelletGO.SetActive(false);
         soundManager.PlayWakaWakaSound();
     }
 
