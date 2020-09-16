@@ -11,6 +11,7 @@ public class Player : MonoBehaviour, IEntity, IPauseable
     private bool hasCollidedWall;
     private readonly Dictionary<KeyCode, Direction> keyDirections = new Dictionary<KeyCode, Direction>();
     private readonly Dictionary<Direction, int> directionRotationAngles = new Dictionary<Direction, int>();
+    private bool canReadInput = false;
     private Animator _animator;
     private SpriteRenderer _spriteRenderer;
 
@@ -53,7 +54,8 @@ public class Player : MonoBehaviour, IEntity, IPauseable
     // Check if direction can be changed instantly
     private void HandleInput(Direction inputDirection)
     {
-        gameManager.ValidateInputDirection(inputDirection, currentDirection, hasCollidedWall);
+        if(canReadInput)
+            gameManager.ValidateInputDirection(inputDirection, currentDirection, hasCollidedWall);
     }
 
     private void MovePlayer()
@@ -151,6 +153,9 @@ public class Player : MonoBehaviour, IEntity, IPauseable
     }
 
     public int EatenGhosts => _eatenGhosts;
-    
-    
+
+    public bool CanReadInput
+    {
+        set => canReadInput = value;
+    }
 }

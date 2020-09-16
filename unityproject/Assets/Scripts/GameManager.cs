@@ -26,6 +26,8 @@ public class GameManager : MonoBehaviour
 
     public ModeManager modeManager;
     private SoundManager soundManager;
+
+    private const float WaitingTimeAfterReset = 2f;
     
     // Start is called before the first frame update
     void Start()
@@ -179,11 +181,13 @@ public class GameManager : MonoBehaviour
 
     private IEnumerator WaitAfterResetEntities()
     {
+        player.CanReadInput = false;
         Time.timeScale = 0;
-        yield return new WaitForSecondsRealtime(2);
+        yield return new WaitForSecondsRealtime(WaitingTimeAfterReset);
         centerText.gameObject.SetActive(false);
-        Time.timeScale = 1;
         soundManager.PlaySiren();
+        player.CanReadInput = true;
+        Time.timeScale = 1;
     }
     
     private IEnumerator WaitForGhostConsumption(Ghost ghost)
@@ -200,12 +204,14 @@ public class GameManager : MonoBehaviour
 
     private IEnumerator WaitForIntroMusic()
     {
+        player.CanReadInput = false;
         Time.timeScale = 0;
         var time = soundManager.GetIntroWaitTime();
         soundManager.PlayIntro();
         yield return new WaitForSecondsRealtime(time);
         centerText.gameObject.SetActive(false);
         soundManager.PlaySiren();
+        player.CanReadInput = true;
         Time.timeScale = 1;
     }
 
