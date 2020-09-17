@@ -123,11 +123,14 @@ public class GameManager : MonoBehaviour
     public void DecrementLives()
     {
         int remainingLives = livesManager.DecrementLives();
-        DisappearAndReset();
 
         if (remainingLives == 0)
         {
             GameOver(false);
+        }
+        else
+        {
+            DisappearAndReset();
         }
     }
 
@@ -186,9 +189,18 @@ public class GameManager : MonoBehaviour
     private IEnumerator WaitForOutro()
     {
         Time.timeScale = 0;
-        var time = soundManager.GetOutroWaitTime();
+        
+        StopGhosts();
+        soundManager.StopTileMapSound();
+        var time = soundManager.GetDisappearingWaitTime();
+        player.OnPauseGame(); // TODO NOT WORKING
+        yield return new WaitForSeconds(time);
+        
+        time = soundManager.GetOutroWaitTime();
         yield return new WaitForSecondsRealtime(time);
+        
         centerText.gameObject.SetActive(false);
+        
         Time.timeScale = 1;
     }
 
