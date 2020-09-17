@@ -10,8 +10,12 @@ public class Score : MonoBehaviour
     private const String highScoreSeparator = "-";
     
     private int _score;
+    private bool _addedExtraLife;
+    private const int ExtraLifeScore = 10000;
     public TMP_Text highScoreText;
     public TMP_Text scoreText;
+
+    private LivesManager livesManager;
 
     private void Awake()
     {
@@ -26,11 +30,23 @@ public class Score : MonoBehaviour
     public void AddPelletPoints()
     {
         _score += PointsPerPellet;
+        
+        if (!_addedExtraLife && _score >= ExtraLifeScore)
+        {
+            _addedExtraLife = true;
+            livesManager.OneLifeUp();
+        }
     }
 
     public void AddPowerPelletPoints()
     {
         _score += PointsPerPowerPellet;
+        
+        if (!_addedExtraLife && _score >= ExtraLifeScore)
+        {
+            _addedExtraLife = true;
+            livesManager.OneLifeUp();
+        }
     }
 
     public void AddEatenGhostPoints(int eatenGhosts)
@@ -79,5 +95,10 @@ public class Score : MonoBehaviour
                 continue;
             PlayerPrefs.SetString($"{i+1}", highScore);
         }
+    }
+
+    public LivesManager LivesManager
+    {
+        set => livesManager = value;
     }
 }

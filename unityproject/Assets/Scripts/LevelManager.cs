@@ -726,8 +726,9 @@ public class LevelManager : MonoBehaviour
         return entitiesTargetTileCoordinates[entityId].Equals(tile);
     }
 
-    public void SetAllPelletsActive()
+    public void ResetPellets()
     {
         pelletTransforms.ForEach(pellet => pellet.gameObject.SetActive(true));
+        finishedGame = false;
     }
 }

@@ -34,6 +34,8 @@ public class GameManager : MonoBehaviour
     {
         soundManager = GetComponent<SoundManager>();
         _tileMapHalfWidth = levelManager.TileMapHalfWidth;
+        score.LivesManager = livesManager;
+        
         IEnumerator coroutine = WaitForIntroMusic();
         StartCoroutine(coroutine);
     }
@@ -168,7 +170,7 @@ public class GameManager : MonoBehaviour
         centerText.color = Color.yellow;
         
         levelManager.InitializeEntitiesProperties();
-        levelManager.SetAllPelletsActive();
+        levelManager.ResetPellets();
         modeManager.OnResetToNextRound();
         player.gameObject.SetActive(true);
         
@@ -296,16 +298,6 @@ public class GameManager : MonoBehaviour
         soundManager.PlayConsumedGhost();
     }
 
-    public void AddPelletPoints()
-    {
-        score.AddPelletPoints();
-    }
-
-    public void AddPowerPelletPoints()
-    {
-        score.AddPowerPelletPoints();
-    }
-
     public void AddEatenGhostPoints(int eatenGhosts)
     {
         score.AddEatenGhostPoints(eatenGhosts);
@@ -315,12 +307,12 @@ public class GameManager : MonoBehaviour
     {
         if (isPowerPellet)
         {
-            AddPowerPelletPoints();
+            score.AddPowerPelletPoints();
             SetFrightenedMode();
         }
         else
         {
-            AddPelletPoints();
+            score.AddPelletPoints();
         }
         
         pelletGO.SetActive(false);
