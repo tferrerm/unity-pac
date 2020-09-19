@@ -10,6 +10,7 @@ public class SoundManager : MonoBehaviour
     public AudioClip disappearingSound;
     public AudioClip wakaWaka;
     public AudioClip eatingGhost;
+    public AudioClip eatingFruit;
     
     public AudioClip intro;
     public AudioClip siren;
@@ -51,6 +52,11 @@ public class SoundManager : MonoBehaviour
     public void PlayConsumedGhost()
     {
         PlayLoop(tileMapAudioSource, consumedGhost);
+    }
+
+    public void PlayConsumedFruit()
+    {
+        playerAudioSource.PlayOneShot(eatingFruit);
     }
 
     public void PlayIntro()

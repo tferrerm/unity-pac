@@ -80,6 +80,9 @@ public class Player : MonoBehaviour, IEntity, IPauseable
         {
             Ghost ghost = other.GetComponent<Ghost>();
             gameManager.CollideGhost(ghost);
+        } else if (other.CompareTag("FruitBonus"))
+        {
+            gameManager.EatBonus(other.gameObject);
         }
     }
 

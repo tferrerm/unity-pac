@@ -6,6 +6,7 @@ public class Score : MonoBehaviour
 {
     private const int PointsPerPellet = 10;
     private const int PointsPerPowerPellet = 50;
+    private const int PointsPerBonusFruit = 200;
     private const int MaxHighScoreEntries = 5;
     private const String highScoreSeparator = "-";
     
@@ -52,6 +53,11 @@ public class Score : MonoBehaviour
     public void AddEatenGhostPoints(int eatenGhosts)
     {
         _score += (int)Math.Pow(2, eatenGhosts) * 100;
+    }
+
+    public void AddFruitBonusPoints()
+    {
+        _score += PointsPerBonusFruit;
     }
 
     public int GetHighestScore()

@@ -8,6 +8,7 @@ TagManager:
   - Blinky
   - Pellet
   - PowerPellet
+  - FruitBonus
   layers:
   - Default
   - TransparentFX
