@@ -11,7 +11,7 @@ public class GameManager : MonoBehaviour
     public LevelManager levelManager;
     public Score score;
     public LivesManager livesManager;
-
+    
     public Player player;
     public Ghost[] ghosts = new Ghost[4];
 
@@ -45,6 +45,8 @@ public class GameManager : MonoBehaviour
 
     private const float WaitingTimeAfterReset = 2f;
 
+    public GameObject pauseMenu;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -58,7 +60,30 @@ public class GameManager : MonoBehaviour
 
     private void Update()
     {
-        // Debug.Log($"fruit timer {_fruitTimer} fruit status {_fruitStatus} fruit ");
+        if (Input.GetKeyDown(KeyCode.Escape))
+        {
+            Time.timeScale = pauseMenu.activeSelf ? 1 : 0;
+            pauseMenu.SetActive(!pauseMenu.activeSelf);
+        }
+
+        FruitHandler();
+    }
+
+    public void PauseMenuResume()
+    {
+        pauseMenu.SetActive(false);
+        Time.timeScale = 1;
+    }
+    
+    public void GoToMainMenu()
+    {
+        pauseMenu.SetActive(false);
+        Time.timeScale = 1;
+        SceneManager.LoadScene(0);
+    }
+
+    private void FruitHandler()
+    {
         if (_fruitStatus == FruitStatus.Waiting)
         {
             _fruitTimer += Time.deltaTime;
