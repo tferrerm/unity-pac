@@ -355,7 +355,8 @@ public class GameManager : MonoBehaviour
     public void EatGhost(Ghost ghost)
     {
         ghost.Consume();
-        soundManager.PlayConsumedGhost();
+        if(modeManager.currentMode == ModeManager.Mode.Frightened)
+            soundManager.PlayConsumedGhost();
     }
 
     public void AddEatenGhostPoints(int eatenGhosts)

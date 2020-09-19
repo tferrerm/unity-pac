@@ -81,6 +81,7 @@ public class Ghost : MonoBehaviour, IEntity
     public void SetFrightenedMode()
     {
         hasBeenEaten = false;
+        _animator.SetInteger("Points", 0);
         _animator.SetBool("FrightenedEnding", false);
         _animator.SetBool("Frightened", true);
     }
