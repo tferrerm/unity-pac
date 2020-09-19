@@ -177,9 +177,9 @@ public class GameManager : MonoBehaviour
     public void GameOver(bool wonGame)
     {
         StopGhosts();
-        player.gameObject.SetActive(false);
         if (wonGame)
         {
+            player.gameObject.SetActive(false);
             centerText.text = "ROUND OVER!";
             centerText.color = Color.green;
             centerText.gameObject.SetActive(true);
@@ -191,9 +191,6 @@ public class GameManager : MonoBehaviour
         else
         {
             score.SaveScore("PAC");
-            centerText.text = "GAME OVER";
-            centerText.color = Color.red;
-            centerText.gameObject.SetActive(true);
             IEnumerator coroutine = WaitForOutro();
             StartCoroutine(coroutine);
             //SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex + 1); TODO HIGHSCORE SCENE
@@ -236,20 +233,23 @@ public class GameManager : MonoBehaviour
 
     private IEnumerator WaitForOutro()
     {
-        Time.timeScale = 0;
-        
         StopGhosts();
         soundManager.StopTileMapSound();
+        
         var time = soundManager.GetDisappearingWaitTime();
-        player.OnPauseGame(); // TODO NOT WORKING
+        player.OnPauseGame();
         yield return new WaitForSeconds(time);
+        
+        player.gameObject.SetActive(false);
+        
+        centerText.text = "GAME OVER";
+        centerText.color = Color.red;
+        centerText.gameObject.SetActive(true);
         
         time = soundManager.GetOutroWaitTime();
         yield return new WaitForSecondsRealtime(time);
         
         centerText.gameObject.SetActive(false);
-        
-        Time.timeScale = 1;
     }
 
     private void DisappearAndReset()

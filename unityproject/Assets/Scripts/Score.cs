@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 
@@ -7,7 +8,7 @@ public class Score : MonoBehaviour
     private const int PointsPerPellet = 10;
     private const int PointsPerPowerPellet = 50;
     private const int PointsPerBonusFruit = 200;
-    private const int MaxHighScoreEntries = 5;
+    private const int MaxHighScoreEntries = 10;
     private const String highScoreSeparator = "-";
     
     private int _score;
