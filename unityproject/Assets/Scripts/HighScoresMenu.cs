@@ -12,14 +12,17 @@ public class HighScoresMenu : MonoBehaviour
 
     public Transform highScoresParent;
     public TMP_Text highScorePrefab;
+    public TMP_Text highScoreHeader;
     
-    private const float HighScoreTopOffset = 20f;
+    private const float HighScoreTopOffset = 10f;
     private const float HighScoreSeparation = 20f;
     
     // Start is called before the first frame update
     void Start()
     {
         List<int> highScores = GetHighScores();
+
+        var currentHighScore = PlayerPrefs.GetInt("currentHighScore");
 
         Vector3 position = highScorePrefab.transform.position;
         position = new Vector3(position.x, position.y - HighScoreTopOffset, position.z);
@@ -29,6 +32,13 @@ public class HighScoresMenu : MonoBehaviour
         {
             TMP_Text scoreGO = Instantiate(highScorePrefab, position, highScoresParent.rotation);
             scoreGO.transform.SetParent(highScoresParent, false);
+            
+            if (count == currentHighScore)
+            {
+                highScoreHeader.gameObject.SetActive(true);
+                scoreGO.color = Color.yellow;
+                PlayerPrefs.SetInt("currentHighScore", 0);
+            }
 
             scoreGO.text = $"{count} - {score}";
             count++;

@@ -80,6 +80,7 @@ public class Score : MonoBehaviour
                 String newScore = $"{_score}{highScoreSeparator}{playerName}";
                 PlayerPrefs.SetString($"{i}", newScore);
                 // Debug.Log($"Put high score {i} {newScore}");
+                PlayerPrefs.SetInt("currentHighScore", i);
                 PlayerPrefs.Save();
                 return;
             }

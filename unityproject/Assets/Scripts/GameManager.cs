@@ -193,7 +193,6 @@ public class GameManager : MonoBehaviour
             score.SaveScore("PAC");
             IEnumerator coroutine = WaitForOutro();
             StartCoroutine(coroutine);
-            //SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex + 1); TODO HIGHSCORE SCENE
         }
     }
 
@@ -249,7 +248,7 @@ public class GameManager : MonoBehaviour
         time = soundManager.GetOutroWaitTime();
         yield return new WaitForSecondsRealtime(time);
         
-        centerText.gameObject.SetActive(false);
+        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex + 1);
     }
 
     private void DisappearAndReset()
