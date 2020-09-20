@@ -356,6 +356,7 @@ public class Ghost : MonoBehaviour, IEntity
 
     public void Reset()
     {
+        isInBox = isInitiallyInBox;
         currentState = initialState;
         hasBeenEaten = false;
         _waitingTimer = 0;

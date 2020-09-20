@@ -11,6 +11,7 @@ public class Player : MonoBehaviour, IEntity, IPauseable
     private readonly Dictionary<KeyCode, Direction> keyDirections = new Dictionary<KeyCode, Direction>();
     private readonly Dictionary<Direction, int> directionRotationAngles = new Dictionary<Direction, int>();
     private bool canReadInput;
+    private Direction? inputWhileFrozen;
     private Animator _animator;
     private int _animatorDisappearId;
     private SpriteRenderer _spriteRenderer;
@@ -44,6 +45,12 @@ public class Player : MonoBehaviour, IEntity, IPauseable
     // Update is called once per frame
     private void Update()
     {
+        if (inputWhileFrozen != null && canReadInput)
+        {
+            gameManager.ValidateInputDirection(inputWhileFrozen.GetValueOrDefault(), currentDirection, hasCollidedWall);
+            inputWhileFrozen = null;
+        }
+        
         MovePlayer();
 
         foreach (var keyValuePair in keyDirections.Where(keyValuePair => Input.GetKey(keyValuePair.Key)))
@@ -57,6 +64,10 @@ public class Player : MonoBehaviour, IEntity, IPauseable
     {
         if(canReadInput)
             gameManager.ValidateInputDirection(inputDirection, currentDirection, hasCollidedWall);
+        else
+        {
+            inputWhileFrozen = inputDirection;
+        }
     }
 
     private void MovePlayer()
