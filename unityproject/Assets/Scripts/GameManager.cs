@@ -35,6 +35,7 @@ public class GameManager : MonoBehaviour
         {
             Time.timeScale = pauseMenu.activeSelf ? 1 : 0;
             pauseMenu.SetActive(!pauseMenu.activeSelf);
+            AudioListener.pause = pauseMenu.activeSelf;
         }
     }
 
