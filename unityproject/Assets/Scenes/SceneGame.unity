@@ -2708,7 +2708,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 06453bac6fc99d140aa0c09fe6e2c547, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  fileName: Assets/Resources/level_classic.txt
+  inputFile: {fileID: 4900000, guid: 73a5f2d831a5d8d4386305e2b316f452, type: 3}
   levelManager: {fileID: 1795960091}
   tileSprites:
   - {fileID: -7732054193419636090, guid: e7c0d2614a7094b4ca25ac4c994b9be8, type: 3}

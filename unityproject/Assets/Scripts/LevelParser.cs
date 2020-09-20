@@ -1,11 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Text;
 using UnityEngine;
 
 public class LevelParser : MonoBehaviour
 {
-    public string fileName = "Assets/Resources/level_classic.txt";
+    public TextAsset inputFile;
 
     public LevelManager levelManager;
     
@@ -41,20 +42,24 @@ public class LevelParser : MonoBehaviour
         MapComponent[][] tileMap = null;
         try
         {
-            using (StreamReader reader = new StreamReader(fileName))
+            byte[] byteArray = Encoding.ASCII.GetBytes( inputFile.text );
+            using (var ms = new MemoryStream(byteArray))
             {
-                ParseRowsAndCols(reader);
-                tileMap = new MapComponent[rows][];
-                CreateTileMap(reader, tileMap, pelletTransforms, boxTiles);
-                InitializeEntitiesProperties(reader, tileMap);
+                using (var reader = new StreamReader(ms))
+                {
+                    ParseRowsAndCols(reader);
+                    tileMap = new MapComponent[rows][];
+                    CreateTileMap(reader, tileMap, pelletTransforms, boxTiles);
+                    InitializeEntitiesProperties(reader, tileMap);
                 
-                var tileWidth = (int) tileSprites[0].rect.width;
-                tileMapHalfWidth = (float)(cols * tileWidth) / 2;
+                    var tileWidth = (int) tileSprites[0].rect.width;
+                    tileMapHalfWidth = (float)(cols * tileWidth) / 2;
+                }
             }
         }
         catch (Exception e)
         {
-            Debug.LogError("Error reading file: " + fileName);
+            Debug.LogError("Error reading file: " + inputFile.name);
             Debug.LogError(e.Message);
             Application.Quit();
         }
