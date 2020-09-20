@@ -948,7 +948,7 @@ MonoBehaviour:
   movSpeed: 25
   normalSpeed: 25
   frightenedModeSpeed: 15
-  consumedStateSpeed: 40
+  consumedStateSpeed: 60
   ghosts:
   - {fileID: 494656769}
   - {fileID: 923034327}
@@ -2112,8 +2112,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2e5b825ad5cbc124e92718c23cdf4b53, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  fruitAppearanceTime: 50
-  fruitDuration: 20
+  fruitAppearanceTime: 30
+  fruitDuration: 10
   fruitBonus: {fileID: 1929785441}
   fruitBonusSprites:
   - {fileID: 8064056289589391633, guid: 987d6203cab1543d9a1de69abd061e71, type: 3}

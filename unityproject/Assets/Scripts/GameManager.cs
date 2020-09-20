@@ -17,7 +17,7 @@ public class GameManager : MonoBehaviour
 
     public TMP_Text centerText;
     public GameObject pauseMenu;
-    private bool canOpenPauseMenu = false;
+    private bool canOpenPauseMenu;
     private SoundManager soundManager;
 
     // Start is called before the first frame update
@@ -152,6 +152,7 @@ public class GameManager : MonoBehaviour
         levelManager.InitializeEntitiesProperties();
         levelManager.ResetPellets();
         modeManager.OnResetToNextRound();
+        player.ResetEatenGhosts();
         player.gameObject.SetActive(true);
         
         yield return new WaitForSecondsRealtime(WaitingTimeAfterReset);

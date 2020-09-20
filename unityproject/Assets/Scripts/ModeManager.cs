@@ -48,6 +48,7 @@ public class ModeManager : MonoBehaviour, IPauseable
     private float maxConsumedStateSpeed;
     private float roundSpeedMultiplier = 1.1f;
     private bool maxSpeedReached;
+    private bool waitingForConsumption;
 
     public List<Ghost> ghosts;
 
@@ -193,12 +194,14 @@ public class ModeManager : MonoBehaviour, IPauseable
     // Called when ghost is eaten
     public void OnPauseGameWhenEaten(Ghost ghost, int ghostsEaten)
     {
+        waitingForConsumption = true;
         movSpeed = 0;
         ghost.SetPointsAnimation(ghostsEaten);
     }
     
     public void OnResumeGameWhenEaten(Ghost ghost)
     {
+        waitingForConsumption = false;
         movSpeed = frightenedModeSpeed;
     }
 
@@ -246,4 +249,6 @@ public class ModeManager : MonoBehaviour, IPauseable
         movSpeed = normalSpeed;
         ghosts.ForEach(ghost => ghost.gameObject.SetActive(true));
     }
+    
+    public bool WaitingForConsumption => waitingForConsumption;
 }

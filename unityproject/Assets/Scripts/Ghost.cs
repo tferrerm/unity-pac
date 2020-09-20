@@ -118,7 +118,8 @@ public class Ghost : MonoBehaviour, IEntity
     {
         if (currentState == GhostState.Waiting) return;
 
-        var speed = (currentState == GhostState.Consumed) ? modeManager.consumedStateSpeed : modeManager.movSpeed;
+        var speed = (currentState == GhostState.Consumed) ? modeManager.consumedStateSpeed : 
+            (hasBeenEaten && !modeManager.WaitingForConsumption)? modeManager.normalSpeed : modeManager.movSpeed;
         Vector3 newPosition = gameManager.GetNewEntityPosition(speed, transform.position, currentDirection);
         if (levelManager.ReachedTargetTile(entityId, newPosition, currentDirection))
         {
@@ -363,5 +364,6 @@ public class Ghost : MonoBehaviour, IEntity
         _animator.SetBool(_animatorEatenId, false);
         _animator.SetBool(_animatorFrightenedId, false);
         _animator.SetBool(_animatorFrightenedEndingId, false);
+        _animator.SetInteger(_animatorPointsId, 0);
     }
 }
