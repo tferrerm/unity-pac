@@ -42,19 +42,15 @@ public class LevelParser : MonoBehaviour
         MapComponent[][] tileMap = null;
         try
         {
-            byte[] byteArray = Encoding.ASCII.GetBytes( inputFile.text );
-            using (var ms = new MemoryStream(byteArray))
+            using (var reader = new StringReader(inputFile.text))
             {
-                using (var reader = new StreamReader(ms))
-                {
-                    ParseRowsAndCols(reader);
-                    tileMap = new MapComponent[rows][];
-                    CreateTileMap(reader, tileMap, pelletTransforms, boxTiles);
-                    InitializeEntitiesProperties(reader, tileMap);
-                
-                    var tileWidth = (int) tileSprites[0].rect.width;
-                    tileMapHalfWidth = (float)(cols * tileWidth) / 2;
-                }
+                ParseRowsAndCols(reader);
+                tileMap = new MapComponent[rows][];
+                CreateTileMap(reader, tileMap, pelletTransforms, boxTiles);
+                InitializeEntitiesProperties(reader, tileMap);
+            
+                var tileWidth = (int) tileSprites[0].rect.width;
+                tileMapHalfWidth = (float)(cols * tileWidth) / 2;
             }
         }
         catch (Exception e)
@@ -67,7 +63,7 @@ public class LevelParser : MonoBehaviour
         return tileMap;
     }
     
-    private void ParseRowsAndCols(StreamReader reader)
+    private void ParseRowsAndCols(StringReader reader)
     {
         var input = reader.ReadLine();
         rows = Int32.Parse(input);
@@ -89,7 +85,7 @@ public class LevelParser : MonoBehaviour
         }
     }
     
-    private void CreateTileMap(StreamReader reader, MapComponent[][] tileMap, List<Transform> pelletTransforms, 
+    private void CreateTileMap(StringReader reader, MapComponent[][] tileMap, List<Transform> pelletTransforms, 
         List<Vector2Int> boxTiles)
     {
         
@@ -184,7 +180,7 @@ public class LevelParser : MonoBehaviour
         tileGO.name = $"Tile ({col}, {row})";
     }
     
-    public void InitializeEntitiesProperties(StreamReader reader, MapComponent[][] tileMap)
+    public void InitializeEntitiesProperties(StringReader reader, MapComponent[][] tileMap)
     {
         reader.ReadLine(); // Player Header
         
