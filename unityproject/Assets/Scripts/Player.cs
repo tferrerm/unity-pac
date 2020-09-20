@@ -13,6 +13,7 @@ public class Player : MonoBehaviour, IEntity, IPauseable
     private readonly Dictionary<Direction, int> directionRotationAngles = new Dictionary<Direction, int>();
     private bool canReadInput = false;
     private Animator _animator;
+    private int _animatorDisappearId;
     private SpriteRenderer _spriteRenderer;
 
     private int _eatenGhosts = 0;
@@ -23,6 +24,7 @@ public class Player : MonoBehaviour, IEntity, IPauseable
     // Start is called before the first frame update
     private void Start()
     {
+        _animatorDisappearId = Animator.StringToHash("Disappear");
         movSpeed = normalSpeed;
         
         keyDirections.Add(KeyCode.LeftArrow, Direction.Left);
@@ -60,7 +62,7 @@ public class Player : MonoBehaviour, IEntity, IPauseable
 
     private void MovePlayer()
     {
-        if (hasCollidedWall || _animator.GetBool("Disappear")) return;
+        if (hasCollidedWall || _animator.GetBool(_animatorDisappearId)) return;
         
         Vector3 newPosition = gameManager.GetNewEntityPosition(movSpeed, transform.position, currentDirection);
         transform.position = gameManager.GetValidatedPosition(EntityId.Player, newPosition, currentDirection, nextDirection);
@@ -106,14 +108,14 @@ public class Player : MonoBehaviour, IEntity, IPauseable
 
     public void AnimationPlayback()
     {
-        if (hasCollidedWall || _animator.GetBool("Disappear"))
+        if (hasCollidedWall || _animator.GetBool(_animatorDisappearId))
             _animator.speed = 0;
     }
 
     public Direction currentDirection { get; set; }
     public void OnPauseGame()
     {
-        if (_animator.GetBool("Disappear"))
+        if (_animator.GetBool(_animatorDisappearId))
         {
             _animator.Play("Disappear");
             _animator.speed = 1;
@@ -123,7 +125,7 @@ public class Player : MonoBehaviour, IEntity, IPauseable
 
     public void OnResumeGame()
     {
-        _animator.SetBool("Disappear", false);
+        _animator.SetBool(_animatorDisappearId, false);
         _animator.Play("Pacman");
     }
 
@@ -140,7 +142,7 @@ public class Player : MonoBehaviour, IEntity, IPauseable
     public void PlayDisappearingAnimation()
     {
         _animator.transform.rotation = Quaternion.Euler(new Vector3(0, 0, 0));
-        _animator.SetBool("Disappear", true);
+        _animator.SetBool(_animatorDisappearId, true);
     }
 
     public void OnPauseGameWhenEating()
