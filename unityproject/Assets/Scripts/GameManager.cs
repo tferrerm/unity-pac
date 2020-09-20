@@ -17,6 +17,7 @@ public class GameManager : MonoBehaviour
 
     public TMP_Text centerText;
     public GameObject pauseMenu;
+    private bool canOpenPauseMenu = false;
     private SoundManager soundManager;
 
     // Start is called before the first frame update
@@ -31,11 +32,12 @@ public class GameManager : MonoBehaviour
 
     private void Update()
     {
-        if (Input.GetKeyDown(KeyCode.Escape))
+        if (Input.GetKeyDown(KeyCode.Escape) && canOpenPauseMenu)
         {
             Time.timeScale = pauseMenu.activeSelf ? 1 : 0;
             pauseMenu.SetActive(!pauseMenu.activeSelf);
             AudioListener.pause = pauseMenu.activeSelf;
+            player.CanReadInput = !pauseMenu.activeSelf;
         }
     }
 
@@ -134,6 +136,7 @@ public class GameManager : MonoBehaviour
 
     private IEnumerator WaitForNextRound()
     {
+        canOpenPauseMenu = false;
         Time.timeScale = 0;
         
         player.CanReadInput = false;
@@ -158,12 +161,13 @@ public class GameManager : MonoBehaviour
         player.CanReadInput = true;
 
         bonusManager.SetFruitWaiting();
-
+        canOpenPauseMenu = true;
         Time.timeScale = 1;
     }
 
     private IEnumerator WaitForOutro()
     {
+        canOpenPauseMenu = false;
         StopGhosts();
         soundManager.StopTileMapSound();
         
@@ -191,6 +195,7 @@ public class GameManager : MonoBehaviour
     
     private IEnumerator WaitForDisappearing()
     {
+        canOpenPauseMenu = false;
         StopGhosts();
         soundManager.StopTileMapSound();
         var time = soundManager.GetDisappearingWaitTime();
@@ -212,6 +217,7 @@ public class GameManager : MonoBehaviour
         soundManager.PlaySiren();
         player.CanReadInput = true;
         Time.timeScale = 1;
+        canOpenPauseMenu = true;
     }
     
     private IEnumerator WaitForGhostConsumption(Ghost ghost)
@@ -228,6 +234,7 @@ public class GameManager : MonoBehaviour
 
     private IEnumerator WaitForIntroMusic()
     {
+        canOpenPauseMenu = false;
         player.CanReadInput = false;
         Time.timeScale = 0;
         var time = soundManager.GetIntroWaitTime();
@@ -236,6 +243,7 @@ public class GameManager : MonoBehaviour
         centerText.gameObject.SetActive(false);
         soundManager.PlaySiren();
         player.CanReadInput = true;
+        canOpenPauseMenu = true;
         Time.timeScale = 1;
     }
 
@@ -321,5 +329,10 @@ public class GameManager : MonoBehaviour
     public void PlayFrightenedModeMelody()
     {
         soundManager.PlayFrightenedMode();
+    }
+
+    public bool IsPauseMenuActive()
+    {
+        return pauseMenu.activeSelf;
     }
 }

@@ -20,7 +20,8 @@ public class SoundManager : MonoBehaviour
 
     private void Awake()
     {
-        MenuMusicManager.instance.StopMusic();
+        if(MenuMusicManager.instance != null)
+            MenuMusicManager.instance.StopMusic();
     }
 
     public void PlayEatingGhostSound()

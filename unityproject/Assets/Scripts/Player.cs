@@ -64,10 +64,8 @@ public class Player : MonoBehaviour, IEntity, IPauseable
     {
         if(canReadInput)
             gameManager.ValidateInputDirection(inputDirection, currentDirection, hasCollidedWall);
-        else
-        {
+        else if(!gameManager.IsPauseMenuActive())
             inputWhileFrozen = inputDirection;
-        }
     }
 
     private void MovePlayer()
@@ -171,6 +169,7 @@ public class Player : MonoBehaviour, IEntity, IPauseable
 
     public bool CanReadInput
     {
+        get => canReadInput;
         set => canReadInput = value;
     }
 }
