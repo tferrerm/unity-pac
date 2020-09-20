@@ -2035,6 +2035,7 @@ GameObject:
   - component: {fileID: 1760033259}
   - component: {fileID: 1760033258}
   - component: {fileID: 1760033260}
+  - component: {fileID: 1760033261}
   m_Layer: 0
   m_Name: GameController
   m_TagString: GameController
@@ -2063,22 +2064,10 @@ MonoBehaviour:
   - {fileID: 923034327}
   - {fileID: 1780488382}
   - {fileID: 1842700900}
-  fruitAppearanceTime: 50
-  fruitDuration: 20
-  fruitBonus: {fileID: 1929785441}
-  fruitBonusSprites:
-  - {fileID: 8064056289589391633, guid: 987d6203cab1543d9a1de69abd061e71, type: 3}
-  - {fileID: -4513582774868341619, guid: 987d6203cab1543d9a1de69abd061e71, type: 3}
-  - {fileID: 7083852059897662497, guid: 987d6203cab1543d9a1de69abd061e71, type: 3}
-  - {fileID: 5327131734856063916, guid: 987d6203cab1543d9a1de69abd061e71, type: 3}
-  - {fileID: 6660317758004568044, guid: 987d6203cab1543d9a1de69abd061e71, type: 3}
-  - {fileID: -2419440146347887631, guid: 987d6203cab1543d9a1de69abd061e71, type: 3}
-  - {fileID: 5627485602472712047, guid: 987d6203cab1543d9a1de69abd061e71, type: 3}
-  - {fileID: 8472352921499875423, guid: 987d6203cab1543d9a1de69abd061e71, type: 3}
-  bonusFruitScoreSprite: {fileID: -6822636483642451544, guid: 987d6203cab1543d9a1de69abd061e71, type: 3}
   centerText: {fileID: 1813596381}
   modeManager: {fileID: 797399382}
   pauseMenu: {fileID: 1462347606}
+  bonusManager: {fileID: 1760033261}
 --- !u!4 &1760033259
 Transform:
   m_ObjectHideFlags: 0
@@ -2116,6 +2105,33 @@ MonoBehaviour:
   frightenedMode: {fileID: 8300000, guid: 62aa1421829ec4233996c46b44e73af1, type: 3}
   consumedGhost: {fileID: 8300000, guid: 68abe3ff67b88433cb7f9eb6e5c718c7, type: 3}
   outro: {fileID: 8300000, guid: 2ce86dadf476a479db00e892d2c001c6, type: 3}
+--- !u!114 &1760033261
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1760033257}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2e5b825ad5cbc124e92718c23cdf4b53, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  fruitAppearanceTime: 50
+  fruitDuration: 20
+  fruitBonus: {fileID: 1929785441}
+  fruitBonusSprites:
+  - {fileID: 8064056289589391633, guid: 987d6203cab1543d9a1de69abd061e71, type: 3}
+  - {fileID: -4513582774868341619, guid: 987d6203cab1543d9a1de69abd061e71, type: 3}
+  - {fileID: 7083852059897662497, guid: 987d6203cab1543d9a1de69abd061e71, type: 3}
+  - {fileID: 5327131734856063916, guid: 987d6203cab1543d9a1de69abd061e71, type: 3}
+  - {fileID: 6660317758004568044, guid: 987d6203cab1543d9a1de69abd061e71, type: 3}
+  - {fileID: -2419440146347887631, guid: 987d6203cab1543d9a1de69abd061e71, type: 3}
+  - {fileID: 5627485602472712047, guid: 987d6203cab1543d9a1de69abd061e71, type: 3}
+  - {fileID: 8472352921499875423, guid: 987d6203cab1543d9a1de69abd061e71, type: 3}
+  bonusFruitScoreSprite: {fileID: -6822636483642451544, guid: 987d6203cab1543d9a1de69abd061e71, type: 3}
+  FruitScoreDisplayTime: 2
+  soundManager: {fileID: 1760033260}
 --- !u!1 &1766515223
 GameObject:
   m_ObjectHideFlags: 0

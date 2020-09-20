@@ -19,22 +19,6 @@ public class GameManager : MonoBehaviour
     private readonly List<Direction> _oppositeYDirections = new List<Direction>(
         new [] {Direction.Up, Direction.Down});
 
-    public int fruitAppearanceTime;
-    public int fruitDuration;
-    public GameObject fruitBonus;
-    public Sprite[] fruitBonusSprites;
-    public Sprite bonusFruitScoreSprite;
-    private int _fruitIndex;
-    private float _fruitTimer;
-    private FruitStatus _fruitStatus = FruitStatus.Waiting;
-
-    private enum FruitStatus
-    {
-        Waiting = 0,
-        Present = 1,
-        Appeared = 2
-    }
-
     private float _tileMapHalfWidth;
 
     public TMP_Text centerText;
@@ -45,6 +29,8 @@ public class GameManager : MonoBehaviour
     private const float WaitingTimeAfterReset = 2f;
 
     public GameObject pauseMenu;
+
+    public BonusManager bonusManager;
 
     // Start is called before the first frame update
     void Start()
@@ -64,8 +50,6 @@ public class GameManager : MonoBehaviour
             Time.timeScale = pauseMenu.activeSelf ? 1 : 0;
             pauseMenu.SetActive(!pauseMenu.activeSelf);
         }
-
-        FruitHandler();
     }
 
     public void PauseMenuResume()
@@ -79,29 +63,6 @@ public class GameManager : MonoBehaviour
         pauseMenu.SetActive(false);
         Time.timeScale = 1;
         SceneManager.LoadScene(0);
-    }
-
-    private void FruitHandler()
-    {
-        if (_fruitStatus == FruitStatus.Waiting)
-        {
-            _fruitTimer += Time.deltaTime;
-            if (_fruitTimer > fruitAppearanceTime)
-            {
-                fruitBonus.SetActive(true);
-                _fruitStatus = FruitStatus.Present;
-                _fruitTimer = 0;
-            }
-        }
-        else if (_fruitStatus == FruitStatus.Present)
-        {
-            _fruitTimer += Time.deltaTime;
-            if (_fruitTimer > fruitDuration)
-            {
-                fruitBonus.SetActive(false);
-                _fruitTimer = 0;
-            }
-        }
     }
 
     public Vector3 GetValidatedPosition(EntityId entityId, Vector3 position, Direction currentDirection, Direction? nextDirection)
@@ -226,11 +187,7 @@ public class GameManager : MonoBehaviour
         
         player.CanReadInput = false;
         
-        fruitBonus.SetActive(false);
-        _fruitStatus = FruitStatus.Appeared;
-        _fruitTimer = 0;
-        _fruitIndex = (_fruitIndex + 1) % fruitBonusSprites.Length;
-        fruitBonus.GetComponent<SpriteRenderer>().sprite = fruitBonusSprites[_fruitIndex];
+        bonusManager.SetNextFruit();
 
         var time = soundManager.GetOutroWaitTime();
         yield return new WaitForSecondsRealtime(time);
@@ -248,9 +205,9 @@ public class GameManager : MonoBehaviour
         centerText.gameObject.SetActive(false);
         soundManager.PlaySiren();
         player.CanReadInput = true;
-        
-        _fruitStatus = FruitStatus.Waiting;
-        
+
+        bonusManager.SetFruitWaiting();
+
         Time.timeScale = 1;
     }
 
@@ -391,20 +348,7 @@ public class GameManager : MonoBehaviour
     {
         score.AddFruitBonusPoints();
         
-        IEnumerator coroutine = EatBonusFruitSprite(bonus);
-        StartCoroutine(coroutine);
-    }
-    
-    private IEnumerator EatBonusFruitSprite(GameObject bonusFruit)
-    {
-        var spriteRenderer = bonusFruit.GetComponent<SpriteRenderer>();
-        var fruitCollider = bonusFruit.GetComponent<Collider2D>();
-        fruitCollider.enabled = false;
-        soundManager.PlayConsumedFruit();
-        spriteRenderer.sprite = bonusFruitScoreSprite;
-        yield return new WaitForSecondsRealtime(2);
-        bonusFruit.SetActive(false);
-        fruitCollider.enabled = true;
+        bonusManager.EatBonus(bonus);
     }
 
     public void EatPellet(GameObject pelletGO, bool isPowerPellet)
