@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 
@@ -9,7 +8,7 @@ public class Score : MonoBehaviour
     private const int PointsPerPowerPellet = 50;
     private const int PointsPerBonusFruit = 200;
     private const int MaxHighScoreEntries = 10;
-    private const String highScoreSeparator = "-";
+    private const String HighScoreSeparator = "-";
     
     private int _score;
     private bool _addedExtraLife;
@@ -77,7 +76,7 @@ public class Score : MonoBehaviour
             if (_score > HighScoreFromString(highScore))
             {
                 ShiftScores(i);
-                String newScore = $"{_score}{highScoreSeparator}{playerName}";
+                String newScore = $"{_score}{HighScoreSeparator}{playerName}";
                 PlayerPrefs.SetString($"{i}", newScore);
                 // Debug.Log($"Put high score {i} {newScore}");
                 PlayerPrefs.SetInt("currentHighScore", i);
@@ -89,7 +88,7 @@ public class Score : MonoBehaviour
 
     public int HighScoreFromString(String highScoreStr)
     {
-        return Int32.Parse(highScoreStr.Split('-')[0]);
+        return Int32.Parse(highScoreStr.Split(HighScoreSeparator[0])[0]);
     }
 
     private void ShiftScores(int index)

@@ -1,5 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
@@ -11,12 +10,12 @@ public class Player : MonoBehaviour, IEntity, IPauseable
     private bool hasCollidedWall;
     private readonly Dictionary<KeyCode, Direction> keyDirections = new Dictionary<KeyCode, Direction>();
     private readonly Dictionary<Direction, int> directionRotationAngles = new Dictionary<Direction, int>();
-    private bool canReadInput = false;
+    private bool canReadInput;
     private Animator _animator;
     private int _animatorDisappearId;
     private SpriteRenderer _spriteRenderer;
 
-    private int _eatenGhosts = 0;
+    private int _eatenGhosts;
 
     public GameManager gameManager;
     private SoundManager soundManager;

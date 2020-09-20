@@ -4,6 +4,8 @@ public class CameraManager : MonoBehaviour
 {
     void OnGUI ()
     {
+        Debug.Assert(Camera.main != null);
+        
         switch (Screen.width)
         {
             case 200:
