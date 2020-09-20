@@ -18,6 +18,8 @@ public class HighScoresMenu : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        MenuMusicManager.instance.PlayMusic();
+        
         List<int> highScores = GetHighScores();
 
         var currentHighScore = PlayerPrefs.GetInt("currentHighScore");

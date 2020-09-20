@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 
 public class SoundManager : MonoBehaviour
 {
@@ -16,7 +17,12 @@ public class SoundManager : MonoBehaviour
     public AudioClip consumedGhost;
 
     public AudioClip outro;
-    
+
+    private void Awake()
+    {
+        MenuMusicManager.instance.StopMusic();
+    }
+
     public void PlayEatingGhostSound()
     {
         playerAudioSource.PlayOneShot(eatingGhost);
