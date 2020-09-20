@@ -32,7 +32,12 @@ public class Ghost : MonoBehaviour, IEntity
     public ModeManager modeManager;
     
     private Animator _animator;
-    private bool _reverseDirection = false;
+    private int _animatorDirectionId;
+    private int _animatorFrightenedId;
+    private int _animatorFrightenedEndingId;
+    private int _animatorEatenId;
+    private int _animatorPointsId;
+    private bool _reverseDirection;
 
     /*
      * Start is called before the first frame update.
@@ -42,7 +47,12 @@ public class Ghost : MonoBehaviour, IEntity
         currentState = initialState;
         isInBox = isInitiallyInBox;
         _animator = GetComponent<Animator>();
-        _animator.SetInteger("Direction", (int)currentDirection);
+        _animatorDirectionId = Animator.StringToHash("Direction");
+        _animatorFrightenedId = Animator.StringToHash("Frightened");
+        _animatorFrightenedEndingId = Animator.StringToHash("FrightenedEnding");
+        _animatorEatenId = Animator.StringToHash("Eaten");
+        _animatorPointsId = Animator.StringToHash("Points");
+        _animator.SetInteger(_animatorDirectionId, (int)currentDirection);
     }
 
     /*
@@ -81,26 +91,26 @@ public class Ghost : MonoBehaviour, IEntity
     public void SetFrightenedMode()
     {
         hasBeenEaten = false;
-        _animator.SetInteger("Points", 0);
-        _animator.SetBool("FrightenedEnding", false);
-        _animator.SetBool("Frightened", true);
+        _animator.SetInteger(_animatorPointsId, 0);
+        _animator.SetBool(_animatorFrightenedEndingId, false);
+        _animator.SetBool(_animatorFrightenedId, true);
     }
     
     public void SetFrightenedEndingAnimation()
     {
-        _animator.SetBool("FrightenedEnding", true);
+        _animator.SetBool(_animatorFrightenedEndingId, true);
     }
 
     public void SetStandardAnimation()
     {
-        _animator.SetBool("Frightened", false);
-        _animator.SetBool("FrightenedEnding", false);
-        _animator.SetInteger("Points", 0);
+        _animator.SetBool(_animatorFrightenedId, false);
+        _animator.SetBool(_animatorFrightenedEndingId, false);
+        _animator.SetInteger(_animatorPointsId, 0);
     }
 
     public void SetPointsAnimation(int eatenGhosts)
     {
-        _animator.SetInteger("Points", eatenGhosts);
+        _animator.SetInteger(_animatorPointsId, eatenGhosts);
     }
 
     private void Move()
@@ -118,7 +128,7 @@ public class Ghost : MonoBehaviour, IEntity
 
             if (currentState == GhostState.Consumed && levelManager.ReachedTile(entityId, consumedBoxTile))
             {
-                _animator.SetBool("Eaten", false);
+                _animator.SetBool(_animatorEatenId, false);
                 if (modeManager.currentMode == ModeManager.Mode.Frightened)
                     gameManager.PlayFrightenedModeMelody();
                 currentState = GhostState.LeavingBox;
@@ -129,7 +139,7 @@ public class Ghost : MonoBehaviour, IEntity
             var chosenDirection = ChooseNewDirection();
             transform.position = gameManager.GetValidatedPosition(entityId, newPosition, currentDirection, chosenDirection);
             currentDirection = chosenDirection;
-            _animator.SetInteger("Direction", (int)currentDirection);
+            _animator.SetInteger(_animatorDirectionId, (int)currentDirection);
         }
         else
         {
@@ -348,9 +358,9 @@ public class Ghost : MonoBehaviour, IEntity
 
     public void Consume()
     {
-        _animator.SetBool("Eaten", true);
-        _animator.SetBool("Frightened", false);
-        _animator.SetBool("FrightenedEnding", false);
+        _animator.SetBool(_animatorEatenId, true);
+        _animator.SetBool(_animatorFrightenedId, false);
+        _animator.SetBool(_animatorFrightenedEndingId, false);
         currentState = GhostState.Consumed;
     }
 
@@ -365,8 +375,8 @@ public class Ghost : MonoBehaviour, IEntity
         currentState = initialState;
         hasBeenEaten = false;
         _waitingTimer = 0;
-        _animator.SetBool("Eaten", false);
-        _animator.SetBool("Frightened", false);
-        _animator.SetBool("FrightenedEnding", false);
+        _animator.SetBool(_animatorEatenId, false);
+        _animator.SetBool(_animatorFrightenedId, false);
+        _animator.SetBool(_animatorFrightenedEndingId, false);
     }
 }
