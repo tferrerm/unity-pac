@@ -25,7 +25,7 @@ public class LivesManager : MonoBehaviour
         return _lives;
     }
     
-    // to be used when reaching 10k points
+    // Used when reaching 10k points
     public void OneLifeUp()
     {
         _lives++;

@@ -37,6 +37,7 @@ public class Ghost : MonoBehaviour, IEntity
     private int _animatorFrightenedEndingId;
     private int _animatorEatenId;
     private int _animatorPointsId;
+    
     private bool _reverseDirection;
 
     /*
@@ -155,10 +156,10 @@ public class Ghost : MonoBehaviour, IEntity
         if (_reverseDirection)
         {
             _reverseDirection = false;
-            return GetOppositeDirection(currentDirection);
+            return DirectionHelper.GetOppositeDirection(currentDirection);
         }
         
-        Direction chosenDirection = currentDirection; // Dummy value
+        Direction chosenDirection = currentDirection;
         var currentTile = gameManager.GetEntityCurrentTileCoordinates(entityId, currentDirection);
         
         var validDirections = levelManager.GetValidDirectionsForTile(currentTile,
@@ -208,7 +209,7 @@ public class Ghost : MonoBehaviour, IEntity
         
         foreach (var direction in validDirections)
         {
-            if(gameManager.DirectionsAreOpposite(currentDirection, direction))
+            if(DirectionHelper.DirectionsAreOpposite(currentDirection, direction))
                 continue;
             
             var xCoord = currentTile.x;
@@ -245,7 +246,7 @@ public class Ghost : MonoBehaviour, IEntity
     private Direction ChooseFrightenedModeDirection(List<Direction> validDirections)
     {
         var filteredValidDirection = validDirections.FindAll(
-            dir => !gameManager.DirectionsAreOpposite(currentDirection, dir));
+            dir => !DirectionHelper.DirectionsAreOpposite(currentDirection, dir));
         var index = Random.Range(0, filteredValidDirection.Count);
         return filteredValidDirection[index];
     }
@@ -338,23 +339,6 @@ public class Ghost : MonoBehaviour, IEntity
     }
 
     public Direction currentDirection { get; set; }
-
-    private Direction GetOppositeDirection(Direction direction)
-    {
-        switch (direction)
-        {
-            case Direction.Up:
-                return Direction.Down;
-            case Direction.Down:
-                return Direction.Up;
-            case Direction.Left:
-                return Direction.Right;
-            case Direction.Right:
-                return Direction.Left;
-            default:
-                throw new ArgumentOutOfRangeException(nameof(direction), direction, null);
-        }
-    }
 
     public void Consume()
     {

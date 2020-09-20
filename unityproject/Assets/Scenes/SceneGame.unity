@@ -2058,16 +2058,11 @@ MonoBehaviour:
   levelManager: {fileID: 1795960091}
   score: {fileID: 1980175181}
   livesManager: {fileID: 2014334510}
-  player: {fileID: 1570586584}
-  ghosts:
-  - {fileID: 494656769}
-  - {fileID: 923034327}
-  - {fileID: 1780488382}
-  - {fileID: 1842700900}
-  centerText: {fileID: 1813596381}
   modeManager: {fileID: 797399382}
-  pauseMenu: {fileID: 1462347606}
   bonusManager: {fileID: 1760033261}
+  player: {fileID: 1570586584}
+  centerText: {fileID: 1813596381}
+  pauseMenu: {fileID: 1462347606}
 --- !u!4 &1760033259
 Transform:
   m_ObjectHideFlags: 0
@@ -2561,6 +2556,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1795960092}
   - component: {fileID: 1795960091}
+  - component: {fileID: 1795960094}
   - component: {fileID: 1795960093}
   m_Layer: 0
   m_Name: TileMap
@@ -2581,33 +2577,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f6481d3973d00434ead18a3e1dd5468a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  inputFile: Assets/Resources/level_classic.txt
-  tileSprites:
-  - {fileID: -7732054193419636090, guid: e7c0d2614a7094b4ca25ac4c994b9be8, type: 3}
-  - {fileID: 463014696082951646, guid: e7c0d2614a7094b4ca25ac4c994b9be8, type: 3}
-  - {fileID: 7759888536935444221, guid: e7c0d2614a7094b4ca25ac4c994b9be8, type: 3}
-  - {fileID: 5200227473811388434, guid: e7c0d2614a7094b4ca25ac4c994b9be8, type: 3}
-  - {fileID: 9165889886868252436, guid: e7c0d2614a7094b4ca25ac4c994b9be8, type: 3}
-  - {fileID: -6188095945304394614, guid: e7c0d2614a7094b4ca25ac4c994b9be8, type: 3}
-  - {fileID: 1873917168148291061, guid: e7c0d2614a7094b4ca25ac4c994b9be8, type: 3}
-  - {fileID: 8192614943898051132, guid: e7c0d2614a7094b4ca25ac4c994b9be8, type: 3}
-  - {fileID: -1627181172737656269, guid: e7c0d2614a7094b4ca25ac4c994b9be8, type: 3}
-  - {fileID: -8029198935585817592, guid: e7c0d2614a7094b4ca25ac4c994b9be8, type: 3}
-  - {fileID: -3646281709339932130, guid: e7c0d2614a7094b4ca25ac4c994b9be8, type: 3}
-  - {fileID: 7371659782090782494, guid: e7c0d2614a7094b4ca25ac4c994b9be8, type: 3}
-  - {fileID: -7548087142759039616, guid: e7c0d2614a7094b4ca25ac4c994b9be8, type: 3}
-  - {fileID: 4359527942422131789, guid: e7c0d2614a7094b4ca25ac4c994b9be8, type: 3}
-  - {fileID: 7988907048659085410, guid: e7c0d2614a7094b4ca25ac4c994b9be8, type: 3}
-  - {fileID: -536759729524808488, guid: e7c0d2614a7094b4ca25ac4c994b9be8, type: 3}
-  - {fileID: -6822932635348197887, guid: e7c0d2614a7094b4ca25ac4c994b9be8, type: 3}
-  - {fileID: 8490642196906846815, guid: e7c0d2614a7094b4ca25ac4c994b9be8, type: 3}
-  - {fileID: 4035501790466999928, guid: e7c0d2614a7094b4ca25ac4c994b9be8, type: 3}
-  - {fileID: -8717017754119436831, guid: e7c0d2614a7094b4ca25ac4c994b9be8, type: 3}
-  pelletPool: {fileID: 1282872300}
-  pelletPrefab: {fileID: 2907960702836929954, guid: a9a85a99e1515994495ff8b90341b10e, type: 3}
-  powerPelletPrefab: {fileID: 1425826279440265562, guid: d4bba8314da61b1498093bc3a6872841, type: 3}
-  player: {fileID: 1570586584}
+  levelParser: {fileID: 1795960094}
   gameManager: {fileID: 1760033258}
+  pelletPool: {fileID: 1282872300}
+  player: {fileID: 1570586584}
   ghosts:
   - {fileID: 494656769}
   - {fileID: 923034327}
@@ -2723,6 +2696,43 @@ AudioSource:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
+--- !u!114 &1795960094
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1795960090}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 06453bac6fc99d140aa0c09fe6e2c547, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  fileName: Assets/Resources/level_classic.txt
+  levelManager: {fileID: 1795960091}
+  tileSprites:
+  - {fileID: -7732054193419636090, guid: e7c0d2614a7094b4ca25ac4c994b9be8, type: 3}
+  - {fileID: 463014696082951646, guid: e7c0d2614a7094b4ca25ac4c994b9be8, type: 3}
+  - {fileID: 7759888536935444221, guid: e7c0d2614a7094b4ca25ac4c994b9be8, type: 3}
+  - {fileID: 5200227473811388434, guid: e7c0d2614a7094b4ca25ac4c994b9be8, type: 3}
+  - {fileID: 9165889886868252436, guid: e7c0d2614a7094b4ca25ac4c994b9be8, type: 3}
+  - {fileID: -6188095945304394614, guid: e7c0d2614a7094b4ca25ac4c994b9be8, type: 3}
+  - {fileID: 1873917168148291061, guid: e7c0d2614a7094b4ca25ac4c994b9be8, type: 3}
+  - {fileID: 8192614943898051132, guid: e7c0d2614a7094b4ca25ac4c994b9be8, type: 3}
+  - {fileID: -1627181172737656269, guid: e7c0d2614a7094b4ca25ac4c994b9be8, type: 3}
+  - {fileID: -8029198935585817592, guid: e7c0d2614a7094b4ca25ac4c994b9be8, type: 3}
+  - {fileID: -3646281709339932130, guid: e7c0d2614a7094b4ca25ac4c994b9be8, type: 3}
+  - {fileID: 7371659782090782494, guid: e7c0d2614a7094b4ca25ac4c994b9be8, type: 3}
+  - {fileID: -7548087142759039616, guid: e7c0d2614a7094b4ca25ac4c994b9be8, type: 3}
+  - {fileID: 4359527942422131789, guid: e7c0d2614a7094b4ca25ac4c994b9be8, type: 3}
+  - {fileID: 7988907048659085410, guid: e7c0d2614a7094b4ca25ac4c994b9be8, type: 3}
+  - {fileID: -536759729524808488, guid: e7c0d2614a7094b4ca25ac4c994b9be8, type: 3}
+  - {fileID: -6822932635348197887, guid: e7c0d2614a7094b4ca25ac4c994b9be8, type: 3}
+  - {fileID: 8490642196906846815, guid: e7c0d2614a7094b4ca25ac4c994b9be8, type: 3}
+  - {fileID: 4035501790466999928, guid: e7c0d2614a7094b4ca25ac4c994b9be8, type: 3}
+  - {fileID: -8717017754119436831, guid: e7c0d2614a7094b4ca25ac4c994b9be8, type: 3}
+  pelletPrefab: {fileID: 2907960702836929954, guid: a9a85a99e1515994495ff8b90341b10e, type: 3}
+  powerPelletPrefab: {fileID: 1425826279440265562, guid: d4bba8314da61b1498093bc3a6872841, type: 3}
 --- !u!1 &1813596379
 GameObject:
   m_ObjectHideFlags: 0

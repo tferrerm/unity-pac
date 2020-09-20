@@ -105,7 +105,7 @@ public class Player : MonoBehaviour, IEntity, IPauseable
         set => hasCollidedWall = value;
     }
 
-    public void AnimationPlayback()
+    public void AnimationPlayback() // Used from Unity in animation key frames
     {
         if (hasCollidedWall || _animator.GetBool(_animatorDisappearId))
             _animator.speed = 0;

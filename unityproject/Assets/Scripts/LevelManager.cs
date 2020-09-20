@@ -1,77 +1,53 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
 public class LevelManager : MonoBehaviour
 {
-    private const int MaxRows = 23;
-    private const int MaxCols = 21;
-
+    public LevelParser levelParser;
+    public GameManager gameManager;
+    
+    /*
+     * Tilemap
+     */
+    private MapComponent[][] tileMap;
     private int rows;
     private int cols;
-
-    public String inputFile = "Assets/Resources/level_classic.txt";
-
-    public List<Sprite> tileSprites;
     
     public GameObject pelletPool;
-    public GameObject pelletPrefab;
-    public GameObject powerPelletPrefab;
     private List<Transform> pelletTransforms = new List<Transform>();
-    
-    private MapComponent[][] tileMap;
-    private Dictionary<EntityId, Vector2Int> entitiesTargetTileCoordinates;
-
-    public Player player;
-    public GameManager gameManager;
-    public Ghost[] ghosts = new Ghost[4];
-    private int _ghostCount;
-    private readonly EntityId[] _ghostOrder = {EntityId.Blinky, EntityId.Inky,
-        EntityId.Pinky, EntityId.Clyde};
-
-    private Vector2Int _initialPlayerPosition;
-    private Direction _initialPlayerDirection;
-    private readonly Vector2Int[] _initialGhostPositions = new Vector2Int[4];
-    private readonly Direction[] _initialGhostDirections = new Direction[4];
-
     private List<Vector2Int> boxTiles = new List<Vector2Int>();
-    private Vector2Int boxDoorCoordinates;
     private Vector2Int boxDoorEntranceCoordinates;
-    public Vector2Int BoxDoorEntranceCoordinates => boxDoorEntranceCoordinates;
-    private const string BoxId = "B";
-    private const string BoxDoorId = "_";
-
-    private const string PelletId = "o";
-    private const string PowerPelletId = "X";
-    private const string BlankId = ".";
-
     private float tileMapHalfWidth;
-    public float TileMapHalfWidth => tileMapHalfWidth;
-
+    
+    /*
+     * Entities
+     */
+    public Player player;
+    public Ghost[] ghosts = new Ghost[4];
+    private readonly EntityId[] _ghostOrder = {EntityId.Blinky, EntityId.Inky, EntityId.Pinky, EntityId.Clyde};
+    private Dictionary<EntityId, Vector2Int> entitiesTargetTileCoordinates;
+    
     private bool finishedGame;
 
-    // Start is called before the first frame update
     void Awake()
     {
-        entitiesTargetTileCoordinates = new Dictionary<EntityId, Vector2Int>();
+        tileMap = levelParser.Parse(pelletTransforms, boxTiles);
 
-        try
+        rows = levelParser.Rows;
+        cols = levelParser.Cols;
+        boxDoorEntranceCoordinates = levelParser.BoxDoorEntranceCoordinates;
+        tileMapHalfWidth = levelParser.TileMapHalfWidth;
+        
+        entitiesTargetTileCoordinates = new Dictionary<EntityId, Vector2Int>();
+        var entityIds = (EntityId[]) Enum.GetValues(typeof(EntityId));
+        foreach (var entityId in entityIds)
         {
-            using (StreamReader reader = new StreamReader(inputFile))
-            {
-                ParseRowsAndCols(reader);
-                CreateTileMap(reader);
-                InitializeEntitiesProperties(reader);
-            }
+            entitiesTargetTileCoordinates.Add(entityId, Vector2Int.zero);
         }
-        catch (Exception e)
-        {
-            Debug.LogError("Error reading file: " + inputFile);
-            Debug.LogError(e.Message);
-            Application.Quit();
-        }
+
+        InitializeEntitiesProperties();
     }
 
     private void Update()
@@ -89,184 +65,27 @@ public class LevelManager : MonoBehaviour
         gameManager.GameOver(true);
     }
 
-    private void CreateTileMap(StreamReader reader)
-    {
-        tileMap = new MapComponent[rows][];
-        var tileWidth = (int) tileSprites[0].rect.width;
-        var tileHeight = (int) tileSprites[0].rect.height;
-        tileMapHalfWidth = (float)(cols * tileWidth) / 2;
-        Dictionary<String, Sprite> spriteNameDict = new Dictionary<String, Sprite>();
-        tileSprites.ForEach(sprite => spriteNameDict.Add(sprite.name, sprite));
-
-        Vector3 positionPointer = new Vector3(-cols / 2 * tileWidth, rows / 2 * tileHeight, 0);
-
-        for (int i = 0; i < rows; i++)
-        {
-            tileMap[i] = new MapComponent[cols];
-            for (int j = 0; j < cols; j++)
-            {
-                var input = ((char) reader.Read()).ToString();
-                CreateTile(input, positionPointer, spriteNameDict, i, j);
-
-                positionPointer = new Vector3(positionPointer.x + tileWidth, positionPointer.y, 0);
-            }
-
-            reader.ReadLine();
-            positionPointer = new Vector3(-cols / 2 * tileWidth, positionPointer.y - tileHeight, 0);
-        }
-
-        if (boxTiles.Count < ghosts.Length - 1)
-        {
-            Debug.LogError("Insufficient box tiles in map file.");
-            Application.Quit();
-        }
-    }
-
-
-    private void CreateTile(string input, Vector3 positionPointer, Dictionary<string, Sprite> spriteDict, int row,
-        int col)
-    {
-        GameObject tileGO = new GameObject();
-        tileGO.transform.SetParent(transform);
-        tileGO.transform.position = positionPointer;
-
-        MapComponent mapComponent = tileGO.AddComponent<MapComponent>();
-        switch (input)
-        {
-            case PelletId:
-                mapComponent.HasPellet = true;
-                break;
-            case PowerPelletId:
-                mapComponent.HasPowerPellet = true;
-                break;
-            case BoxId:
-                boxTiles.Add(new Vector2Int(col, row));
-                break;
-            case BoxDoorId:
-                /*if (boxDoorCoordinates != null)
-                {
-                    Debug.LogError("Only one box door tile is allowed.");
-                    Application.Quit();
-                }*/
-                boxDoorCoordinates = new Vector2Int(col, row);
-                boxDoorEntranceCoordinates = new Vector2Int(col, row - 1);
-                mapComponent.IsBoxDoor = true;
-                mapComponent.IsWall = true;
-                break;
-            case BlankId:
-                break;
-            default:
-                mapComponent.IsWall = true;
-                break;
-        }
-        tileMap[row][col] = mapComponent;
-
-        tileGO.AddComponent<SpriteRenderer>();
-        GameObject pellet;
-        if (mapComponent.HasPellet)
-        {
-            // Instantiate pellet
-            tileGO.GetComponent<SpriteRenderer>().sprite = spriteDict["."];
-            pellet = Instantiate(pelletPrefab, positionPointer, Quaternion.identity, pelletPool.transform);
-            pelletTransforms.Add(pellet.transform);
-        }
-        else if (mapComponent.HasPowerPellet)
-        {
-            // Instantiate power pellet
-            tileGO.GetComponent<SpriteRenderer>().sprite = spriteDict["."];
-            pellet = Instantiate(powerPelletPrefab, positionPointer, Quaternion.identity, pelletPool.transform);
-            pelletTransforms.Add(pellet.transform);
-        }
-        else
-        {
-            tileGO.GetComponent<SpriteRenderer>().sprite = input == BoxId ? spriteDict[BlankId] : spriteDict[input];
-        }
-        
-        tileGO.name = $"Tile ({col}, {row})";
-    }
-    
-    
-    public void InitializeEntitiesProperties(StreamReader reader)
-    {
-        reader.ReadLine(); // Player Header
-        
-        var input = reader.ReadLine();
-        var initX = Int32.Parse(input);
-
-        input = reader.ReadLine();
-        var initY = Int32.Parse(input);
-
-        ValidateInitialPosition(initX, initY);
-
-        _initialPlayerPosition = new Vector2Int(initX, initY);
-        player.transform.position = tileMap[initY][initX].gameObject.transform.position;
-
-        input = reader.ReadLine();
-        _initialPlayerDirection = (Direction) Int32.Parse(input);
-        gameManager.SetPlayerDirection(_initialPlayerDirection);
-        Vector2Int targetTileCoordinates = TargetTileFromInitDirection(_initialPlayerDirection, initX, initY);
-
-        entitiesTargetTileCoordinates.Add(EntityId.Player, targetTileCoordinates);
-
-        reader.ReadLine(); // Ghosts Header
-        
-        input = reader.ReadLine();
-        _ghostCount = Math.Min(Int32.Parse(input), _ghostOrder.Length);
-
-        for (int i = 0; i < _ghostCount; i++)
-        {
-            reader.ReadLine(); // Ghost Header
-            
-            input = reader.ReadLine();
-            var ghostX = Int32.Parse(input);
-            input = reader.ReadLine();
-            var ghostY = Int32.Parse(input);
-
-            ValidateInitialPosition(ghostX, ghostY);
-
-            var ghost = ghosts[i];
-            _initialGhostPositions[i] = new Vector2Int(ghostX, ghostY);
-
-            ghost.transform.position = tileMap[ghostY][ghostX].gameObject.transform.position;
-
-            input = reader.ReadLine();
-            _initialGhostDirections[i] = (Direction) Int32.Parse(input);
-            
-            ghost.currentDirection = _initialGhostDirections[i];
-            var ghostTargetTile = TargetTileFromInitDirection(_initialGhostDirections[i], ghostX, ghostY);
-            entitiesTargetTileCoordinates.Add(_ghostOrder[i], ghostTargetTile);
-        }
-    }
-
     public void InitializeEntitiesProperties()
     {
-        int initX = _initialPlayerPosition.x;
-        int initY = _initialPlayerPosition.y;
+        int initX = levelParser.InitialPlayerPosition.x;
+        int initY = levelParser.InitialPlayerPosition.y;
         player.transform.position = tileMap[initY][initX].gameObject.transform.position;
-        gameManager.SetPlayerDirection(_initialPlayerDirection);
-        Vector2Int targetTileCoordinates = TargetTileFromInitDirection(_initialPlayerDirection, initX, initY);
+        gameManager.SetPlayerDirection(levelParser.InitialPlayerDirection);
+        Vector2Int targetTileCoordinates = TargetTileFromInitDirection(levelParser.InitialPlayerDirection, initX, initY);
         entitiesTargetTileCoordinates[EntityId.Player] = targetTileCoordinates;
         
-        for (int i = 0; i < _ghostCount; i++)
+        for (int i = 0; i < levelParser.GhostCount; i++)
         {
             var ghost = ghosts[i];
-            var ghostX = _initialGhostPositions[i].x;
-            var ghostY = _initialGhostPositions[i].y;
-            _initialGhostPositions[i] = new Vector2Int(ghostX, ghostY);
+            var ghostX = levelParser.InitialGhostPositions[i].x;
+            var ghostY = levelParser.InitialGhostPositions[i].y;
+            levelParser.InitialGhostPositions[i] = new Vector2Int(ghostX, ghostY);
             
             ghost.transform.position = tileMap[ghostY][ghostX].gameObject.transform.position;
             
-            ghost.currentDirection = _initialGhostDirections[i];
-            var ghostTargetTile = TargetTileFromInitDirection(_initialGhostDirections[i], ghostX, ghostY);
+            ghost.currentDirection = levelParser.InitialGhostDirections[i];
+            var ghostTargetTile = TargetTileFromInitDirection(levelParser.InitialGhostDirections[i], ghostX, ghostY);
             entitiesTargetTileCoordinates[_ghostOrder[i]] = ghostTargetTile;
-        }
-    }
-
-    private void ValidateInitialPosition(int initX, int initY)
-    {
-        if (tileMap[initY][initX].IsWall || initX <= 0 || initX >= cols - 1 || initY <= 0 || initY >= rows - 1)
-        {
-            throw new Exception("Invalid initial player position.");
         }
     }
 
@@ -286,30 +105,34 @@ public class LevelManager : MonoBehaviour
                 throw new ArgumentOutOfRangeException();
         }
     }
-
     
-    private void ParseRowsAndCols(StreamReader reader)
+    // Get new position based on direction, speed and frame delta time
+    public Vector3 GetNewEntityPosition(float movSpeed,Vector2 position, Direction currentDirection)
     {
-        var input = reader.ReadLine();
-        rows = Int32.Parse(input);
+        Vector3 newPosition;
+        float posX;
+        switch (currentDirection)
+        {
+            case Direction.Left:
+                posX = position.x - movSpeed * Time.deltaTime;
+                newPosition = new Vector3(posX < -tileMapHalfWidth ? tileMapHalfWidth : posX, position.y, 0);
+                break;
+            case Direction.Right:
+                posX = position.x + movSpeed * Time.deltaTime;
+                newPosition = new Vector3(posX > tileMapHalfWidth ? -tileMapHalfWidth : posX, position.y, 0);
+                break;
+            case Direction.Up:
+                newPosition = new Vector3(position.x, position.y + movSpeed * Time.deltaTime, 0);
+                break;
+            case Direction.Down:
+                newPosition = new Vector3(position.x, position.y - movSpeed * Time.deltaTime, 0);
+                break;
+            default:
+                throw new ArgumentOutOfRangeException();
+        }
 
-        input = reader.ReadLine();
-        cols = Int32.Parse(input);
-        
-        if (rows <= 0 || cols <= 0)
-        {
-            throw new Exception("Negative rows or columns.");
-        }
-        if (rows % 2 == 0 || cols % 2 == 0)
-        {
-            throw new Exception("Uneven rows or columns.");
-        }
-        if (rows > MaxRows || cols > MaxCols)
-        {
-            throw new Exception($"Cannot exceed {MaxRows} rows and {MaxCols} columns.");
-        }
+        return newPosition;
     }
-
     
     // Check if target was reached and update variables, otherwise simply return input 'position' parameter
     public Vector3 GetValidatedPlayerPosition(Vector3 position, Direction currentDirection, Direction? nextDirection)
@@ -537,7 +360,7 @@ public class LevelManager : MonoBehaviour
     // If input direction is opposite to current direction, update target and return true
     private bool ValidateOppositeInputDirection(Direction inputDirection, Direction currentDirection)
     {
-        if (!gameManager.DirectionsAreOpposite(inputDirection, currentDirection))
+        if (!DirectionHelper.DirectionsAreOpposite(inputDirection, currentDirection))
             return false;
         UpdateTargetTileCoordinates(EntityId.Player, entitiesTargetTileCoordinates[EntityId.Player], inputDirection);
         return true;
@@ -731,4 +554,8 @@ public class LevelManager : MonoBehaviour
         pelletTransforms.ForEach(pellet => pellet.gameObject.SetActive(true));
         finishedGame = false;
     }
+
+    public EntityId[] GhostOrder => _ghostOrder;
+    
+    public Vector2Int BoxDoorEntranceCoordinates => boxDoorEntranceCoordinates;
 }
