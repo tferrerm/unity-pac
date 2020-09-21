@@ -15,7 +15,7 @@ public class MenuMusicManager : MonoBehaviour
             Destroy (gameObject);
 
         instance.PlayMusic();
-        DontDestroyOnLoad (gameObject);
+        DontDestroyOnLoad(gameObject);
     }
     
     public void PlayMusic()

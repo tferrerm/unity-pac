@@ -51,6 +51,7 @@ public class GameManager : MonoBehaviour
     {
         pauseMenu.SetActive(false);
         Time.timeScale = 1;
+        AudioListener.pause = false;
         SceneManager.LoadScene(0);
     }
 
