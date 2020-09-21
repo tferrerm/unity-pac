@@ -52,6 +52,7 @@ public class BonusManager : MonoBehaviour
             if (_fruitTimer > fruitDuration)
             {
                 fruitBonus.SetActive(false);
+                _fruitStatus = FruitStatus.Appeared;
                 _fruitTimer = 0;
             }
         }
@@ -86,6 +87,8 @@ public class BonusManager : MonoBehaviour
         spriteRenderer.sprite = bonusFruitScoreSprite;
         yield return new WaitForSecondsRealtime(FruitScoreDisplayTime);
         bonusFruit.SetActive(false);
+        _fruitStatus = FruitStatus.Appeared;
+        _fruitTimer = 0;
         fruitCollider.enabled = true;
     }
 }
