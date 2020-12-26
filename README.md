@@ -18,8 +18,8 @@ To deploy the game, you need to extract the file 'deploy/deploy.zip' and start a
 
 ### Credits
 
-- [Tomás Ferrer](mailto:tferrer@itba.edu.ar) (Unity Developer)
-- [Marcos Lund](mailto:mlund@itba.edu.ar) (Unity Developer)
-- [Santiago Swinnen](mailto:sswinnen@itba.edu.ar) (Unity Developer)
+- [Tomás Ferrer](https://github.com/tferrerITBA) (Unity Developer)
+- [Marcos Lund](https://github.com/marcoslund) (Unity Developer)
+- [Santiago Swinnen](https://github.com/santiagoswinnen) (Unity Developer)
 
 Special thanks to Namco, Toru Iwatani and Shigeichi Ishimura for creating this awesome game!
